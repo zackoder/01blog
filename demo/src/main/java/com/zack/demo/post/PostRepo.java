@@ -68,6 +68,6 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             LIMIT ?4 OFFSET ?5;
 
                         """, nativeQuery = true)
-    List<GetPostDto> findUserPostsByOffsetAndLimit(long id, long id1, long id2, long limit, long offset);
+    List<GetPostDto> findUserPostsByOffsetAndLimit(long id1, long id2, long id3, long limit4, long offset5);
 
 }

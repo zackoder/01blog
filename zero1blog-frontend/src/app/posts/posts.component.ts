@@ -1,6 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Input,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { OffsetLimitService } from '../services/offset-limit.service';
 import { ReportComponent } from '../report/report.component';
 import { environment } from '../../environments/environment.prod';
@@ -15,7 +23,7 @@ import { AddPostComponent } from '../add-post/add-post.component';
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css',
 })
-export class PostsComponent implements OnInit {
+export class PostsComponent implements OnInit, OnDestroy {
   private baseUrl = environment.apiUrl;
   nothingToFetch = false;
   isLoading = false;
@@ -27,23 +35,30 @@ export class PostsComponent implements OnInit {
   currentPath = '';
   @Input() target: string = '';
   @Input() profileData: string | null = null;
+  private routerSubscription: Subscription | null = null;
   constructor(
     private http: HttpClient,
     private router: Router,
     private offsetService: OffsetLimitService,
     public postsService: PostsService
-  ) {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.handleRouteChange();
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    // console.log('before fetching');
-    // this.currentPath = this.router.url;
-    // this.fetchPosts(0);
+    // Subscribe to router navigation end events and handle route changes.
+    this.currentPath = this.router.url;
+    this.routerSubscription = this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe(() => this.handleRouteChange());
+    this.fetchPosts(0);
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+      this.routerSubscription = null;
+      this.postsService.deleteAll();
+      this.offsetService.setOffset(0);
+    }
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -218,21 +233,15 @@ export class PostsComponent implements OnInit {
     if (this.isLoading) return;
     const newPath = this.router.url;
 
-    console.log('waaaaaaaa3333333333333333333333', newPath);
+    // Avoid refetching when path hasn't changed.
+    if (newPath === this.currentPath) return;
 
-    // if (
-    //   newPath.startsWith('/profile') &&
-    //   this.currentPath.startsWith('/profile')
-    // ) {
-    //   if (newPath !== this.currentPath) {
-    //     this.postsService.deleteAll();
-    //     this.offsetService.setOffset(0);
-    //     this.nothingToFetch = false;
+    // Reset state for new route
+    this.currentPath = newPath;
+    this.offsetService.setOffset(0);
+    this.postsService.deleteAll();
+    this.nothingToFetch = false;
 
-    //     if (newPath !== this.currentPath) this.fetchPosts(0);
-    //   }
-    //   this.currentPath = newPath;
-    // }
     this.fetchPosts(0);
   }
 }

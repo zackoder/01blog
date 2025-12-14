@@ -1,11 +1,11 @@
 @if (!currentPath.startsWith('/profile')) {
 <app-add-post></app-add-post>
-} 
+}
 <div class="postsContainer">
   @for (post of postsService.getPosts(); track post.id; let i = $index) {
   <div class="post">
-    <h2 (click)="goToProfile(post.nickname, post.user_id)" class="userNickname">
-      <span>
+    <h2 class="userNickname">
+      <span (click)="goToProfile(post.nickname, post.user_id)">
         {{ post.nickname }}
       </span>
       <i (click)="toggle(i)" class="fa-solid fa-bars"></i>

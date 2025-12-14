@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { PostsService } from '../services/posts.service';
-import { OffsetLimitService } from '../services/offset-limit.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +10,7 @@ import { OffsetLimitService } from '../services/offset-limit.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnDestroy {
   baseUrl = environment.apiUrl;
   show = false;
   isAdmin = true;
@@ -28,11 +26,14 @@ export class NavbarComponent {
       }
     });
   }
+  ngOnDestroy() {
+    
+  }
 
   openProfile() {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
-      this.router.navigate(['/login']);
+      // this.router.navigate(['/login']);
       return;
     }
     this.router.navigate([`/profile/${this.data.nickname}.${this.data.id}`]);
@@ -43,7 +44,9 @@ export class NavbarComponent {
     this.isLoading = true;
     const token = localStorage.getItem('jwtToken');
     if (!token) {
-      this.router.navigate(['/login']);
+      // if (this.router.url !== '/signup') {
+      //   this.router.navigate(['/login']);
+      // }
       return;
     }
 
@@ -73,13 +76,7 @@ export class NavbarComponent {
     this.router.navigate(['/login']);
   }
 
-  // goHome() {
-  //   console.log('go home');
-  //   if (this.router.url !== '/') {
-  //     this.posts.deleteAll();
-  //     this.offset.setOffset(0);
-  //   }
-
-  //   this.router.navigate(['/']);
-  // }
+  goHome() {
+    this.router.navigate(['/']);
+  }
 }
