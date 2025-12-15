@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgClass } from '@angular/common';
@@ -10,45 +10,44 @@ import { NgClass } from '@angular/common';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent {
   baseUrl = environment.apiUrl;
   show = false;
   isAdmin = true;
   isLoading = false;
   data: any;
-  currentPath!: string;
+  currentPath: string = '';
+
   constructor(private http: HttpClient, private router: Router) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.userCredentials();
         this.currentPath = this.router.url;
-        console.log(this.currentPath);
+        this.userCredentials();
       }
     });
-  }
-  ngOnDestroy() {
-    
   }
 
   openProfile() {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
-      // this.router.navigate(['/login']);
       return;
     }
     this.router.navigate([`/profile/${this.data.nickname}.${this.data.id}`]);
+    this.show = false;
   }
 
   userCredentials() {
     if (this.isLoading) return;
     this.isLoading = true;
     const token = localStorage.getItem('jwtToken');
+
     if (!token) {
-      // if (this.router.url !== '/signup') {
-      //   this.router.navigate(['/login']);
-      // }
+      // this.router.navigate(['/']);
+      this.isLoading = false;
       return;
     }
+
+    console.log('11111111111111111111111111');
 
     this.http
       .get(`${this.baseUrl}/userCredentials`, {
@@ -65,6 +64,7 @@ export class NavbarComponent implements OnDestroy {
           this.isLoading = false;
         },
       });
+    console.log('user data:', this.data);
   }
 
   toggle() {
@@ -73,10 +73,12 @@ export class NavbarComponent implements OnDestroy {
 
   logout() {
     localStorage.clear();
+    this.show = false;
     this.router.navigate(['/login']);
   }
 
   goHome() {
+    this.show = false;
     this.router.navigate(['/']);
   }
 }
