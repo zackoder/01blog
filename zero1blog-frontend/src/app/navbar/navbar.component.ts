@@ -47,8 +47,6 @@ export class NavbarComponent {
       return;
     }
 
-    console.log('11111111111111111111111111');
-
     this.http
       .get(`${this.baseUrl}/userCredentials`, {
         headers: { authorization: `Bearer ${token}` },
@@ -64,7 +62,6 @@ export class NavbarComponent {
           this.isLoading = false;
         },
       });
-    console.log('user data:', this.data);
   }
 
   toggle() {

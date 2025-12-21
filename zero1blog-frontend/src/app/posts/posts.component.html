@@ -1,7 +1,7 @@
 @if (!currentPath.startsWith('/profile')) {
 <app-add-post></app-add-post>
 }
-<div class="postsContainer">
+<div class="postsContainer" [class.paddingTop]="currentPath.startsWith('/profile')" >
   @for (post of postsService.getPosts(); track post.id; let i = $index) {
   <div class="post">
     <h2 class="userNickname">

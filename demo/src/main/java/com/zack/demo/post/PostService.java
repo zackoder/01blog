@@ -123,7 +123,7 @@ public class PostService {
         return postRepo.existsById(id);
     }
 
-    public boolean checkouner(long id, String nickname) {
+    public boolean checkOwner(long id, String nickname) {
         return postRepo.existsByIdAndUserNickname(id, nickname);
     }
 
