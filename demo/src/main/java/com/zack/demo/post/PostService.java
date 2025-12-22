@@ -10,9 +10,13 @@ import java.util.List;
 
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserRepository;
 
@@ -24,6 +28,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public HashMap<String, ?> savePost(String content, String userNickname, MultipartFile file) {
         Post post = new Post();
@@ -55,8 +62,9 @@ public class PostService {
         post.setVisibility(true);
         post.setCreated_at(new Date().getTime() / 1000);
         System.out.println(post.toString());
+
         Post newPost = postRepo.save(post);
-        System.out.println(newPost);
+
         res.put("message", "successfully");
         res.put("postId", newPost.getId());
         return res;
@@ -134,5 +142,10 @@ public class PostService {
     public List<GetPostDto> getNewPost(String nickname) {
         User user = userRepository.findByNickname(nickname).get();
         return postRepo.findPostsByOffsetAndLimit(user.getId(), user.getId(), 1, 0);
+    }
+
+    public AddPostDto converteData(String data) throws JsonMappingException, JsonProcessingException {
+        AddPostDto post = objectMapper.readValue(data, AddPostDto.class);
+        return post;
     }
 }

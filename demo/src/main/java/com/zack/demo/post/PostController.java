@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zack.demo.config.JwtService;
 
 @RestController
@@ -50,12 +53,22 @@ public class PostController {
 
     @PutMapping("/updatePost")
     public ResponseEntity<?> updatePost(
-            @RequestPart("content") GetPostDto post,
+            @RequestPart("content") String content,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestHeader("authorization") String jwt) {
+            @RequestHeader("authorization") String jwt) throws JsonProcessingException {
 
+        AddPostDto post = postService.converteData(content);
+
+        System.out.println(post);
+
+        if (post.id() == null) {
+            return ResponseEntity.badRequest().body("{\"error\":\"Bad Request\"}");
+        }
         String nickname = jwtService.extractUsername(jwt.substring(7));
-        postService.checkOwner(post.getId(), nickname);
+        if (!postService.checkOwner(post.id(), nickname)) {
+            return ResponseEntity.status(401).body(null);
+        }
+        postService.savePost(content, nickname, file);
         return ResponseEntity.ok().body("ok");
     }
 
