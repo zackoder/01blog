@@ -32,10 +32,11 @@ public class PostService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public HashMap<String, ?> savePost(String content, String userNickname, MultipartFile file) {
+    public HashMap<String, ?> savePost(AddPostDto postDto, String userNickname, MultipartFile file) {
         Post post = new Post();
         String filePath = "";
 
+        System.out.println(file);
         HashMap<String, Object> res = new HashMap<>();
 
         User user = userRepository.findByNickname(userNickname).get();
@@ -47,16 +48,16 @@ public class PostService {
 
         if (file != null) {
             filePath = uploadFile(file);
-
             String message = storeFile(filePath, file);
-
             if (!message.equals("successfully")) {
                 res.put("error", "couldn't store the file please try again");
                 return res;
             }
         }
 
-        post.setContent(content);
+        System.out.println("file path is: " + filePath);
+        post.setId(postDto.id());
+        post.setContent(postDto.content());
         post.setImagePath(filePath);
         post.setUser(user);
         post.setVisibility(true);

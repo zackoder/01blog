@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zack.demo.config.JwtService;
 
 @RestController
@@ -35,17 +34,20 @@ public class PostController {
     public ResponseEntity<?> addPost(
             @RequestPart("content") String content,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestHeader("authorization") String authHeader) {
+            @RequestHeader("authorization") String authHeader) throws JsonProcessingException {
 
         String jwt = authHeader.substring(7);
         String nickname = jwtService.extractUsername(jwt);
         System.out.println("Extracted nickname: " + nickname);
 
-        HashMap<String, ?> savingPost = postService.savePost(content, nickname, file);
+        AddPostDto post = postService.converteData(content);
+
+        HashMap<String, ?> savingPost = postService.savePost(post, nickname, file);
 
         if (savingPost.get("error") != null) {
-            // return ResponseEntity.
+            return ResponseEntity.badRequest().body(savingPost);
         }
+
         System.out.println(savingPost.get("postId"));
         List<GetPostDto> newPost = postService.getNewPost(nickname);
         return ResponseEntity.ok(newPost);
@@ -68,7 +70,7 @@ public class PostController {
         if (!postService.checkOwner(post.id(), nickname)) {
             return ResponseEntity.status(401).body(null);
         }
-        postService.savePost(content, nickname, file);
+        postService.savePost(post, nickname, file);
         return ResponseEntity.ok().body("ok");
     }
 

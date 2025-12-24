@@ -1,8 +1,7 @@
 package com.zack.demo.post;
 
 public record AddPostDto(
-        Integer id,
+        Long id,
         String content,
-        Integer user_id
-    ) {
+        Integer user_id) {
 }

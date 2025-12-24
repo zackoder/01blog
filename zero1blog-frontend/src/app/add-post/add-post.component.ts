@@ -51,7 +51,7 @@ export class AddPostComponent {
 
     const formData = new FormData();
 
-    formData.append('content', this.content);
+    formData.append('content', JSON.stringify({ content: this.content }));
 
     if (this.selectedFile) {
       formData.append('file', this.selectedFile, this.selectedFile.name);
