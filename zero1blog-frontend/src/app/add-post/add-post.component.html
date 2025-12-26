@@ -25,6 +25,9 @@
           [(ngModel)]="data.content"
           placeholder="What's on your mind?"
         ></textarea>
+        @if (err) {
+        <p>{{ err }}</p>
+        }
       </div>
     </div>
 

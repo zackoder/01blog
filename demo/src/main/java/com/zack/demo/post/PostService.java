@@ -91,7 +91,7 @@ public class PostService {
                     fileName = "videos/";
                 } else {
                     System.out.println("file type " + tika.detect(bytes));
-                    return "invalid type of file";
+                    return "invalid file type";
                 }
             }
         } catch (Exception e) {

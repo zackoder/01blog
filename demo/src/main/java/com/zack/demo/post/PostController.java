@@ -80,7 +80,7 @@ public class PostController {
         if (res.get("error") != null) {
             return ResponseEntity.badRequest().body(res);
         }
-        return ResponseEntity.ok().body("ok");
+        return ResponseEntity.ok().body("{\"message\":\"success\"}");
     }
 
     @DeleteMapping("/deletePost/{id}")

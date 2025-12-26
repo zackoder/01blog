@@ -19,8 +19,11 @@ export class AddPostComponent implements OnInit {
     content: '',
   };
 
+  err: string = '';
+
   selectedFile: File | null = null;
   private baseUrl = environment.apiUrl;
+  isLoading: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -79,6 +82,9 @@ export class AddPostComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    this.err = '';
     const token = localStorage.getItem('jwtToken');
 
     if (!token) {
@@ -109,8 +115,13 @@ export class AddPostComponent implements OnInit {
         next: (res) => {
           this.data.content = '';
           this.selectedFile = null;
+          this.isLoading = false;
+          this.router.navigate(['/']);
         },
-        error: (err) => console.error('Error during post creation:', err),
+        error: (err) => {
+          this.err = err.error.error;
+          this.isLoading = false;
+        },
       });
   }
 
@@ -123,8 +134,13 @@ export class AddPostComponent implements OnInit {
         next: (res) => {
           this.data.content = '';
           this.selectedFile = null;
+          this.isLoading = false;
+          this.router.navigate(['/']);
         },
-        error: (err) => console.error('Error during post creation:', err),
+        error: (err) => {
+          this.err = err.error.error;
+          this.isLoading = false;
+        },
       });
   }
 }

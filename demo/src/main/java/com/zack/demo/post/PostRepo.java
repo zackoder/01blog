@@ -36,7 +36,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             GROUP BY
                 p.id, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
 
-            ORDER BY p.created_at DESC
+            ORDER BY p.id DESC
             LIMIT ?3 OFFSET ?4;
 
                         """, nativeQuery = true)
@@ -64,7 +64,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             GROUP BY
                 p.id, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
 
-            ORDER BY p.created_at DESC
+            ORDER BY p.id DESC
             LIMIT ?4 OFFSET ?5;
 
                         """, nativeQuery = true)
