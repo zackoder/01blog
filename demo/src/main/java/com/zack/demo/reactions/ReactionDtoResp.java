@@ -1,7 +1,5 @@
 package com.zack.demo.reactions;
 
-import com.beust.jcommander.internal.Nullable;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

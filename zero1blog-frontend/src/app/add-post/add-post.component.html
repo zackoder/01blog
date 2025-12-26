@@ -1,26 +1,53 @@
-<div class="container">
-  <form (ngSubmit)="onSubmit()" class="addPost">
+<div class="container py-5" style="max-width: 800px">
+  <form
+    (ngSubmit)="onSubmit()"
+    class="card shadow p-4 mx-auto"
+    style="max-width: 800px"
+  >
     <div class="content_container">
-      <label for="titel">Enter something</label>
-      <textarea
-        class="content"
-        name="title"
-        type="text"
-        id="title"
-        [(ngModel)]="content"
-      ></textarea>
+      <h2 class="title">
+        <img
+          src="http://localhost:8080/uploads/default-avatar.jpg"
+          style="width: 60px; height: 60px; border-radius: 50%; margin: 0"
+        />
+        <span>
+          {{ data.nickname }}
+        </span>
+      </h2>
+
+      <div class="mb-3">
+        <textarea
+          class="form-control"
+          name="title"
+          id="title"
+          rows="10"
+          style="width: 100%"
+          [(ngModel)]="data.content"
+          placeholder="What's on your mind?"
+        ></textarea>
+      </div>
     </div>
-    <div class="img_container">
-      <label for="image">add image</label>
-      <input
-        (change)="OnSelectFile($event)"
-        type="file"
-        id="image"
-        class="img"
-      />
+
+    <div class="mb-4">
+      <div
+        class="p-4 border border-2 border-dashed rounded text-center bg-light"
+      >
+        <label for="image" class="form-label d-block fw-bold mb-2"
+          >ADD IMAGE</label
+        >
+        <input
+          (change)="OnSelectFile($event)"
+          type="file"
+          id="image"
+          class="form-control"
+        />
+      </div>
     </div>
-    <div>
-      <button id="createPost" type="submit">submit</button>
+
+    <div class="text-center">
+      <button id="createPost" type="submit" class="btn btn-primary btn-lg px-5">
+        SUBMIT
+      </button>
     </div>
   </form>
 </div>

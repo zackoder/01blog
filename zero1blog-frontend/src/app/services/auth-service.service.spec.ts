@@ -42,17 +42,14 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-          // Update the shared state upon successful fetch
           this.userDataSource.next(res);
         }),
-        // Ensure loading state is turned off regardless of success or error
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
   logout() {
     localStorage.clear();
-    // **CRITICAL FIX:** Explicitly reset the shared state to null on logout
     this.userDataSource.next(null);
   }
 }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.zack.demo.config.JwtService;
 
 @RestController
@@ -28,6 +27,13 @@ public class PostController {
         String nickname = jwtService.extractUsername(authHeader.substring(7));
         List<GetPostDto> posts = postService.getPosts(offset, nickname);
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/getPost/{id}")
+    public ResponseEntity<?> getPost(@PathVariable long id, @RequestHeader("authorization") String authHeader) {
+
+        GetPostDto post = postService.getPostById(id);
+        return ResponseEntity.ok(post);
     }
 
     @PostMapping("/addPost")
@@ -70,7 +76,10 @@ public class PostController {
         if (!postService.checkOwner(post.id(), nickname)) {
             return ResponseEntity.status(401).body(null);
         }
-        postService.savePost(post, nickname, file);
+        HashMap<String, ?> res = postService.savePost(post, nickname, file);
+        if (res.get("error") != null) {
+            return ResponseEntity.badRequest().body(res);
+        }
         return ResponseEntity.ok().body("ok");
     }
 
@@ -99,5 +108,4 @@ public class PostController {
         resp.put("message", "post deleted");
         return ResponseEntity.ok().body(resp);
     }
-
 }

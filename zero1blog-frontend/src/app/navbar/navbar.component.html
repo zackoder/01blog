@@ -14,6 +14,7 @@
       [style.visibility]="show ? 'visible' : 'hidden'"
     >
       <li (click)="openProfile()">Profile</li>
+      <li (click)="navigateToAddPost()">Add Post</li>
       @if (isAdmin) {
       <li>Dashboard</li>
       }

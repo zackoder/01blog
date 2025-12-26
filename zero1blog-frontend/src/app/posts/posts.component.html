@@ -1,7 +1,4 @@
-@if (!currentPath.startsWith('/profile')) {
-<app-add-post></app-add-post>
-}
-<div class="postsContainer" [class.paddingTop]="currentPath.startsWith('/profile')" >
+<div class="postsContainer">
   @for (post of postsService.getPosts(); track post.id; let i = $index) {
   <div class="post">
     <h2 class="userNickname">
@@ -15,7 +12,9 @@
     <div class="actionMenu">
       <ul class="opptions">
         @if (post.postOwner) {
-        <li><i class="fa-regular fa-pen-to-square"></i> edit</li>
+        <li (click)="editPost(post.id)">
+          <i class="fa-regular fa-pen-to-square"></i> edit
+        </li>
         <li (click)="deleteChecker = true">
           <i class="fa-regular fa-trash-can"></i>
           delete

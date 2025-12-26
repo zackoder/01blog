@@ -15,11 +15,10 @@ import { environment } from '../../environments/environment.prod';
 import { PostsService } from '../services/posts.service';
 import { CommentsComponent } from '../comments/comments.component';
 import { formatDate as formatDateUtil } from '../utils/dateFormater';
-import { AddPostComponent } from '../add-post/add-post.component';
 
 @Component({
   selector: 'app-posts',
-  imports: [ReportComponent, CommentsComponent, AddPostComponent],
+  imports: [ReportComponent, CommentsComponent],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css',
 })
@@ -44,7 +43,6 @@ export class PostsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to router navigation end events and handle route changes.
     this.currentPath = this.router.url;
     this.routerSubscription = this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
@@ -206,7 +204,6 @@ export class PostsComponent implements OnInit, OnDestroy {
           console.log(res);
           if (res.message === 'post deleted') {
             this.postsService.deletePost(index);
-            // this.postsService.setPosts(res);
             this.deleteChecker = false;
             this.targetedPost = -1;
           }
@@ -233,15 +230,17 @@ export class PostsComponent implements OnInit, OnDestroy {
     if (this.isLoading) return;
     const newPath = this.router.url;
 
-    // Avoid refetching when path hasn't changed.
     if (newPath === this.currentPath) return;
 
-    // Reset state for new route
     this.currentPath = newPath;
     this.offsetService.setOffset(0);
     this.postsService.deleteAll();
     this.nothingToFetch = false;
 
     this.fetchPosts(0);
+  }
+
+  editPost(i: number) {
+    this.router.navigate([`/edit/${i}`]);
   }
 }

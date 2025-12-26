@@ -78,4 +78,8 @@ export class NavbarComponent {
     this.show = false;
     this.router.navigate(['/']);
   }
+  navigateToAddPost() {
+    this.show = false;
+    this.router.navigate(['/addPost']);
+  }
 }

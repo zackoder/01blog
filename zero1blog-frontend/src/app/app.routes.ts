@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { HomeComponent } from './home/home.component';
+import { AddPostComponent } from './add-post/add-post.component';
 
 export const routes: Routes = [
   {
@@ -23,4 +24,15 @@ export const routes: Routes = [
     path: 'profile/:id',
     component: HomeComponent,
   },
+
+  {
+    path: 'addPost',
+    component: AddPostComponent,
+  },
+
+  {
+    path: 'edit/:index',
+    component: AddPostComponent,
+  },
+
 ];

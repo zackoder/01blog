@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,26 +35,27 @@ public class PostService {
         Post post = new Post();
         String filePath = "";
 
-        System.out.println(file);
         HashMap<String, Object> res = new HashMap<>();
 
         User user = userRepository.findByNickname(userNickname).get();
         if (user == null) {
-            removeFile(filePath);
             res.put("error", "user not found");
             return res;
         }
 
-        if (file != null) {
+        if (file != null && !file.isEmpty()) {
             filePath = uploadFile(file);
+            if (!filePath.startsWith("image") && !filePath.startsWith("video")) {
+                res.put("error", filePath);
+                return res;
+            }
             String message = storeFile(filePath, file);
             if (!message.equals("successfully")) {
-                res.put("error", "couldn't store the file please try again");
+                res.put("error", message);
                 return res;
             }
         }
 
-        System.out.println("file path is: " + filePath);
         post.setId(postDto.id());
         post.setContent(postDto.content());
         post.setImagePath(filePath);
@@ -91,11 +91,11 @@ public class PostService {
                     fileName = "videos/";
                 } else {
                     System.out.println("file type " + tika.detect(bytes));
-                    return "invalid type of file\n";
+                    return "invalid type of file";
                 }
             }
         } catch (Exception e) {
-            return "couldn't read the file\n";
+            return "couldn't read the file";
         }
 
         Date currentTime = new Date();
@@ -148,5 +148,19 @@ public class PostService {
     public AddPostDto converteData(String data) throws JsonMappingException, JsonProcessingException {
         AddPostDto post = objectMapper.readValue(data, AddPostDto.class);
         return post;
+    }
+
+    public GetPostDto getPostById(long id) {
+        Post post = postRepo.findById(id).get();
+        GetPostDto resp = new GetPostDto();
+        if (post == null) {
+            return null;
+        }
+
+        resp.setId(id);
+        resp.setContent(post.getContent());
+        resp.setImage_path(post.getImagePath());
+
+        return resp;
     }
 }
