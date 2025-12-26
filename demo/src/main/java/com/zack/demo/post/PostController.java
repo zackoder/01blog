@@ -74,7 +74,7 @@ public class PostController {
         }
         String nickname = jwtService.extractUsername(jwt.substring(7));
         if (!postService.checkOwner(post.id(), nickname)) {
-            return ResponseEntity.status(401).body(null);
+            return ResponseEntity.badRequest().body("{\"error\":\"bad request\"}");
         }
         HashMap<String, ?> res = postService.savePost(post, nickname, file);
         if (res.get("error") != null) {

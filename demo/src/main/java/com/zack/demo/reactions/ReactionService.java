@@ -32,13 +32,13 @@ public class ReactionService {
 
     public HashMap<String, String> validateDto(ReactionDto dto) {
         HashMap<String, String> res = new HashMap<>();
-        if (dto.getReactionType().isEmpty()
-                || (!dto.getReactionType().equals("like") && !dto.getReactionType().equals("dislike"))) {
+        if (dto.reactionType().isEmpty()
+                || (!dto.reactionType().equals("like") && !dto.reactionType().equals("dislike"))) {
             res.put("error", "bad request");
             return res;
         }
 
-        Optional<Post> postOption = post.findById(dto.getTargetId());
+        Optional<Post> postOption = post.findById(dto.targetId());
         if (postOption.isEmpty()) {
             res.put("error", "bad request");
             return res;
@@ -54,21 +54,21 @@ public class ReactionService {
     public void seveReaction(String nickname) {
         Optional<User> userOptional = user.findByNickname(nickname);
         User reacter = userOptional.get();
-        Optional<Reactions> reactionOptional = reactionRepo.findByPostIdAndUserId(this.dto.getTargetId(),
+        Optional<Reactions> reactionOptional = reactionRepo.findByPostIdAndUserId(this.dto.targetId(),
                 reacter.getId());
         Reactions reaction = new Reactions();
         if (reactionOptional.isEmpty()) {
             reaction.setCreatedAt(new Date().getTime() / 1000);
-            reaction.setPostId(this.dto.getTargetId());
+            reaction.setPostId(this.dto.targetId());
             reaction.setUserId(reacter.getId());
-            reaction.setReaction_type(dto.getReactionType());
+            reaction.setReaction_type(dto.reactionType());
             reactionRepo.save(reaction);
         } else {
             reaction = reactionOptional.get();
-            if (reaction.getReaction_type().equals(dto.getReactionType())) {
+            if (reaction.getReaction_type().equals(dto.reactionType())) {
                 reactionRepo.delete(reaction);
             } else {
-                reaction.setReaction_type(dto.getReactionType());
+                reaction.setReaction_type(dto.reactionType());
                 reactionRepo.save(reaction);
             }
         }
@@ -76,6 +76,6 @@ public class ReactionService {
 
     public ReactionDtoResp countReaction(String nickname) {
         User user = this.user.findByNickname(nickname).get();
-        return reactionRepo.countReaction(user.getId(), dto.getTargetId());
+        return reactionRepo.countReaction(user.getId(), dto.targetId());
     }
 }

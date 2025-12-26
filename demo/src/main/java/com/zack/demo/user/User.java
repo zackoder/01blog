@@ -1,6 +1,7 @@
 package com.zack.demo.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 @Entity
@@ -15,6 +16,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String nickname;
 
+    @Email
     @Column(unique = true, nullable = false)
     private String email;
 

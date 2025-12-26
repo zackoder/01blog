@@ -32,7 +32,7 @@ public class ReportService {
             return resp;
         }
 
-        boolean postExists = postRepo.existsById(dto.getTargetId());
+        boolean postExists = postRepo.existsById(dto.targetId());
 
         if (!postExists) {
             resp.put("error", "Post Does not exists");
@@ -44,8 +44,8 @@ public class ReportService {
 
     public void saveReport(ReportDto dto, long reporterId) {
         Reports newReport = new Reports();
-        newReport.setPostId(dto.getTargetId());
-        newReport.setContent(dto.getContent());
+        newReport.setPostId(dto.targetId());
+        newReport.setContent(dto.content());
         newReport.setCreated_at(new Date().getTime() / 1000);
         newReport.setUserId(reporterId);
         reportRepo.save(newReport);

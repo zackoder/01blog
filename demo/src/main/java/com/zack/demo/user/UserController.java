@@ -31,23 +31,29 @@ public class UserController {
         return ResponseEntity.ok().body(CredentialsDto);
     }
 
-    @GetMapping("/userData/{nicknameAndId}")
-    public ResponseEntity<?> getUserData(@RequestParam("offset") long offset, @PathVariable String nicknameAndId,
+    @GetMapping("/userData/{nickname}")
+    public ResponseEntity<?> getUserData(@RequestParam("offset") long offset, @PathVariable String nickname,
             @RequestHeader("authorization") String jwt) {
-        HashMap<String, String> res = new HashMap<>();
+        HashMap<String, Object> res = new HashMap<>();
         if (jwt == null || !jwt.startsWith("Bearer ")) {
             res.put("error", "Unauthorized");
             return ResponseEntity.status(401).body(res);
         }
 
-        String nickname = jwtService.extractUsername(jwt.substring(7));
-        String[] data = nicknameAndId.split("\\.");
-        res = userService.checkData(nickname, data);
-        if (res != null) {
-            return ResponseEntity.status(403).body(res);
-        }
-        long id = Long.parseLong(data[1]);
-        List<GetPostDto> posts = userService.getUserPosts(nickname, id, offset);
+        String requesterNickname = jwtService.extractUsername(jwt.substring(7));
+        List<GetPostDto> posts = userService.getUserPosts(nickname, requesterNickname, offset);
+
         return ResponseEntity.ok().body(posts);
+    }
+
+    @GetMapping("/profileData")
+    public ResponseEntity<?> profileData(@RequestParam("id") Long id, @RequestHeader("authorization") String jwt) {
+        String nickname = jwtService.extractUsername(jwt.substring(7));
+        User user = userService.findByNickname(nickname).get();
+        if (user == null) {
+            return ResponseEntity.badRequest().body("{\"error\":\"user not found\"}");
+        }
+        UserProfileResponseDto resp = userService.getProfileData(user, id);
+        return ResponseEntity.ok().body(resp);
     }
 }

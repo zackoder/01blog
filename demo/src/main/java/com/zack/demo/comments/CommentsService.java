@@ -51,18 +51,14 @@ public class CommentsService {
     }
 
     private CommentsResDto commentsResDto(Comments comment) {
-        CommentsResDto resDto = new CommentsResDto();
-        resDto.setComment(comment.getContent());
-        resDto.setCreadAt(comment.getCreatedAt());
-        resDto.setId(comment.getId());
-        resDto.setNickname(comment.getUser().getNickname());
-        resDto.setUserId(comment.getUser().getId());
-        resDto.setPostId(comment.getPost().getId());
+        CommentsResDto resDto = new CommentsResDto(comment.getId(), comment.getUser().getId(),
+                comment.getPost().getId(), comment.getContent(), comment.getUser().getNickname(),
+                comment.getCreatedAt());
         return resDto;
     }
 
     public List<CommentsResDto> getAllComments(long id) {
-        List<Comments> comments = commentsRepo.findAllByPostIdOrderByCreatedAtDesc (id);
+        List<Comments> comments = commentsRepo.findAllByPostIdOrderByCreatedAtDesc(id);
         return convetToResDto(comments);
     }
 

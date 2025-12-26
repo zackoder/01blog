@@ -32,7 +32,7 @@ export class NavbarComponent {
     if (!token) {
       return;
     }
-    this.router.navigate([`/profile/${this.data.nickname}.${this.data.id}`]);
+    this.router.navigate([`/profile/${this.data.nickname}`]);
     this.show = false;
   }
 

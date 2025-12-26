@@ -42,36 +42,24 @@ public class UserService {
         if (user == null) {
             return null;
         }
-        GetCredentialsDto userCredentials = new GetCredentialsDto(user.getNickname(), user.getId());
+        GetCredentialsDto userCredentials = new GetCredentialsDto(user.getNickname(), user.getId(),
+                "/uploads/default-avatar.jpg");
         return userCredentials;
     }
 
-    public HashMap<String, String> checkData(String nickname, String[] data) {
-        HashMap<String, String> res = new HashMap<>();
-        long id = 0;
-        try {
-            id = Long.parseLong(data[data.length - 1]);
-        } catch (Exception e) {
-            res.put("error", "invalid Data");
-            return res;
+    public List<GetPostDto> getUserPosts(String nickname, String requesterNickname, long offset) {
+        long requesterId = userRepository.findByNickname(requesterNickname).get().getId();
+        if (requesterNickname.equals(nickname)) {
+            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, requesterId, 10, offset);
+        } else {
+            long ownerId = userRepository.findByNickname(nickname).get().getId();
+            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, ownerId, 10, offset);
         }
-
-        User userById = userRepository.findById(id).get();
-
-        if (userById == null || !userById.getNickname().equals(data[0])) {
-            res.put("error", "invalid Data or user does not exists any more");
-            return res;
-        }
-
-        if (!userRepository.existsByNickname(nickname)) {
-            res.put("error", "invalid Data or user does not exists any more");
-            return res;
-        }
-        return null;
     }
 
-    public List<GetPostDto> getUserPosts(String nickname, long id, long offset) {
-        long requesterId = userRepository.findByNickname(nickname).get().getId();
-        return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, id, 10, offset);
+    public UserProfileResponseDto getProfileData(User user, long id) {
+        return new UserProfileResponseDto(user.getNickname(), user.getFirstName(), user.getLastName(), user.getBio(),
+                userRepository.isFollowing(id, user.getId()),
+                user.getId() == id);
     }
 }
