@@ -11,13 +11,14 @@
     @if (targetedPost == i) {
     <div class="actionMenu">
       <ul class="opptions">
-        @if (post.postOwner) {
-        <li (click)="editPost(post.id)">
-          <i class="fa-regular fa-pen-to-square"></i> edit
-        </li>
+        @if (post.postOwner || isAdmin) {
         <li (click)="deleteChecker = true">
           <i class="fa-regular fa-trash-can"></i>
           delete
+        </li>
+        } @if (post.postOwner) {
+        <li (click)="editPost(post.id)">
+          <i class="fa-regular fa-pen-to-square"></i> edit
         </li>
         } @else {
         <li (click)="reportForm = true">

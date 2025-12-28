@@ -30,10 +30,6 @@ public class CommentsController {
     @PostMapping("/addComment")
     public ResponseEntity<?> addComment(@RequestBody CommentsReqDto dto, @RequestHeader("authorization") String jwt) {
         HashMap<String, String> resp = new HashMap<>();
-        if (jwt == null || !jwt.startsWith("Bearer ")) {
-            resp.put("error", "unauthorized");
-            return ResponseEntity.status(403).body(resp);
-        }
 
         String nickname = jwtService.extractUsername(jwt.substring(7));
         System.out.println(nickname);
@@ -54,11 +50,7 @@ public class CommentsController {
 
     @GetMapping("/getComments")
     public ResponseEntity<?> getComments(@RequestParam("id") long id, @RequestHeader("authorization") String jwt) {
-        HashMap<String, String> res = new HashMap<>();
-        if (jwt == null || !jwt.startsWith("Bearer ")) {
-            res.put("error", "Unauthorized");
-            return ResponseEntity.badRequest().body(res);
-        }
+
         List<CommentsResDto> comments = commentsService.getAllComments(id);
         return ResponseEntity.ok().body(comments);
     }

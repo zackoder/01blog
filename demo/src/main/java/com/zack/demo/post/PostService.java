@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserRepository;
+import com.zack.demo.user.UserService;
 
 @Service
 public class PostService {
@@ -26,7 +27,7 @@ public class PostService {
     private PostRepo postRepo;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,11 +38,7 @@ public class PostService {
 
         HashMap<String, Object> res = new HashMap<>();
 
-        User user = userRepository.findByNickname(userNickname).get();
-        if (user == null) {
-            res.put("error", "user not found");
-            return res;
-        }
+        User user = userService.checkUser(userNickname);
 
         if (file != null && !file.isEmpty()) {
             filePath = uploadFile(file);
@@ -72,10 +69,8 @@ public class PostService {
     }
 
     public List<GetPostDto> getPosts(long offset, String nickname) {
-        User user = userRepository.findByNickname(nickname).get();
-        if (user == null) {
-            return null;
-        }
+        User user = userService.checkUser(nickname);
+
         return postRepo.findPostsByOffsetAndLimit(user.getId(), user.getId(), 10, offset);
     }
 
@@ -124,10 +119,6 @@ public class PostService {
 
     }
 
-    public boolean checkUser(String nickname) {
-        return userRepository.existsByNickname(nickname);
-    }
-
     public boolean checkPost(long id) {
         return postRepo.existsById(id);
     }
@@ -141,8 +132,12 @@ public class PostService {
     }
 
     public List<GetPostDto> getNewPost(String nickname) {
-        User user = userRepository.findByNickname(nickname).get();
+        User user = userService.checkUser(nickname);
         return postRepo.findPostsByOffsetAndLimit(user.getId(), user.getId(), 1, 0);
+    }
+
+    public boolean existsByNickname(String nickname) {
+        return userService.existsByNickname(nickname);
     }
 
     public AddPostDto converteData(String data) throws JsonMappingException, JsonProcessingException {

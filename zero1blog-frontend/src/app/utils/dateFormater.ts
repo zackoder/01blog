@@ -1,3 +1,5 @@
+import { HttpClient } from '@angular/common/http';
+
 export function formatDate(ceaiation: number) {
   let now: number = new Date().getTime() / 1000;
   let ceaiationDate = new Date(ceaiation * 1000);
@@ -25,4 +27,14 @@ export function formatDate(ceaiation: number) {
   if (duration >= onemin) return `${Math.floor(duration / onemin)} min ago`;
 
   return `${Math.floor(duration)} s ago`;
+}
+
+export function checkToken() {
+  const token = localStorage.getItem('jwtToken');
+
+  if (!token) {
+    console.warn('JWT Token not found. Redirecting to login.');
+    return '';
+  }
+  return token;
 }

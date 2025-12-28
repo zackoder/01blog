@@ -2,6 +2,7 @@ package com.zack.demo.post;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,16 @@ public class PostController {
     }
 
     @GetMapping("/getPost/{id}")
-    public ResponseEntity<?> getPost(@PathVariable long id, @RequestHeader("authorization") String authHeader) {
+    public ResponseEntity<?> getPost(@PathVariable long id, @RequestParam("edit") boolean edit,
+            @RequestHeader("authorization") String authHeader) {
 
+        System.out.println(edit);
+        if (edit) {
+            String nickname = jwtService.extractUsername(authHeader.substring(7));
+            if (!postService.checkOwner(id, nickname)) {
+                return ResponseEntity.badRequest().body("{\"error\":\"Bad Request\"}");
+            }
+        }
         GetPostDto post = postService.getPostById(id);
         return ResponseEntity.ok(post);
     }
@@ -88,7 +97,8 @@ public class PostController {
         HashMap<String, String> resp = new HashMap<>();
 
         String UserNickname = jwtService.extractUsername(jwt.substring(7));
-        if (!postService.checkUser(UserNickname)) {
+
+        if (!postService.existsByNickname(UserNickname)) {
             resp.put("error", "user not found");
             return ResponseEntity.status(403).body(resp);
         }
@@ -100,12 +110,14 @@ public class PostController {
 
         String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
         System.out.println("role: " + role);
-        if (!postService.checkOwner(id, UserNickname)) {
 
+        if (!role.equals("admin") && !postService.checkOwner(id, UserNickname)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
         postService.deletePost(id);
         resp.put("message", "post deleted");
         return ResponseEntity.ok().body(resp);
     }
+
 }

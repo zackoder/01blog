@@ -25,10 +25,6 @@ public class ReportsController {
             @RequestHeader("authorization") String auth) {
 
         HashMap<String, Object> resp = new HashMap<>();
-        if (auth.isEmpty() || !auth.startsWith("Bearer ")) {
-            resp.put("error", "Unauthorized");
-            return ResponseEntity.status(403).body(resp);
-        }
 
         String nickname = jwt.extractUsername(auth.substring(7));
         HashMap<String, Object> reportStat = reportService.checkReportData(nickname, dto);

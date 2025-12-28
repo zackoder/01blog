@@ -1,29 +1,37 @@
-// import { Component, OnInit } from '@angular/core';
-// import { NavbarComponent } from '../navbar/navbar.component';
-// import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-// import { HttpClient } from '@angular/common/http';
-// import { environment } from '../../environments/environment.prod';
-// import { PostsComponent } from '../posts/posts.component';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment.prod';
+import { AuthService } from '../services/auth-service.service.spec';
+import { PostsComponent } from '../posts/posts.component';
 
-// @Component({
-//   selector: 'app-profile',
-//   imports: [NavbarComponent, PostsComponent],
-//   templateUrl: './profile.component.html',
-//   styleUrl: './profile.component.css',
-// })
-// export class ProfileComponent implements OnInit {
-//   userId: string | null = null;
-//   baseUrl = environment.apiUrl;
-//   constructor(
-//     private http: HttpClient,
-//     private route: Router,
-//     private activatedRoute: ActivatedRoute
-//   ) {}
+@Component({
+  selector: 'app-profile',
+  imports: [PostsComponent],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css',
+})
+export class ProfileComponent implements OnInit {
+  baseUrl = environment.apiUrl;
+  data: any = {};
+  constructor(
+    private rout: Router,
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
+  fetchProfileData() {
+    console.log(this.rout.url.startsWith('/profile'));
+    this.auth.userData$.subscribe({
+      next: (data) => {
+        console.log(data);
+        this.data = data;
+        console.log(data);
+      },
+    });
 
-//   ngOnInit(): void {
-//     this.activatedRoute.paramMap.subscribe((params: ParamMap) => {
-//       this.userId = params.get('id');
-//       console.log(this.userId);
-//     });
-//   }
-// }
+    this.http.get(`${this.baseUrl}/profileData`);
+  }
+  ngOnInit(): void {
+    this.fetchProfileData();
+  }
+}

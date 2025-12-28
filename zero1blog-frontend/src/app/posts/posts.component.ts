@@ -32,6 +32,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   deleteChecker = false;
   showTargetedPostId = -1;
   currentPath = '';
+  isAdmin = true;
   @Input() target: string = '';
   @Input() profileData: string | null = null;
   private routerSubscription: Subscription | null = null;
@@ -215,9 +216,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   }
 
   goToProfile(nickname: string, id: number) {
-    console.log('11111111111111111111');
-
-    const profile = `/profile/${nickname}.${id}`;
+    const profile = `/profile/${nickname}`;
     if (profile !== this.router.url) {
       this.offsetService.setOffset(0);
       this.postsService.deleteAll();

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import javax.ws.rs.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,10 @@ public class UserService {
 
     public Optional<User> findByNickname(String nickname) {
         return this.userRepository.findByNickname(nickname);
+    }
+
+    public boolean existsByNickname(String nickname) {
+        return this.userRepository.existsByNickname(nickname);
     }
 
     public User saveUser(User user) {
@@ -57,9 +63,17 @@ public class UserService {
         }
     }
 
-    public UserProfileResponseDto getProfileData(User user, long id) {
-        return new UserProfileResponseDto(user.getNickname(), user.getFirstName(), user.getLastName(), user.getBio(),
-                userRepository.isFollowing(id, user.getId()),
-                user.getId() == id);
+    public User checkUser(String nickName) {
+        return findByNickname(nickName).orElseThrow(() -> new NotFoundException("User Not Found"));
+    }
+
+    public UserProfileResponseDto getProfileData(User user, User requester) {
+        boolean isOwner = user.getId().equals(requester.getId());
+        boolean isFollowing = userRepository.isFollowing(requester.getId(), user.getId());
+
+        return new UserProfileResponseDto(user.getNickname(), user.getFirstName(), user.getLastName(),
+                user.getBio(),
+                isFollowing,
+                isOwner);
     }
 }

@@ -7,6 +7,7 @@ import { OffsetLimitService } from '../services/offset-limit.service'; // Assumi
 import { environment } from '../../environments/environment.prod';
 import { PostsService } from '../services/posts.service';
 import { AuthService } from '../services/auth-service.service.spec';
+import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-add-post',
@@ -45,28 +46,28 @@ export class AddPostComponent implements OnInit {
   }
 
   getPost() {
-    const token = localStorage.getItem('jwtToken');
+    const token = checkToken();
 
     if (!token) {
-      console.warn('JWT Token not found. Redirecting to login.');
       this.router.navigate(['/login']);
-      return;
     }
 
     const pathValues = this.router.url.split('/');
     const id = pathValues[pathValues.length - 1];
     this.http
-      .get<any>(`${this.baseUrl}/getPost/${id}`, {
+      .get<any>(`${this.baseUrl}/getPost/${id}?edit=true`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .subscribe({
         next: (res) => {
-          this.data.id = res.id;
-          this.data.image_path = res.image_path;
-          this.data.content = res.content;
+          this.data = { ...this.data, ...res };
         },
         error: (err) => {
-          console.log(err);
+          if (err.status === 400) {
+            this.router.navigate(['/']);
+            return;
+          }
+          console.log('error', err.status);
         },
       });
   }
