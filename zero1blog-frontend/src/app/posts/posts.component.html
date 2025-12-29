@@ -1,5 +1,5 @@
 <div class="postsContainer">
-  @for (post of postsService.getPosts(); track post.id; let i = $index) {
+  @for (post of postsService.posts(); track post.id; let i = $index) {
   <div class="post">
     <h2 class="userNickname">
       <span (click)="goToProfile(post.nickname, post.user_id)">

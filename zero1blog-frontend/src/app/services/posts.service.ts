@@ -1,32 +1,41 @@
 import { Injectable, signal, Signal } from '@angular/core';
 
+interface Post {
+  content: string;
+  created_at: number;
+  dislikes: number;
+  id: number;
+  image_path: string;
+  likes: number;
+  nickname: string;
+  postOwner: boolean;
+  reacted: string;
+  user_id: number;
+  visibility: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class PostsService {
-  private posts = signal<any[]>([]);
+  private _posts = signal<Post[]>([]);
+
+  public posts = this._posts.asReadonly();
+  public postLen = this._posts().length;
 
   constructor() {}
   setPosts(newPosts: []) {
-    return this.posts.update((current) => [...current, ...newPosts]);
-  }
-
-  addOnePost(newPost: []) {
-    this.posts.update((current) => [...newPost, ...current]);
-  }
-
-  getPosts() {
-    return this.posts();
+    return this._posts.update((current) => [...current, ...newPosts]);
   }
 
   deletePost(index: number) {
-    this.posts.update((current) => {
+    this._posts.update((current) => {
       const newPosts = [...current];
       newPosts.splice(index, 1);
       return [...newPosts];
     });
   }
   deleteAll() {
-    this.posts = signal<any[]>([]);
+    this._posts.set([]);
   }
 }

@@ -116,7 +116,7 @@ export class PostsComponent implements OnInit, OnDestroy {
 
           this.isLoading = false;
           this.targetedPost = -1;
-          this.offsetService.setOffset(this.postsService.getPosts().length);
+          this.offsetService.setOffset(this.postsService.posts().length);
         },
         error: (err) => {
           if (err.status) {
@@ -153,7 +153,7 @@ export class PostsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (res) => {
-          const targetedPost = this.postsService.getPosts()[index];
+          const targetedPost = this.postsService.posts()[index];
           if (res == null) {
             targetedPost.dislikes = 0;
             targetedPost.likes = 0;
@@ -194,7 +194,7 @@ export class PostsComponent implements OnInit, OnDestroy {
       this.router.navigate(['/login']);
       return;
     }
-    const postId = this.postsService.getPosts()[index].id;
+    const postId = this.postsService.posts()[index].id;
 
     this.http
       .delete<any>(`${this.baseUrl}/deletePost/${postId}`, {
@@ -205,6 +205,7 @@ export class PostsComponent implements OnInit, OnDestroy {
           console.log(res);
           if (res.message === 'post deleted') {
             this.postsService.deletePost(index);
+            this.offsetService.setOffset(this.postsService.posts().length);
             this.deleteChecker = false;
             this.targetedPost = -1;
           }
