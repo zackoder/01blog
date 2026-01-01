@@ -124,7 +124,7 @@ export class AddPostComponent implements OnInit {
           this.router.navigate(['/']);
         },
         error: (err) => {
-          this.err = err.error.error;
+          this.err = err.error.content;
           this.isLoading = false;
         },
       });
@@ -143,7 +143,7 @@ export class AddPostComponent implements OnInit {
           this.router.navigate(['/']);
         },
         error: (err) => {
-          this.err = err.error.error;
+          this.err = err.error.content;
           this.isLoading = false;
         },
       });

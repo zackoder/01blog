@@ -70,13 +70,11 @@ public class PostController {
         return ResponseEntity.ok(newPost);
     }
 
-    @PutMapping("/updatePost")
+    @PutMapping(value = "/updatePost", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> updatePost(
-            @RequestPart("content") String content,
+            @Valid @RequestPart("content") AddPostDto post,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestHeader("authorization") String jwt) throws JsonProcessingException {
-
-        AddPostDto post = postService.converteData(content);
 
         System.out.println(post);
 

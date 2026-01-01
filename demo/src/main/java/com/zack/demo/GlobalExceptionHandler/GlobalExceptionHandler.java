@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
                 errors.put(fieldName, errorMessage);
             });
 
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(errors);
         }
 
         else {

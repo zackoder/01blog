@@ -4,10 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment.prod';
 import { AuthService } from '../services/auth-service.service.spec';
 import { PostsComponent } from '../posts/posts.component';
+import { ProfileDataComponent } from '../profile-data/profile-data.component';
 
 @Component({
   selector: 'app-profile',
-  imports: [PostsComponent],
+  imports: [PostsComponent, ProfileDataComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
 })

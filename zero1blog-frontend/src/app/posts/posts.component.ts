@@ -96,6 +96,7 @@ export class PostsComponent implements OnInit, OnDestroy {
     if (this.nothingToFetch) {
       return;
     }
+
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
