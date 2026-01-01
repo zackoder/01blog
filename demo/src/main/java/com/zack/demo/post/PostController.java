@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zack.demo.config.JwtService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -45,17 +48,16 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    @PostMapping("/addPost")
+    @PostMapping(value = "/addPost", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> addPost(
-            @RequestPart("content") String content,
+            @Valid @RequestPart("content") AddPostDto post,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestHeader("authorization") String authHeader) throws JsonProcessingException {
-
+            @RequestHeader("authorization") String authHeader) {
         String jwt = authHeader.substring(7);
         String nickname = jwtService.extractUsername(jwt);
         System.out.println("Extracted nickname: " + nickname);
-
-        AddPostDto post = postService.converteData(content);
+        // @Valid
+        // AddPostDto post = postService.converteData(content);
 
         HashMap<String, ?> savingPost = postService.savePost(post, nickname, file);
 

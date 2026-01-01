@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment.prod';
 import { PostsService } from '../services/posts.service';
 import { AuthService } from '../services/auth-service.service.spec';
 import { checkToken } from '../utils/dateFormater';
+import { blob } from 'node:stream/consumers';
 
 @Component({
   selector: 'app-add-post',
@@ -19,6 +20,8 @@ export class AddPostComponent implements OnInit {
   data: any = {
     content: '',
   };
+
+  nickname: string = '';
 
   err: string = '';
 
@@ -36,7 +39,7 @@ export class AddPostComponent implements OnInit {
     this.user.userData$.subscribe({
       next: (data) => {
         console.log('data', data);
-        this.data.nickname = data?.nickname;
+        if (data) this.nickname = data.nickname;
       },
     });
 
@@ -95,7 +98,8 @@ export class AddPostComponent implements OnInit {
     }
 
     const formData = new FormData();
-    formData.append('content', JSON.stringify(this.data));
+    const post = JSON.stringify(this.data);
+    formData.append('content', new Blob([post], { type: 'application/json' }));
     if (this.selectedFile) {
       formData.append('file', this.selectedFile, this.selectedFile.name);
     }
