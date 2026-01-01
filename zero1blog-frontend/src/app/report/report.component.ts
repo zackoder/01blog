@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-report',
@@ -19,10 +20,11 @@ export class ReportComponent {
   private baseUrl = environment.apiUrl;
   constructor(private http: HttpClient, private router: Router) {}
   onsubmitReport() {
-    const token = localStorage.getItem('jwtToken');
+    const headers = checkToken();
 
-    if (!token) this.router.navigate(['/login']);
-
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+    }
     if (this.reportReason.trim() === '') {
       this.error = "report can't be empty";
       return;
@@ -39,7 +41,7 @@ export class ReportComponent {
           content: this.reportReason,
           createdAt: 0,
         },
-        { headers: { authorization: `Bearer ${token}` } }
+        { headers }
       )
       .subscribe({
         next: (res) => {
@@ -55,4 +57,3 @@ export class ReportComponent {
     this.removeReportComponent.emit(false);
   }
 }
-

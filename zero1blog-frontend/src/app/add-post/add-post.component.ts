@@ -49,18 +49,16 @@ export class AddPostComponent implements OnInit {
   }
 
   getPost() {
-    const token = checkToken();
+    const headers = checkToken();
 
-    if (!token) {
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
     }
 
     const pathValues = this.router.url.split('/');
     const id = pathValues[pathValues.length - 1];
     this.http
-      .get<any>(`${this.baseUrl}/getPost/${id}?edit=true`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get<any>(`${this.baseUrl}/getPost/${id}?edit=true`, { headers })
       .subscribe({
         next: (res) => {
           this.data = { ...this.data, ...res };
@@ -89,12 +87,10 @@ export class AddPostComponent implements OnInit {
     if (this.isLoading) return;
     this.isLoading = true;
     this.err = '';
-    const token = localStorage.getItem('jwtToken');
+    const headers = checkToken();
 
-    if (!token) {
-      console.warn('JWT Token not found. Redirecting to login.');
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
 
     const formData = new FormData();
@@ -104,18 +100,16 @@ export class AddPostComponent implements OnInit {
       formData.append('file', this.selectedFile, this.selectedFile.name);
     }
     if (this.router.url.startsWith('/addPost')) {
-      this.addPost(token, formData);
+      this.addPost(headers, formData);
     }
     if (this.router.url.startsWith('/edit')) {
-      this.updatePost(token, formData);
+      this.updatePost(headers, formData);
     }
   }
 
-  addPost(token: string, formData: FormData) {
+  addPost(headers: HttpHeaders, formData: FormData) {
     this.http
-      .post<[]>(`${this.baseUrl}/addPost`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .post<[]>(`${this.baseUrl}/addPost`, formData, { headers })
       .subscribe({
         next: (res) => {
           this.data.content = '';
@@ -130,11 +124,9 @@ export class AddPostComponent implements OnInit {
       });
   }
 
-  updatePost(token: string, formData: FormData) {
+  updatePost(headers: HttpHeaders, formData: FormData) {
     this.http
-      .put<[]>(`${this.baseUrl}/updatePost`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .put<[]>(`${this.baseUrl}/updatePost`, formData, { headers })
       .subscribe({
         next: (res) => {
           this.data.content = '';

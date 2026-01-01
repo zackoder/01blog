@@ -14,7 +14,10 @@ import { ReportComponent } from '../report/report.component';
 import { environment } from '../../environments/environment.prod';
 import { PostsService } from '../services/posts.service';
 import { CommentsComponent } from '../comments/comments.component';
-import { formatDate as formatDateUtil } from '../utils/dateFormater';
+import {
+  checkToken,
+  formatDate as formatDateUtil,
+} from '../utils/dateFormater';
 
 @Component({
   selector: 'app-posts',
@@ -77,7 +80,6 @@ export class PostsComponent implements OnInit, OnDestroy {
     if (this.isLoading) return;
     this.isLoading = true;
     let target = this.router.url;
-    console.log(this.currentPath);
 
     if (target === '/') {
       target += 'getPosts';
@@ -86,20 +88,15 @@ export class PostsComponent implements OnInit, OnDestroy {
       target = target.replace('/profile', '/userData');
     }
 
-    const token = localStorage.getItem('jwtToken');
+    const headers = checkToken();
 
-    if (!token) {
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
 
     if (this.nothingToFetch) {
       return;
     }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
 
     this.http
       .get<any[]>(`${this.baseUrl}${target}?offset=${offset}`, {
@@ -107,8 +104,6 @@ export class PostsComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (data: any) => {
-          console.log(data);
-
           if (!Array.isArray(data) || data.length === 0) {
             data = [];
             this.nothingToFetch = true;
@@ -130,10 +125,10 @@ export class PostsComponent implements OnInit, OnDestroy {
   }
 
   reaction(postId: number, reaction: string, index: number) {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
 
     if (!reaction || (reaction !== 'like' && reaction !== 'dislike')) {
@@ -148,9 +143,7 @@ export class PostsComponent implements OnInit, OnDestroy {
       .post<any>(
         `${this.baseUrl}/reaction`,
         { target: 'post', targetId: postId, reactionType: reaction },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers }
       )
       .subscribe({
         next: (res) => {
@@ -230,14 +223,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   handleRouteChange() {
     if (this.isLoading) return;
     const newPath = this.router.url;
-
-    if (newPath === this.currentPath) return;
-
     this.currentPath = newPath;
-    this.offsetService.setOffset(0);
-    this.postsService.deleteAll();
-    this.nothingToFetch = false;
-
     this.fetchPosts(0);
   }
 

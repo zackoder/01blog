@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
-import { formatDate } from '../utils/dateFormater';
+import { checkToken, formatDate } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-comments',
@@ -23,15 +23,14 @@ export class CommentsComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('getting comments');
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
+
     this.http
-      .get<any[]>(`${this.baseUrl}/getComments?id=${this.postId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get<any[]>(`${this.baseUrl}/getComments?id=${this.postId}`, { headers })
       .subscribe({
         next: (res) => {
           console.log(res);
@@ -51,10 +50,10 @@ export class CommentsComponent implements OnInit {
       return;
     }
 
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
 
     if (!this.comment.trim()) {
@@ -70,9 +69,7 @@ export class CommentsComponent implements OnInit {
           postId: this.postId,
           comment: this.comment,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers }
       )
       .subscribe({
         next: (res) => {

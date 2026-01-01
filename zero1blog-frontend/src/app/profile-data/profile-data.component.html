@@ -7,4 +7,12 @@
     Full Name: {{ userData.firstName }} {{ userData.lastName.toUpperCase() }}
   </h2>
   <p>Nickname: {{ userData.nickname }}</p>
+  <p>Bio:</p>
+  @if (userData.bio) {
+  <p>{{ userData.bio }}</p>
+  } @else {
+  <p>nothing</p>
+  } @if (userData.isOwner) { } @else {
+  <button>report User</button>
+  }
 </div>

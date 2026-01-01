@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgClass } from '@angular/common';
+import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-navbar',
@@ -28,10 +29,12 @@ export class NavbarComponent {
   }
 
   openProfile() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-      return;
-    }
+    // const headers = checkToken();
+
+    // if (!headers.has('Authorization')) {
+    //   this.router.navigate(['/login']);
+    // }
+
     this.router.navigate([`/profile/${this.data.nickname}`]);
     this.show = false;
   }
@@ -39,29 +42,23 @@ export class NavbarComponent {
   userCredentials() {
     if (this.isLoading) return;
     this.isLoading = true;
-    const token = localStorage.getItem('jwtToken');
+    const headers = checkToken();
 
-    if (!token) {
-      // this.router.navigate(['/']);
-      this.isLoading = false;
-      return;
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
     }
 
-    this.http
-      .get(`${this.baseUrl}/userCredentials`, {
-        headers: { authorization: `Bearer ${token}` },
-      })
-      .subscribe({
-        next: (res) => {
-          this.data = res;
-          console.log(this.data);
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.log(err);
-          this.isLoading = false;
-        },
-      });
+    this.http.get(`${this.baseUrl}/userCredentials`, { headers }).subscribe({
+      next: (res) => {
+        this.data = res;
+        console.log(this.data);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.log(err);
+        this.isLoading = false;
+      },
+    });
   }
 
   toggle() {

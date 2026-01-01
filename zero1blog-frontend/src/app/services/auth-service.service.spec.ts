@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment.prod';
+import { checkToken } from '../utils/dateFormater';
+import { Router } from '@angular/router';
 
 interface UserCredentials {
   id: number;
@@ -23,23 +25,21 @@ export class AuthService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public isLoading$ = this.loadingSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.fetchUserCredentials().subscribe();
   }
 
   fetchUserCredentials(): Observable<UserCredentials> {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-      this.userDataSource.next(null);
-      return new Observable();
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
     }
 
     this.loadingSubject.next(true);
 
     return this.http
-      .get<UserCredentials>(`${this.baseUrl}/userCredentials`, {
-        headers: { authorization: `Bearer ${token}` },
-      })
+      .get<UserCredentials>(`${this.baseUrl}/userCredentials`, { headers })
       .pipe(
         tap((res) => {
           this.userDataSource.next(res);

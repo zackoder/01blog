@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
+import { checkToken } from '../utils/dateFormater';
 
 interface ProfileData {
   nickname: string;
@@ -36,16 +37,16 @@ export class ProfileDataComponent implements OnInit {
   }
 
   getProfileData() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-      return;
     }
     const pathValues = this.router.url.split('/');
     const nickname = pathValues[pathValues.length - 1];
     this.http
       .get<ProfileData>(`${this.baseUrl}/profileData?nickname=${nickname}`, {
-        headers: { authorization: `Bearer ${token}` },
+        headers,
       })
       .subscribe({
         next: (data) => {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpHandler, HttpHeaders } from '@angular/common/http';
 
 export function formatDate(ceaiation: number) {
   let now: number = new Date().getTime() / 1000;
@@ -34,7 +34,11 @@ export function checkToken() {
 
   if (!token) {
     console.warn('JWT Token not found. Redirecting to login.');
-    return '';
+    return new HttpHeaders();
   }
-  return token;
+
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`,
+  });
+  return headers;
 }

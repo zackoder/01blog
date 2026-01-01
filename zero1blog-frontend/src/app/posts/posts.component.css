@@ -1,10 +1,14 @@
 .postsContainer {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 120px var(--spacing-lg);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
+}
+
+.top {
+  padding: 120 var(--spacing-lg);
 }
 
 .post {
