@@ -12,7 +12,11 @@
   <p>{{ userData.bio }}</p>
   } @else {
   <p>nothing</p>
-  } @if (userData.isOwner) { } @else {
+  } @if (!userData.isOwner) {
   <button>report User</button>
+  } @if (!userData.isOwner && !userData.isFollower) {
+  <button (click)="follow()">follow</button>
+  } @else if (userData.isFollower) {
+  <button (click)="follow()">unfollow</button>
   }
 </div>

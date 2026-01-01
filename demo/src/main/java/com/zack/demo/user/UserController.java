@@ -57,4 +57,16 @@ public class UserController {
         UserProfileResponseDto resp = userService.getProfileData(user, requester);
         return ResponseEntity.ok().body(resp);
     }
+
+    @GetMapping("/follow")
+    public ResponseEntity<?> follow(@RequestParam("followedNickname") String followedNickname,
+            @RequestHeader("authorization") String jwt) {
+
+        String nickname = jwtService.extractUsername(jwt.substring(7));
+        User follower = userService.checkUser(nickname);
+        User followed = userService.checkUser(followedNickname);
+        
+        return ResponseEntity.ok().body("safi rak nadi");
+    }
+
 }

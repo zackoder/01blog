@@ -37,6 +37,9 @@ export class ProfileDataComponent implements OnInit {
   }
 
   getProfileData() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
     const headers = checkToken();
 
     if (!headers.has('Authorization')) {
@@ -52,10 +55,21 @@ export class ProfileDataComponent implements OnInit {
         next: (data) => {
           this.userData = data;
           console.log('profile data', data);
+          this.isLoading = false;
         },
         error: (err) => {
           console.log('error while getting data', err);
+          this.isLoading = false;
         },
       });
+  }
+
+  follow() {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+    }
+    
   }
 }
