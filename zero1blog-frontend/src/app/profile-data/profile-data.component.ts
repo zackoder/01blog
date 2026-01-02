@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
 
@@ -19,8 +19,9 @@ interface ProfileData {
   templateUrl: './profile-data.component.html',
   styleUrl: './profile-data.component.css',
 })
-export class ProfileDataComponent implements OnInit {
+export class ProfileDataComponent {
   isLoading: boolean = false;
+
   userData: ProfileData = {
     nickname: '',
     lastName: '',
@@ -29,11 +30,14 @@ export class ProfileDataComponent implements OnInit {
     isFollower: false,
     isOwner: false,
   };
-  baseUrl: string = environment.apiUrl;
-  constructor(private http: HttpClient, private router: Router) {}
 
-  ngOnInit(): void {
-    this.getProfileData();
+  baseUrl: string = environment.apiUrl;
+  constructor(private http: HttpClient, private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.getProfileData();
+      }
+    });
   }
 
   getProfileData() {
@@ -70,6 +74,22 @@ export class ProfileDataComponent implements OnInit {
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
     }
-    
+
+    const params = this.router.url.split('/');
+    const followedNickname = params[params.length - 1];
+
+    this.http
+      .get<any>(`${this.baseUrl}/follow?followedNickname=${followedNickname}`, {
+        headers,
+      })
+      .subscribe({
+        next: (res) => {
+          this.userData.isFollower = res.message === 'followed';
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 }

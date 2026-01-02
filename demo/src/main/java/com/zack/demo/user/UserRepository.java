@@ -1,9 +1,12 @@
 package com.zack.demo.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.transaction.Transactional;
+import lombok.var;
 
 import java.util.Optional;
 
@@ -28,4 +31,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean isFollowing(
             @Param("followerId") Long followerId,
             @Param("followedId") Long followedId);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            INSERT INTO followers (follower_id, followed_id, created_at)
+            VALUES (:followerId, :followedId, :created_at)
+            """, nativeQuery = true)
+    public void followUser(@Param(":followerId") Long followerId, @Param(":followedId") Long followedId,
+            @Param(":created_at") long created_at);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            DELETE FROM followers
+            WHERE follower_id = :followerId
+            AND followed_id = :followedId
+            """, nativeQuery = true)
+    public void unfollowUser(@Param(":followerId") Long followerId, @Param(":followedId") Long followedId);
 }

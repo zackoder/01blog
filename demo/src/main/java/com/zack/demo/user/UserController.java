@@ -2,6 +2,7 @@ package com.zack.demo.user;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.NotFoundException;
@@ -65,8 +66,14 @@ public class UserController {
         String nickname = jwtService.extractUsername(jwt.substring(7));
         User follower = userService.checkUser(nickname);
         User followed = userService.checkUser(followedNickname);
-        
-        return ResponseEntity.ok().body("safi rak nadi");
+
+        if (followed.getId().equals(follower.getId())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
+        }
+
+        String message = userService.toggleFollow(follower, followed);
+
+        return ResponseEntity.ok().body(Map.of("message", message));
     }
 
 }

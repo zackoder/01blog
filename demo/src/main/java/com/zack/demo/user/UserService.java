@@ -1,5 +1,6 @@
 package com.zack.demo.user;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -75,5 +76,15 @@ public class UserService {
                 user.getBio(),
                 isFollowing,
                 isOwner);
+    }
+
+    public String toggleFollow(User follower, User followed) {
+        if (userRepository.isFollowing(follower.getId(), followed.getId())) {
+            userRepository.unfollowUser(follower.getId(), followed.getId());
+            return "unfollowed";
+        } else {
+            userRepository.followUser(follower.getId(), followed.getId(), new java.util.Date().getTime() / 1000);
+            return "followed";
+        }
     }
 }
