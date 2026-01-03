@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import io.micrometer.common.lang.NonNull;
+
 @Repository
 public interface PostRepo extends JpaRepository<Post, Long> {
     Optional<Post> findById(Long id);
@@ -14,6 +16,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     boolean existsByIdAndUserNickname(Long id, String nickname);
 
     boolean existsById(Long id);
+
+    boolean findVisibilityById(long id);
 
     @Query(value = """
             SELECT

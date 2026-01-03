@@ -1,5 +1,6 @@
 package com.zack.demo.post;
 
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,10 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -145,16 +150,19 @@ public class PostService {
     }
 
     public GetPostDto getPostById(long id) {
-        Post post = postRepo.findById(id).get();
-        GetPostDto resp = new GetPostDto();
-        if (post == null) {
-            return null;
-        }
+        Post post = postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
 
-        resp.setId(id);
-        resp.setContent(post.getContent());
-        resp.setImage_path(post.getImagePath());
+        if (!post.getVisibility()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This post has been hidden by an administrator.");
+        }
+        GetPostDto resp = new GetPostDto(post.getId(), post.getContent(), post.getImagePath(), 0, post.getVisibility(),
+                0, "", 0, 0,
+                true, "");
 
         return resp;
+    }
+
+    public boolean findVisibilityById(long id) {
+        return postRepo.findVisibilityById(id);
     }
 }

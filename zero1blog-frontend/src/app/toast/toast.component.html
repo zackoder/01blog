@@ -1,0 +1,5 @@
+@for (message of toast.toasts(); track message.id) {
+<div class="toast">
+  <p>{{ message.message }}</p>
+</div>
+} @empty { }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
   Component,
   HostListener,
@@ -18,6 +18,7 @@ import {
   checkToken,
   formatDate as formatDateUtil,
 } from '../utils/dateFormater';
+import { ToastService, Type } from '../services/toast.service';
 
 @Component({
   selector: 'app-posts',
@@ -43,7 +44,8 @@ export class PostsComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private offsetService: OffsetLimitService,
-    public postsService: PostsService
+    public postsService: PostsService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +65,7 @@ export class PostsComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll', [])
   onScroll() {
     const newvScrollPosition = window.pageYOffset;
     if (newvScrollPosition < this.prevScrollPosition) return;
@@ -202,6 +204,7 @@ export class PostsComponent implements OnInit, OnDestroy {
             this.offsetService.setOffset(this.postsService.posts().length);
             this.deleteChecker = false;
             this.targetedPost = -1;
+            this.toast.show(res.message, Type.success);
           }
         },
         error: (err) => {

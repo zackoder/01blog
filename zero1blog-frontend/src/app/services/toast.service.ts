@@ -6,7 +6,7 @@ export interface Toast {
   type: Type;
 }
 
-enum Type {
+export enum Type {
   success,
   error,
   info,
@@ -16,7 +16,7 @@ enum Type {
 })
 export class ToastService {
   private _toasts = signal<Toast[]>([]);
-  readonly toast = this._toasts.asReadonly();
+  readonly toasts = this._toasts.asReadonly();
 
   show(message: string, type: Type = Type.success) {
     const id = Date.now();
@@ -26,6 +26,7 @@ export class ToastService {
       this.remove(id);
     }, 3000);
   }
+
   remove(id: number) {
     this._toasts.update((allToasts) =>
       allToasts.filter((t: Toast) => t.id !== id)

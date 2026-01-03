@@ -28,4 +28,8 @@ public class Post {
     private User user;
 
     private long created_at;
+
+    public boolean getVisibility() {
+        return this.visibility;
+    }
 }

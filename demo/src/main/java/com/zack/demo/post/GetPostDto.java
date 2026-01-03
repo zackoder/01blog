@@ -1,22 +1,15 @@
 package com.zack.demo.post;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class GetPostDto {
-    private long id;
-    private String content;
-    private String image_path;
-    private long user_id;
-    private boolean visibility;
-    private long created_at;
-    private String nickname;
-    private long likes;
-    private long dislikes;
-    private boolean postOwner;
-    private String reacted;
+public record GetPostDto(
+        long id,
+        String content,
+        String image_path,
+        long user_id,
+        boolean visibility,
+        long created_at,
+        String nickname,
+        long likes,
+        long dislikes,
+        boolean postOwner,
+        String reacted) {
 }

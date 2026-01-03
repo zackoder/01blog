@@ -9,6 +9,7 @@ import { PostsService } from '../services/posts.service';
 import { AuthService } from '../services/auth-service.service.spec';
 import { checkToken } from '../utils/dateFormater';
 import { blob } from 'node:stream/consumers';
+import { ToastService, Type } from '../services/toast.service';
 
 @Component({
   selector: 'app-add-post',
@@ -32,7 +33,8 @@ export class AddPostComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private user: AuthService
+    private user: AuthService,
+    private toasts: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +68,7 @@ export class AddPostComponent implements OnInit {
         error: (err) => {
           if (err.status === 400) {
             this.router.navigate(['/']);
+            this.toasts.show(err.error);
             return;
           }
           console.log('error', err.status);
@@ -93,6 +96,10 @@ export class AddPostComponent implements OnInit {
       this.router.navigate(['/login']);
     }
 
+    if (!this.data.content.trim()) {
+      this.err = 'you need to write something';
+      return;
+    }
     const formData = new FormData();
     const post = JSON.stringify(this.data);
     formData.append('content', new Blob([post], { type: 'application/json' }));
@@ -116,9 +123,10 @@ export class AddPostComponent implements OnInit {
           this.selectedFile = null;
           this.isLoading = false;
           this.router.navigate(['/']);
+          this.toasts.show('post created', Type.success);
         },
         error: (err) => {
-          this.err = err.error.content;
+          this.toasts.show(err.error.content, Type.error);
           this.isLoading = false;
         },
       });
@@ -135,7 +143,8 @@ export class AddPostComponent implements OnInit {
           this.router.navigate(['/']);
         },
         error: (err) => {
-          this.err = err.error.content;
+          // this.err = err.error.content;
+          this.toasts.show(err.error.content);
           this.isLoading = false;
         },
       });

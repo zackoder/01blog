@@ -37,7 +37,6 @@ public class PostController {
     public ResponseEntity<?> getPost(@PathVariable long id, @RequestParam("edit") boolean edit,
             @RequestHeader("authorization") String authHeader) {
 
-        System.out.println(edit);
         if (edit) {
             String nickname = jwtService.extractUsername(authHeader.substring(7));
             if (!postService.checkOwner(id, nickname)) {
@@ -56,8 +55,6 @@ public class PostController {
         String jwt = authHeader.substring(7);
         String nickname = jwtService.extractUsername(jwt);
         System.out.println("Extracted nickname: " + nickname);
-        // @Valid
-        // AddPostDto post = postService.converteData(content);
 
         HashMap<String, ?> savingPost = postService.savePost(post, nickname, file);
 
@@ -76,20 +73,23 @@ public class PostController {
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestHeader("authorization") String jwt) throws JsonProcessingException {
 
-        System.out.println(post);
-
         if (post.id() == null) {
-            return ResponseEntity.badRequest().body("{\"error\":\"Bad Request\"}");
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
+
+        if (!postService.findVisibilityById(post.id())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
+        }
+
         String nickname = jwtService.extractUsername(jwt.substring(7));
         if (!postService.checkOwner(post.id(), nickname)) {
-            return ResponseEntity.badRequest().body("{\"error\":\"bad request\"}");
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
         HashMap<String, ?> res = postService.savePost(post, nickname, file);
         if (res.get("error") != null) {
             return ResponseEntity.badRequest().body(res);
         }
-        return ResponseEntity.ok().body("{\"message\":\"success\"}");
+        return ResponseEntity.ok().body(Map.of("message", "success"));
     }
 
     @DeleteMapping("/deletePost/{id}")
