@@ -78,7 +78,7 @@ public class PostController {
         }
 
         if (!postService.findVisibilityById(post.id())) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
+        return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
         String nickname = jwtService.extractUsername(jwt.substring(7));

@@ -141,10 +141,10 @@ export class AddPostComponent implements OnInit {
           this.selectedFile = null;
           this.isLoading = false;
           this.router.navigate(['/']);
+          this.toasts.show('post updated', Type.success);
         },
         error: (err) => {
-          // this.err = err.error.content;
-          this.toasts.show(err.error.content);
+          this.toasts.show(err.error.content, Type.error);
           this.isLoading = false;
         },
       });

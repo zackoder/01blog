@@ -75,7 +75,7 @@ public class PostService {
     public List<GetPostDto> getPosts(long offset, String nickname) {
         User user = userService.checkUser(nickname);
 
-        return postRepo.findPostsByOffsetAndLimit(user.getId(), user.getId(), 10, offset);
+        return postRepo.findPostsByOffsetAndLimit(user.getId(), 10, offset);
     }
 
     private String uploadFile(MultipartFile file) {
@@ -105,11 +105,11 @@ public class PostService {
     public String storeFile(String fileName, MultipartFile file) {
         Path uploadBasePath = Paths.get("uploads").toAbsolutePath().normalize();
 
-        String[] splited = fileName.split("/");
-        Path targetDir = uploadBasePath.resolve(splited[0]);
+        String[] splitted = fileName.split("/");
+        Path targetDir = uploadBasePath.resolve(splitted[0]);
         try {
             Files.createDirectories(targetDir);
-            Path targetPath = targetDir.resolve(splited[1]);
+            Path targetPath = targetDir.resolve(splitted[1]);
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             System.out.println("creating parent folder for an uploaded file:\n" + e);
@@ -137,7 +137,7 @@ public class PostService {
 
     public List<GetPostDto> getNewPost(String nickname) {
         User user = userService.checkUser(nickname);
-        return postRepo.findPostsByOffsetAndLimit(user.getId(), user.getId(), 1, 0);
+        return postRepo.findPostsByOffsetAndLimit(user.getId(), 1, 0);
     }
 
     public boolean existsByNickname(String nickname) {
