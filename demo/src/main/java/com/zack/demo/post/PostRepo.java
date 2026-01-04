@@ -16,8 +16,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 
     boolean existsById(Long id);
 
-    @Query(value = "SELECT p.visibility FROM Post p WHERE p.id = ?", nativeQuery = true)
-    boolean findVisibilityById(long id);
+    @Query(value = "SELECT p.visibility FROM Post p WHERE p.id = :post_id", nativeQuery = true)
+    boolean findVisibilityById(@Param("post_id") long id);
 
     @Query(value = """
             SELECT
@@ -44,41 +44,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             LIMIT :limit OFFSET :offset;
 
                         """, nativeQuery = true)
-    List<GetPostDto> findPostsByOffsetAndLimit(@Param(":requester") long requester, @Param(":limit") long limit,
-            @Param(":offset") long offset);
-
-    /*
-     * @Query(value = """
-     * SELECT
-     * p.id AS id,
-     * p.content AS content,
-     * p.image_path AS imagePath,
-     * p.user_id AS userId,
-     * p.visibility AS visibility,
-     * p.created_at AS createdAt,
-     * u.nickname AS nickname,
-     * SUM(CASE WHEN r.reaction_type = 'like' THEN 1 ELSE 0 END) AS likes,
-     * SUM(CASE WHEN r.reaction_type = 'dislike' THEN 1 ELSE 0 END) AS dislikes,
-     * CASE WHEN p.user_id = :requester THEN true ELSE false END AS postOwner,
-     * MAX(CASE WHEN r.user_id = :requester THEN r.reaction_type ELSE '' END) AS
-     * reacted
-     * FROM posts p
-     * JOIN users u ON p.user_id = u.id
-     * LEFT JOIN reactions r ON p.id = r.post_id
-     * GROUP BY
-     * p.id, u.nickname
-     * ORDER BY p.id DESC
-     * LIMIT :limit OFFSET :offset
-     * """, nativeQuery = true)
-     * List<GetPostDto> findPostsByOffsetAndLimit(
-     * 
-     * @Param("requester") long requester,
-     * 
-     * @Param("limit") long limit,
-     * 
-     * @Param("offset") long offset
-     * );
-     */
+    List<GetPostDto> findPostsByOffsetAndLimit(@Param("requester") long requester, @Param("limit") long limit,
+            @Param("offset") long offset);
 
     @Query(value = """
             SELECT
@@ -106,7 +73,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             LIMIT :limit OFFSET :offset;
 
                         """, nativeQuery = true)
-    List<GetPostDto> findUserPostsByOffsetAndLimit(@Param(":requesterId") long requesterId,
-            @Param(":postOwner") long postOwner, @Param(":limit") long limit, @Param("offset") long offset);
+    List<GetPostDto> findUserPostsByOffsetAndLimit(@Param("requesterId") long requesterId,
+            @Param("postOwner") long postOwner, @Param("limit") long limit, @Param("offset") long offset);
 
 }

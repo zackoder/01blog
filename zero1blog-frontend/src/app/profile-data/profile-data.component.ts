@@ -51,6 +51,7 @@ export class ProfileDataComponent {
     }
     const pathValues = this.router.url.split('/');
     const nickname = pathValues[pathValues.length - 1];
+    if (!nickname) return;
     this.http
       .get<ProfileData>(`${this.baseUrl}/profileData?nickname=${nickname}`, {
         headers,

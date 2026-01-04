@@ -57,10 +57,10 @@ public class UserService {
     public List<GetPostDto> getUserPosts(String nickname, String requesterNickname, long offset) {
         long requesterId = userRepository.findByNickname(requesterNickname).get().getId();
         if (requesterNickname.equals(nickname)) {
-            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, requesterId, 10, offset);
+            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, 10, offset);
         } else {
             long ownerId = userRepository.findByNickname(nickname).get().getId();
-            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, ownerId, 10, offset);
+            return postRepo.findUserPostsByOffsetAndLimit(requesterId, ownerId, 10, offset);
         }
     }
 
