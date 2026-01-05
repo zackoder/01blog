@@ -11,7 +11,8 @@ import { Router } from '@angular/router';
 interface UserCredentials {
   id: number;
   nickname: string;
-  isAdmin: boolean;
+  avatar: string;
+  role: string;
 }
 
 @Injectable({ providedIn: 'root' })

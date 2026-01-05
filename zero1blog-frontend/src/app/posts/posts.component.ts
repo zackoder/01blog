@@ -12,13 +12,14 @@ import { filter } from 'rxjs/operators';
 import { OffsetLimitService } from '../services/offset-limit.service';
 import { ReportComponent } from '../report/report.component';
 import { environment } from '../../environments/environment.prod';
-import { PostsService } from '../services/posts.service';
+import { Post, PostsService } from '../services/posts.service';
 import { CommentsComponent } from '../comments/comments.component';
 import {
   checkToken,
   formatDate as formatDateUtil,
 } from '../utils/dateFormater';
 import { ToastService, Type } from '../services/toast.service';
+import { AuthService } from '../services/auth-service.service.spec';
 
 @Component({
   selector: 'app-posts',
@@ -36,23 +37,32 @@ export class PostsComponent implements OnInit, OnDestroy {
   deleteChecker = false;
   showTargetedPostId = -1;
   currentPath = '';
-  isAdmin = true;
+  isAdmin: boolean = false;
   @Input() target: string = '';
   @Input() profileData: string | null = null;
   private routerSubscription: Subscription | null = null;
+
   constructor(
     private http: HttpClient,
     private router: Router,
     private offsetService: OffsetLimitService,
     public postsService: PostsService,
-    private toast: ToastService
+    private toast: ToastService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.auth.userData$.subscribe({
+      next: (res) => {
+        if (res?.role) this.isAdmin = res.role === 'admin';
+      },
+    });
     this.currentPath = this.router.url;
     this.routerSubscription = this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe(() => this.handleRouteChange());
+      .subscribe(() => {
+        this.handleRouteChange();
+      });
     this.fetchPosts(0);
   }
 
@@ -60,16 +70,16 @@ export class PostsComponent implements OnInit, OnDestroy {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
       this.routerSubscription = null;
-      this.postsService.deleteAll();
-      this.offsetService.setOffset(0);
     }
+    this.postsService.deleteAll();
+    this.offsetService.setOffset(0);
   }
 
   @HostListener('window:scroll', [])
   onScroll() {
     const newvScrollPosition = window.pageYOffset;
     if (newvScrollPosition < this.prevScrollPosition) return;
-    else this.prevScrollPosition = newvScrollPosition;
+    this.prevScrollPosition = newvScrollPosition;
 
     const documentHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
@@ -78,49 +88,49 @@ export class PostsComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleRouteChange() {
+    this.nothingToFetch = false;
+    this.postsService.deleteAll();
+    this.offsetService.setOffset(0);
+    this.currentPath = this.router.url;
+    this.fetchPosts(0);
+  }
+
   fetchPosts(offset = 0) {
     if (this.isLoading) return;
+    if (offset === 0) this.nothingToFetch = false;
+    if (this.nothingToFetch) return;
+
     this.isLoading = true;
     let target = this.router.url;
 
-    if (target === '/') {
-      target += 'getPosts';
-    }
-    if (target.startsWith('/profile')) {
+    if (target === '/') target += 'getPosts';
+    if (target.startsWith('/profile'))
       target = target.replace('/profile', '/userData');
-    }
 
     const headers = checkToken();
-
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-    }
-
-    if (this.nothingToFetch) {
+      this.toast.show('you need to regester', Type.info);
       return;
     }
 
     this.http
-      .get<any[]>(`${this.baseUrl}${target}?offset=${offset}`, {
-        headers,
-      })
+      .get<Post[]>(`${this.baseUrl}${target}?offset=${offset}`, { headers })
       .subscribe({
-        next: (data: any) => {
+        next: (data: Post[]) => {
           if (!Array.isArray(data) || data.length === 0) {
-            data = [];
             this.nothingToFetch = true;
+            this.isLoading = false;
+            return;
           }
           this.postsService.setPosts(data);
-
           this.isLoading = false;
           this.targetedPost = -1;
           this.offsetService.setOffset(this.postsService.posts().length);
         },
         error: (err) => {
-          if (err.status) {
-            this.router.navigate(['/login']);
-          }
-          console.error('errro:', err);
+          if (err.status === 401) this.router.navigate(['/login']);
           this.isLoading = false;
         },
       });
@@ -128,18 +138,11 @@ export class PostsComponent implements OnInit, OnDestroy {
 
   reaction(postId: number, reaction: string, index: number) {
     const headers = checkToken();
-
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
-    }
-
-    if (!reaction || (reaction !== 'like' && reaction !== 'dislike')) {
       return;
     }
-    if (!postId) {
-      alert("id doesn't exists");
-      return;
-    }
+    if (!reaction || (reaction !== 'like' && reaction !== 'dislike')) return;
 
     this.http
       .post<any>(
@@ -160,14 +163,8 @@ export class PostsComponent implements OnInit, OnDestroy {
           targetedPost.likes = res.likes;
           targetedPost.reacted = res.reacted;
         },
-        error: (e) => {
-          console.log('reacting to post error :', e);
-        },
+        error: (e) => console.error(e),
       });
-    console.log('post id is:', postId, 'reaction: ', reaction);
-  }
-  showComments(postId: number) {
-    console.log('post id is:', postId);
   }
 
   formatDate(ceaiation: number) {
@@ -175,7 +172,6 @@ export class PostsComponent implements OnInit, OnDestroy {
   }
 
   toggle(index: number) {
-    console.log(this.reportForm);
     if (index == this.targetedPost) this.targetedPost = -1;
     else this.targetedPost = index;
   }
@@ -198,7 +194,6 @@ export class PostsComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (res) => {
-          console.log(res);
           if (res.message === 'post deleted') {
             this.postsService.deletePost(index);
             this.offsetService.setOffset(this.postsService.posts().length);
@@ -207,27 +202,13 @@ export class PostsComponent implements OnInit, OnDestroy {
             this.toast.show(res.message, Type.success);
           }
         },
-        error: (err) => {
-          console.log(err);
-        },
+        error: (err) => console.error(err),
       });
   }
 
   goToProfile(nickname: string, id: number) {
     const profile = `/profile/${nickname}`;
-    if (profile !== this.router.url) {
-      this.offsetService.setOffset(0);
-      this.postsService.deleteAll();
-    }
     this.router.navigate([profile]);
-    return;
-  }
-
-  handleRouteChange() {
-    if (this.isLoading) return;
-    const newPath = this.router.url;
-    this.currentPath = newPath;
-    this.fetchPosts(0);
   }
 
   editPost(i: number) {

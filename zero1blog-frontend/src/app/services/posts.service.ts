@@ -1,6 +1,6 @@
 import { Injectable, signal, Signal } from '@angular/core';
 
-interface Post {
+export interface Post {
   content: string;
   created_at: number;
   dislikes: number;
@@ -24,7 +24,7 @@ export class PostsService {
   public postLen = this._posts().length;
 
   constructor() {}
-  setPosts(newPosts: []) {
+  setPosts(newPosts: Post[]) {
     return this._posts.update((current) => [...current, ...newPosts]);
   }
 

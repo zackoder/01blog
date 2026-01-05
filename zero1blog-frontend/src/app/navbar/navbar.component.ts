@@ -29,25 +29,20 @@ export class NavbarComponent {
   }
 
   openProfile() {
-    // const headers = checkToken();
-
-    // if (!headers.has('Authorization')) {
-    //   this.router.navigate(['/login']);
-    // }
-
     this.router.navigate([`/profile/${this.data.nickname}`]);
     this.show = false;
   }
 
   userCredentials() {
-    if (this.isLoading) return;
-    this.isLoading = true;
     const headers = checkToken();
 
     if (!headers.has('Authorization')) {
+      if (this.router.url === '/login' || this.router.url === '/signup') return;
       this.router.navigate(['/login']);
     }
 
+    if (this.isLoading) return;
+    this.isLoading = true;
     this.http.get(`${this.baseUrl}/userCredentials`, { headers }).subscribe({
       next: (res) => {
         this.data = res;
