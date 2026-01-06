@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS reactions (
     post_id INT NOT NULL,
     user_id INT NOT NULL,
     reaction_type VARCHAR(50) NOT NULL,
-    created_at INT,
     CONSTRAINT fk_post
         FOREIGN KEY(post_id)
         REFERENCES posts(id)

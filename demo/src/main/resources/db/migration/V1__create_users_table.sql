@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(50) NOT NULL, 
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100),
     bio TEXT,
-    role VARCHAR(20) DEFAULT 'USER',
-    created_at int
+    image_path VARCHAR(255),
+    role VARCHAR(20) DEFAULT 'USER'
 );

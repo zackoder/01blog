@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -50,6 +51,8 @@ public class GlobalExceptionHandler {
             return ResponseEntity.badRequest().body(errors);
         } else if (e instanceof ResponseStatusException ex) {
             return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", ex.getReason()));
+        } else if (e instanceof NoResourceFoundException) {
+            return ResponseEntity.status(404).body(Map.of("error", "Resource not found"));
         }
 
         else {

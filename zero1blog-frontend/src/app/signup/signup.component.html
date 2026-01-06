@@ -1,180 +1,225 @@
-<form (ngSubmit)="onSignUp()" class="signup-form p-4" #signupForm="ngForm">
-  <!-- Nickname -->
-  <div class="mb-3">
-    <label for="nickname" class="form-label d-block fw-semibold"
-      >Nickname</label
-    >
-    <input
-      id="nickname"
-      name="nickname"
-      type="text"
-      class="form-control w-100 d-block"
-      [(ngModel)]="data.nickname"
-      required
-    />
-    @if (errorMsg.errNickname) {
-    <p class="text-danger small mt-1">{{ errorMsg.errNickname }}</p>
-    }
-  </div>
-
-  <!-- First Name -->
-  <div class="mb-3">
-    <label for="firstName" class="form-label d-block fw-semibold"
-      >First Name</label
-    >
-    <input
-      id="firstName"
-      name="firstName"
-      type="text"
-      class="form-control w-100 d-block"
-      [(ngModel)]="data.firstName"
-    />
-    @if (errorMsg.errFirstName) {
-    <p class="text-danger small mt-1">{{ errorMsg.errFirstName }}</p>
-    }
-  </div>
-
-  <!-- Last Name -->
-  <div class="mb-3">
-    <label for="lastName" class="form-label d-block fw-semibold"
-      >Last Name</label
-    >
-    <input
-      id="lastName"
-      name="lastName"
-      type="text"
-      class="form-control w-100 d-block"
-      [(ngModel)]="data.lastName"
-    />
-    @if (errorMsg.errLastName) {
-    <p class="text-danger small mt-1">{{ errorMsg.errLastName }}</p>
-    }
-  </div>
-
-  <!-- Email -->
-  <div class="mb-3">
-    <label for="email" class="form-label d-block fw-semibold">Email</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      class="form-control w-100 d-block"
-      [(ngModel)]="data.email"
-      required
-    />
-    @if (errorMsg.errEmail) {
-    <p class="text-danger small mt-1">{{ errorMsg.errEmail }}</p>
-    }
-  </div>
-
-  <!-- Password -->
-  <div class="mb-3">
-    <label for="password" class="form-label d-block fw-semibold"
-      >Password</label
-    >
-    <input
-      id="password"
-      name="password"
-      type="password"
-      class="form-control w-100 d-block"
-      [(ngModel)]="data.password"
-      (ngModelChange)="onPasswordChange($event)"
-      required
-    />
-    @if (errorMsg.errPassword) {
-    <p class="text-danger small mt-1">{{ errorMsg.errPassword }}</p>
-    }
-
-    <!-- Password Requirements -->
-    <div class="password-requirements mt-2 ps-2">
-      <p
-        class="small mb-1"
-        [class.text-success]="passwordValidation.hasLowerCase"
-        [class.text-danger]="!passwordValidation.hasLowerCase"
-      >
-        {{ passwordValidation.hasLowerCase ? "✓" : "✗" }} At least one lowercase
-        letter
-      </p>
-
-      <p
-        class="small mb-1"
-        [class.text-success]="passwordValidation.hasUpperCase"
-        [class.text-danger]="!passwordValidation.hasUpperCase"
-      >
-        {{ passwordValidation.hasUpperCase ? "✓" : "✗" }} At least one uppercase
-        letter
-      </p>
-
-      <p
-        class="small mb-1"
-        [class.text-success]="passwordValidation.hasNumber"
-        [class.text-danger]="!passwordValidation.hasNumber"
-      >
-        {{ passwordValidation.hasNumber ? "✓" : "✗" }} At least one number
-      </p>
-
-      <p
-        class="small mb-1"
-        [class.text-success]="passwordValidation.hasSpecialChar"
-        [class.text-danger]="!passwordValidation.hasSpecialChar"
-      >
-        {{ passwordValidation.hasSpecialChar ? "✓" : "✗" }} At least one special
-        character
-      </p>
-
-      <p
-        class="small mb-1"
-        [class.text-success]="passwordValidation.hasMinLength"
-        [class.text-danger]="!passwordValidation.hasMinLength"
-      >
-        {{ passwordValidation.hasMinLength ? "✓" : "✗" }} At least 8 characters
-      </p>
-    </div>
-  </div>
-
-  <!-- Confirm Password -->
-  <div class="mb-3">
-    <label for="confirmPassword" class="form-label d-block fw-semibold"
-      >Confirm Password</label
-    >
-    <input
-      id="confirmPassword"
-      name="confirmPassword"
-      type="password"
-      class="form-control w-100"
-      [(ngModel)]="data.confirmPassword"
-      required
-    />
-    @if (errorMsg.errConfirmPassword) {
-    <p class="text-danger small mt-1">{{ errorMsg.errConfirmPassword }}</p>
-    }
-  </div>
-
-  <!-- Bio -->
-  <div class="mb-3">
-    <label for="bio" class="form-label d-block fw-semibold">Bio</label>
-    <textarea
-      id="bio"
-      name="bio"
-      class="form-control w-100"
-      rows="3"
-      [(ngModel)]="data.bio"
-    ></textarea>
-    @if (errorMsg.errBio) {
-    <p class="text-danger small mt-1">{{ errorMsg.errBio }}</p>
-    }
-  </div>
-
-  <!-- Submit -->
-  <button
-    type="submit"
-    class="btn btn-primary w-100 py-2 mt-2"
-    [disabled]="isLoading || !signupForm.form.valid"
+<div
+  class="container d-flex justify-content-center align-items-center min-vh-100"
+>
+  <div
+    class="card shadow-lg border-0 rounded-4 p-4 w-100"
+    style="max-width: 500px; background: #ffffff"
   >
-    {{ isLoading ? "Signing up..." : "Sign Up" }}
-  </button>
+    <h2 class="text-center fw-bold mb-4 text-primary">Create Account</h2>
 
-  <p class="text-center mt-2 mb-1">
-    already have an account <a (click)="login()" class="link-primary">log in</a>
-  </p>
-</form>
+    <form (ngSubmit)="onSignUp()" #signupForm="ngForm">
+      <div class="mb-4 text-center">
+        <div class="position-relative d-inline-block">
+          <div
+            class="avatar-wrapper rounded-circle border border-3 border-light shadow-sm overflow-hidden bg-light d-flex align-items-center justify-content-center"
+            style="width: 120px; height: 120px"
+          >
+            @if (imagePreview) {
+            <img
+              [src]="imagePreview"
+              class="img-fluid w-100 h-100 object-fit-cover"
+            />
+            <button
+              type="button"
+              class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle border-0 shadow"
+              (click)="removeImage()"
+              style="width: 28px; height: 28px; padding: 0"
+            >
+              &times;
+            </button>
+            } @else {
+            <i
+              class="bi bi-person-fill text-secondary"
+              style="font-size: 3rem"
+            ></i>
+            }
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm rounded-circle position-absolute bottom-0 end-0 shadow"
+            (click)="fileInput.click()"
+            style="width: 32px; height: 32px; padding: 0"
+          >
+            <i class="bi bi-camera-fill"></i>
+          </button>
+        </div>
+        <input
+          type="file"
+          #fileInput
+          class="d-none"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              id="nickname"
+              name="nickname"
+              type="text"
+              class="form-control rounded-3"
+              placeholder="Nickname"
+              [(ngModel)]="data.nickname"
+              required
+              [class.is-invalid]="errorMsg.errNickname"
+            />
+            <label for="nickname">Nickname</label>
+          </div>
+          @if (errorMsg.errNickname) {
+          <div class="text-danger small px-2">{{ errorMsg.errNickname }}</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-floating">
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              class="form-control"
+              placeholder="First Name"
+              [(ngModel)]="data.firstName"
+            />
+            <label for="firstName">First Name</label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-floating">
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              class="form-control"
+              placeholder="Last Name"
+              [(ngModel)]="data.lastName"
+            />
+            <label for="lastName">Last Name</label>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              [(ngModel)]="data.email"
+              required
+            />
+            <label for="email">Email address</label>
+          </div>
+          @if (errorMsg.errEmail) {
+          <div class="text-danger small px-2">{{ errorMsg.errEmail }}</div>
+          }
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              [(ngModel)]="data.password"
+              (ngModelChange)="onPasswordChange($event)"
+              required
+            />
+            <label for="password">Password</label>
+          </div>
+
+          <div class="mt-2 p-2 bg-light rounded-3 border">
+            <div class="d-flex flex-wrap gap-2">
+              <span
+                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
+                [class.bg-success-subtle]="passwordValidation.hasMinLength"
+              >
+                <i
+                  class="bi"
+                  [class.bi-check-circle-fill]="passwordValidation.hasMinLength"
+                  [class.bi-x-circle]="!passwordValidation.hasMinLength"
+                ></i>
+                8+ chars
+              </span>
+              <span
+                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
+                [class.bg-success-subtle]="passwordValidation.hasNumber"
+              >
+                <i
+                  class="bi"
+                  [class.bi-check-circle-fill]="passwordValidation.hasNumber"
+                  [class.bi-x-circle]="!passwordValidation.hasNumber"
+                ></i>
+                123
+              </span>
+              <span
+                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
+                [class.bg-success-subtle]="passwordValidation.hasSpecialChar"
+              >
+                <i
+                  class="bi"
+                  [class.bi-check-circle-fill]="
+                    passwordValidation.hasSpecialChar
+                  "
+                  [class.bi-x-circle]="!passwordValidation.hasSpecialChar"
+                ></i>
+                {{ "@#!" }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              class="form-control"
+              placeholder="Confirm Password"
+              [(ngModel)]="data.confirmPassword"
+              required
+            />
+            <label for="confirmPassword">Confirm Password</label>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating">
+            <textarea
+              id="bio"
+              name="bio"
+              class="form-control"
+              style="height: 100px"
+              placeholder="Bio"
+              [(ngModel)]="data.bio"
+            ></textarea>
+            <label for="bio">Short Bio</label>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100 py-3 fw-bold rounded-3 mt-4"
+        [disabled]="isLoading || !signupForm.form.valid"
+      >
+        {{ isLoading ? "" : "Register Now" }}
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+      </button>
+
+      <p class="text-center mt-3 text-muted">
+        Already have an account?
+        <a
+          (click)="login()"
+          class="text-primary fw-semibold text-decoration-none cursor-pointer"
+          >Login here</a
+        >
+      </p>
+    </form>
+  </div>
+</div>
