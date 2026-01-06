@@ -49,8 +49,8 @@ public class UserService {
         if (user == null) {
             return null;
         }
-        GetCredentialsDto userCredentials = new GetCredentialsDto(user.getNickname(), user.getId(),
-                "/uploads/default-avatar.jpg");
+        GetCredentialsDto userCredentials = new GetCredentialsDto(user.getId(), user.getNickname(),
+                "/uploads/default-avatar.jpg", user.getRole());
         return userCredentials;
     }
 

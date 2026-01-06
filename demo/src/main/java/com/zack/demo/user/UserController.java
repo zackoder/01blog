@@ -76,4 +76,14 @@ public class UserController {
         return ResponseEntity.ok().body(Map.of("message", message));
     }
 
+    public ResponseEntity<?> admin(@RequestHeader("authorization") String jwt) {
+        String nickname = jwtService.extractUsername(jwt.substring(7));
+        User user = userService.checkUser(nickname);
+
+        if (!user.getRole().equals("admin")) {
+            return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        }
+
+        return ResponseEntity.ok().body(Map.of("message", "Admin access granted"));
+    }
 }

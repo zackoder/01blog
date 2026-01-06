@@ -30,7 +30,6 @@ public class SignupService {
         user.setBio(dto.getBio());
 
         User savedUser = userRepository.save(user);
-        System.out.println(savedUser.getId());
 
         if (savedUser.getId() == 1) {
             savedUser.setRole("admin");

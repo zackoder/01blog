@@ -1,7 +1,8 @@
 package com.zack.demo.user;
 
 public record GetCredentialsDto(
-                String nickname,
-                long id,
-                String avatar) {
+        long id,
+        String nickname,
+        String avatar,
+        String role) {
 }

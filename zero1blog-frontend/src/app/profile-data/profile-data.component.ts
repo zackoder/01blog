@@ -41,17 +41,20 @@ export class ProfileDataComponent {
   }
 
   getProfileData() {
-    if (this.isLoading) return;
-    this.isLoading = true;
-
+    
     const headers = checkToken();
-
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
     }
+    if (!this.router.url.startsWith('/profile')) {
+      return;
+    }
+
+    if (this.isLoading) return;
+    this.isLoading = true;
     const pathValues = this.router.url.split('/');
     const nickname = pathValues[pathValues.length - 1];
-    if (!nickname) return;
+
     this.http
       .get<ProfileData>(`${this.baseUrl}/profileData?nickname=${nickname}`, {
         headers,
