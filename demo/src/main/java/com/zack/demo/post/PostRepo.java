@@ -10,18 +10,21 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepo extends JpaRepository<Post, Long> {
-    Optional<Post> findById(Long id);
+    Optional<Post> findById(long id);
 
     boolean existsByIdAndUserNickname(Long id, String nickname);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
-    @Query(value = "SELECT p.visibility FROM Post p WHERE p.id = :post_id", nativeQuery = true)
+    String findImagePathById(long id);
+
+    @Query("SELECT p.visibility FROM Post p WHERE p.id = :post_id")
     boolean findVisibilityById(@Param("post_id") long id);
 
     @Query(value = """
             SELECT
                 p.id,
+                u.image_path,
                 p.content,
                 p.image_path,
                 p.user_id,
@@ -38,7 +41,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             LEFT JOIN reactions r ON p.id = r.post_id
 
             GROUP BY
-                p.id, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
+                p.id, u.image_path, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
 
             ORDER BY p.id DESC
             LIMIT :limit OFFSET :offset;
@@ -50,6 +53,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     @Query(value = """
             SELECT
                 p.id,
+                u.image_path,
                 p.content,
                 p.image_path,
                 p.user_id,
@@ -67,7 +71,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             WHERE
                 p.user_id = :postOwner
             GROUP BY
-                p.id, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
+                p.id, u.image_path, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
 
             ORDER BY p.id DESC
             LIMIT :limit OFFSET :offset;

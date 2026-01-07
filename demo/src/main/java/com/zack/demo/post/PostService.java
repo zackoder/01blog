@@ -1,5 +1,6 @@
 package com.zack.demo.post;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +37,7 @@ public class PostService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public HashMap<String, ?> savePost(AddPostDto postDto, String userNickname, MultipartFile file) {
+    public HashMap<String, ?> savePost(AddPostDto postDto, String userNickname, MultipartFile file) throws IOException {
         Post post = new Post();
         String filePath = "";
 
@@ -59,11 +60,10 @@ public class PostService {
 
         post.setId(postDto.id());
         post.setContent(postDto.content());
-        post.setImagePath(filePath);
+        post.setImagePath(filePath.isEmpty() ? "" : "/uploads/" + filePath);
         post.setUser(user);
         post.setVisibility(true);
         post.setCreated_at(new Date().getTime() / 1000);
-        System.out.println(post.toString());
 
         Post newPost = postRepo.save(post);
 
@@ -102,25 +102,22 @@ public class PostService {
         return fileName;
     }
 
-    public String storeFile(String fileName, MultipartFile file) {
+    public String storeFile(String fileName, MultipartFile file) throws IOException {
         Path uploadBasePath = Paths.get("uploads").toAbsolutePath().normalize();
 
         String[] splitted = fileName.split("/");
         Path targetDir = uploadBasePath.resolve(splitted[0]);
-        try {
-            Files.createDirectories(targetDir);
-            Path targetPath = targetDir.resolve(splitted[1]);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            System.out.println("creating parent folder for an uploaded file:\n" + e);
-            return "couldn't create the parent folder";
-        }
+
+        Files.createDirectories(targetDir);
+        Path targetPath = targetDir.resolve(splitted[1]);
+        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         return "successfully";
     }
 
-    private void removeFile(String path) {
-
+    private void removeFile(String pathStr) throws IOException {
+        Path filePath = Paths.get(pathStr);
+        Files.delete(filePath);
     }
 
     public boolean checkPost(long id) {
@@ -131,7 +128,10 @@ public class PostService {
         return postRepo.existsByIdAndUserNickname(id, nickname);
     }
 
-    public void deletePost(long id) {
+    public void deletePost(long id) throws IOException {
+        String filePath = postRepo.findImagePathById(id);
+        if (!filePath.isEmpty())
+            removeFile(filePath);
         postRepo.deleteById(id);
     }
 
@@ -155,7 +155,8 @@ public class PostService {
         if (!post.getVisibility()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This post has been hidden by an administrator.");
         }
-        GetPostDto resp = new GetPostDto(post.getId(), post.getContent(), post.getImagePath(), 0, post.getVisibility(),
+        GetPostDto resp = new GetPostDto(post.getId(), post.getUser().getImagePath(), post.getContent(),
+                post.getImagePath(), 0, post.getVisibility(),
                 0, "", 0, 0,
                 true, "");
 

@@ -1,5 +1,6 @@
 package com.zack.demo.post;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zack.demo.config.JwtService;
 
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class PostController {
     public ResponseEntity<?> addPost(
             @Valid @RequestPart("content") AddPostDto post,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestHeader("authorization") String authHeader) {
+            @RequestHeader("authorization") String authHeader) throws IOException {
         String jwt = authHeader.substring(7);
         String nickname = jwtService.extractUsername(jwt);
         System.out.println("Extracted nickname: " + nickname);
@@ -63,22 +63,21 @@ public class PostController {
         }
 
         System.out.println(savingPost.get("postId"));
-        List<GetPostDto> newPost = postService.getNewPost(nickname);
-        return ResponseEntity.ok(newPost);
+        return ResponseEntity.ok(Map.of("message", "success"));
     }
 
     @PutMapping(value = "/updatePost", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> updatePost(
             @Valid @RequestPart("content") AddPostDto post,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestHeader("authorization") String jwt) throws JsonProcessingException {
+            @RequestHeader("authorization") String jwt) throws IOException {
 
         if (post.id() == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
         if (!postService.findVisibilityById(post.id())) {
-        return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
         String nickname = jwtService.extractUsername(jwt.substring(7));
@@ -93,7 +92,8 @@ public class PostController {
     }
 
     @DeleteMapping("/deletePost/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable long id, @RequestHeader("authorization") String jwt) {
+    public ResponseEntity<?> deletePost(@PathVariable long id, @RequestHeader("authorization") String jwt)
+            throws IOException {
         HashMap<String, String> resp = new HashMap<>();
 
         String UserNickname = jwtService.extractUsername(jwt.substring(7));

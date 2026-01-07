@@ -9,6 +9,5 @@ public record SignupRequestDto(
         @NotBlank String lastName,
         @Email String email,
         @NotBlank String password,
-        @NotBlank String confPassword,
         String bio) {
 }

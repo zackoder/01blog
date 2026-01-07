@@ -5,8 +5,8 @@ public record UserProfileResponseDto(
         String firstName,
         String lastName,
         String bio,
+        String avatar,
         boolean isFollower,
-        boolean isOwner
-    ) {
+        boolean isOwner) {
 
 }

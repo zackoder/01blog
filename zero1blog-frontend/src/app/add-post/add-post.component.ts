@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, Input, input, OnInit } from '@angular/core';
+import { Component, Input, input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OffsetLimitService } from '../services/offset-limit.service'; // Assuming this service exists
@@ -22,7 +22,11 @@ export class AddPostComponent implements OnInit {
     content: '',
   };
 
-  nickname: string = '';
+  userData: any = {
+    id: 0,
+    avatar: '',
+    nickname: '',
+  };
 
   err: string = '';
 
@@ -38,10 +42,14 @@ export class AddPostComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.user.userData$.subscribe({
       next: (data) => {
         console.log('data', data);
-        if (data) this.nickname = data.nickname;
+        if (data) {
+          this.userData = data;
+          this.isLoading = false;
+        }
       },
     });
 
@@ -49,6 +57,10 @@ export class AddPostComponent implements OnInit {
       this.getPost();
     }
   }
+
+  // ngOnDestroy(): void {
+  //   this.user.userData$.unsubscribe();
+  // }
 
   getPost() {
     const headers = checkToken();

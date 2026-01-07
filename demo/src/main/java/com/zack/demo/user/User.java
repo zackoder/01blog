@@ -25,4 +25,6 @@ public class User {
     private String password;
     private String bio;
     private String role = "user";
+    private String imagePath;
+
 }

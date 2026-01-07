@@ -44,14 +44,14 @@
       <p>{{ post.content }}</p>
       @if (post.image_path) {
       <div class="fileContainer">
-        @if (post.image_path.startsWith("image")) {
+        @if (post.image_path.startsWith("/uploads/image")) {
         <img
-          [src]="`http://localhost:8080/uploads/${post.image_path}`"
+          [src]="`http://localhost:8080${post.image_path}`"
           alt="Post Image"
         />
-        } @if (post.image_path.startsWith("videos")) {
+        } @if (post.image_path.startsWith("/uploads/videos")) {
         <video
-          [src]="`http://localhost:8080/uploads/${post.image_path}`"
+          [src]="`http://localhost:8080${post.image_path}`"
           controls
         ></video>
         }

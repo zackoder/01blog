@@ -9,6 +9,7 @@ interface ProfileData {
   firstName: string;
   lastName: string;
   bio: string;
+  avatar: string;
   isFollower: boolean;
   isOwner: boolean;
 }
@@ -27,6 +28,7 @@ export class ProfileDataComponent {
     lastName: '',
     firstName: '',
     bio: '',
+    avatar: '',
     isFollower: false,
     isOwner: false,
   };
@@ -41,7 +43,6 @@ export class ProfileDataComponent {
   }
 
   getProfileData() {
-    
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);

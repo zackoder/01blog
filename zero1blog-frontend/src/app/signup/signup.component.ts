@@ -73,12 +73,13 @@ export class SignupComponent {
     this.isLoading = true;
 
     const formData = new FormData();
-    formData.append('nickname', this.data.nickname);
-    formData.append('firstName', this.data.firstName);
-    formData.append('lastName', this.data.lastName);
-    formData.append('email', this.data.email);
-    formData.append('password', this.data.password);
-    formData.append('bio', this.data.bio);
+
+    const data = JSON.stringify(this.data);
+
+    formData.append(
+      'signupDto',
+      new Blob([data], { type: 'application/json' })
+    );
 
     if (this.selectedFile) {
       formData.append('profileImage', this.selectedFile);
@@ -101,7 +102,7 @@ export class SignupComponent {
               this.errorMsg.errEmail = response.message;
             }
           } else {
-            this.router.navigate(["/login"]);
+            this.router.navigate(['/login']);
           }
           this.isLoading = false;
         },
@@ -139,7 +140,8 @@ export class SignupComponent {
       valid = false;
     }
     if (!this.isPasswordValid()) {
-      this.errorMsg.errPassword = 'Password must meet all the required criteria';
+      this.errorMsg.errPassword =
+        'Password must meet all the required criteria';
       valid = false;
     }
     return valid;
@@ -154,7 +156,9 @@ export class SignupComponent {
     this.passwordValidation.hasLowerCase = /[a-z]/.test(password);
     this.passwordValidation.hasUpperCase = /[A-Z]/.test(password);
     this.passwordValidation.hasNumber = /[0-9]/.test(password);
-    this.passwordValidation.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    this.passwordValidation.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(
+      password
+    );
     this.passwordValidation.hasMinLength = password.length >= 8;
   }
 
@@ -169,6 +173,6 @@ export class SignupComponent {
   }
 
   login() {
-    this.router.navigate(["/login"]);
+    this.router.navigate(['/login']);
   }
 }

@@ -1,3 +1,4 @@
+@if (!isLoading) {
 <div class="container py-5" style="max-width: 800px">
   <form
     (ngSubmit)="onSubmit()"
@@ -6,12 +7,14 @@
   >
     <div class="content_container">
       <h2 class="title">
+        @if (userData.avatar) {
         <img
-          src="http://localhost:8080/uploads/default-avatar.jpg"
+          [src]="`http://localhost:8080${userData.avatar}`"
           style="width: 60px; height: 60px; border-radius: 50%; margin: 0"
         />
+        }
         <span>
-          {{ nickname }}
+          {{ userData.nickname }}
         </span>
       </h2>
 
@@ -54,3 +57,4 @@
     </div>
   </form>
 </div>
+}

@@ -45,22 +45,21 @@ public class UserService {
     }
 
     public GetCredentialsDto getCredentials(String nickname) {
-        User user = userRepository.findByNickname(nickname).get();
-        if (user == null) {
-            return null;
-        }
+        User user = checkUser(nickname);
+
         GetCredentialsDto userCredentials = new GetCredentialsDto(user.getId(), user.getNickname(),
-                "/uploads/default-avatar.jpg", user.getRole());
+                user.getImagePath(), user.getRole());
         return userCredentials;
     }
 
     public List<GetPostDto> getUserPosts(String nickname, String requesterNickname, long offset) {
-        long requesterId = userRepository.findByNickname(requesterNickname).get().getId();
+        User requester = checkUser(requesterNickname);
+
         if (requesterNickname.equals(nickname)) {
-            return postRepo.findUserPostsByOffsetAndLimit(requesterId, requesterId, 10, offset);
+            return postRepo.findUserPostsByOffsetAndLimit(requester.getId(), requester.getId(), 10, offset);
         } else {
-            long ownerId = userRepository.findByNickname(nickname).get().getId();
-            return postRepo.findUserPostsByOffsetAndLimit(requesterId, ownerId, 10, offset);
+            User owner = checkUser(nickname);
+            return postRepo.findUserPostsByOffsetAndLimit(requester.getId(), owner.getId(), 10, offset);
         }
     }
 
@@ -74,6 +73,7 @@ public class UserService {
 
         return new UserProfileResponseDto(user.getNickname(), user.getFirstName(), user.getLastName(),
                 user.getBio(),
+                user.getImagePath(),
                 isFollowing,
                 isOwner);
     }
