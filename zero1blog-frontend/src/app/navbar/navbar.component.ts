@@ -2,19 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
-import { NgClass } from '@angular/common';
 import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-navbar',
-  imports: [NgClass],
+  imports: [],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
   baseUrl = environment.apiUrl;
   show = false;
-  isAdmin = true;
+  isAdmin = false;
   isLoading = false;
   data: any;
   currentPath: string = '';
@@ -47,6 +46,7 @@ export class NavbarComponent {
       next: (res) => {
         this.data = res;
         console.log(this.data);
+        this.isAdmin = this.data.role === 'admin';
         this.isLoading = false;
       },
       error: (err) => {

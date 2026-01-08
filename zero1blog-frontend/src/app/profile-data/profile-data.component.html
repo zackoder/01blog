@@ -1,25 +1,64 @@
-@if (!isLoading) {
+@if (!isLoading && userData) {
+<div class="container-fluid p-0 vh-100 bg-white">
+  <div class="h-100 w-100 p-4">
+    <div class="text-center mt-5">
+      <img
+        [src]="'http://localhost:8080' + userData.avatar"
+        alt="profile picture"
+        class="rounded-circle border border-3 border-light shadow-sm mb-3 object-fit-cover"
+        style="width: 150px; height: 150px"
+      />
 
-<div>
-  <img
-    [src]="`http://localhost:8080${userData.avatar}`"
-    alt="profile pictsur"
-  />
-  <h2>
-    Full Name: {{ userData.firstName }} {{ userData.lastName.toUpperCase() }}
-  </h2>
-  <p>Nickname: {{ userData.nickname }}</p>
-  <p>Bio:</p>
-  @if (userData.bio) {
-  <p>{{ userData.bio }}</p>
-  } @else {
-  <p>nothing</p>
-  } @if (!userData.isOwner) {
-  <button>report User</button>
-  } @if (!userData.isOwner && !userData.isFollower) {
-  <button (click)="follow()">follow</button>
-  } @else if (userData.isFollower) {
-  <button (click)="follow()">unfollow</button>
-  }
+      <h2 class="h4 fw-bold text-dark mb-1">
+        Full Name: {{ userData.firstName }}
+        {{ userData.lastName?.toUpperCase() }}
+      </h2>
+      <p class="text-muted mb-3">Nickname: {{ userData.nickname }}</p>
+    </div>
+
+    <div class="mx-auto" style="max-width: 600px">
+      <div class="mt-2">
+        <p class="fw-bold mb-1 text-secondary small">Bio:</p>
+        @if (userData.bio) {
+        <p
+          class="p-3 bg-light rounded shadow-sm italic text-dark border-start border-primary border-4"
+        >
+          {{ userData.bio }}
+        </p>
+        }
+      </div>
+
+      <div class="d-flex flex-column gap-2 mt-3">
+        @if (!userData.isOwner) { @if (!userData.isFollower) {
+        <button
+          [disabled]="isLoadingFollow"
+          (click)="follow()"
+          class="btn btn-primary w-100 rounded-pill fw-bold"
+        >
+          @if (isLoadingFollow) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          } @else { follow }
+        </button>
+        } @else {
+        <button
+          [disabled]="isLoadingFollow"
+          (click)="follow()"
+          class="btn btn-outline-secondary w-100 rounded-pill fw-bold"
+        >
+          @if (isLoadingFollow) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          } @else { unfollow }
+        </button>
+        }
+
+        <button
+          class="btn btn-link btn-sm text-danger text-decoration-none mt-2"
+        >
+          report User
+        </button>
+        }
+      </div>
+    </div>
+  </div>
 </div>
 }

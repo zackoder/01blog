@@ -8,9 +8,10 @@
       [src]="`http://localhost:8080${data.avatar}`"
       alt="default image"
     />
+    @if (show) {
     <ul
       class="options animate"
-      [ngClass]="show ? 'options-visible' : 'options-hidden'"
+      [class]="show ? 'options-visible' : 'options-hidden'"
       [style.visibility]="show ? 'visible' : 'hidden'"
     >
       <li (click)="openProfile()">Profile</li>
@@ -20,6 +21,7 @@
       }
       <li (click)="logout()">Log Out</li>
     </ul>
+    }
   </div>
 </header>
 }

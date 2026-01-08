@@ -22,6 +22,7 @@ interface ProfileData {
 })
 export class ProfileDataComponent {
   isLoading: boolean = false;
+  isLoadingFollow: boolean = false;
 
   userData: ProfileData = {
     nickname: '',
@@ -79,7 +80,8 @@ export class ProfileDataComponent {
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
     }
-
+    if (this.isLoadingFollow) return;
+    this.isLoadingFollow = true;
     const params = this.router.url.split('/');
     const followedNickname = params[params.length - 1];
 
@@ -90,10 +92,12 @@ export class ProfileDataComponent {
       .subscribe({
         next: (res) => {
           this.userData.isFollower = res.message === 'followed';
+          this.isLoadingFollow = false;
           console.log(res);
         },
         error: (err) => {
           console.log(err);
+          this.isLoadingFollow = false;
         },
       });
   }
