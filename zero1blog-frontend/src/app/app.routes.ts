@@ -4,6 +4,7 @@ import { SignupComponent } from './signup/signup.component';
 import { HomeComponent } from './home/home.component';
 import { AddPostComponent } from './add-post/add-post.component';
 import { ProfileComponent } from './profile/profile.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
@@ -34,5 +35,9 @@ export const routes: Routes = [
   {
     path: 'edit/:index',
     component: AddPostComponent,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
   },
 ];

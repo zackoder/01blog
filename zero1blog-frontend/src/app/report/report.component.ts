@@ -6,6 +6,12 @@ import { environment } from '../../environments/environment.prod';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { checkToken } from '../utils/dateFormater';
 
+interface Report {
+  reportedPostId: number;
+  reported: string;
+  content: String;
+}
+
 @Component({
   selector: 'app-report',
   imports: [FormsModule, CommonModule],
@@ -13,9 +19,15 @@ import { checkToken } from '../utils/dateFormater';
   styleUrl: './report.component.css',
 })
 export class ReportComponent {
+  report: Report = {
+    reportedPostId: 0,
+    reported: '',
+    content: '',
+  };
   reportReason = '';
   error = '';
   @Input() postId!: number;
+  @Input() reported!: string;
   @Output() removeReportComponent = new EventEmitter<boolean>();
   private baseUrl = environment.apiUrl;
   constructor(private http: HttpClient, private router: Router) {}
@@ -25,24 +37,16 @@ export class ReportComponent {
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
     }
-    if (this.reportReason.trim() === '') {
+    if (this.report.content.trim() === '') {
       this.error = "report can't be empty";
       return;
     }
 
     this.error = '';
+    this.report.reportedPostId = this.postId;
 
     this.http
-      .post(
-        `${this.baseUrl}/report`,
-        {
-          target: 'post',
-          targetId: this.postId,
-          content: this.reportReason,
-          createdAt: 0,
-        },
-        { headers }
-      )
+      .post(`${this.baseUrl}/report`, this.report, { headers })
       .subscribe({
         next: (res) => {
           this.error = '';

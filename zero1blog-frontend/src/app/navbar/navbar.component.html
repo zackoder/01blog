@@ -17,7 +17,7 @@
       <li (click)="openProfile()">Profile</li>
       <li (click)="navigateToAddPost()">Add Post</li>
       @if (isAdmin) {
-      <li>Dashboard</li>
+      <li (click)="goToDashboard()">Dashboard</li>
       }
       <li (click)="logout()">Log Out</li>
     </ul>

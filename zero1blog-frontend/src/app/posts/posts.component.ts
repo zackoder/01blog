@@ -20,10 +20,11 @@ import {
 } from '../utils/dateFormater';
 import { ToastService, Type } from '../services/toast.service';
 import { AuthService } from '../services/auth-service.service.spec';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-posts',
-  imports: [ReportComponent, CommentsComponent],
+  imports: [ReportComponent, CommentsComponent, CommonModule],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css',
 })
@@ -44,7 +45,7 @@ export class PostsComponent implements OnInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
+    public router: Router,
     private offsetService: OffsetLimitService,
     public postsService: PostsService,
     private toast: ToastService,
@@ -153,12 +154,6 @@ export class PostsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           const targetedPost = this.postsService.posts()[index];
-          if (res == null) {
-            targetedPost.dislikes = 0;
-            targetedPost.likes = 0;
-            targetedPost.reacted = '';
-            return;
-          }
           targetedPost.dislikes = res.dislikes;
           targetedPost.likes = res.likes;
           targetedPost.reacted = res.reacted;

@@ -7,6 +7,7 @@ import javax.ws.rs.NotFoundException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -53,6 +54,8 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", ex.getReason()));
         } else if (e instanceof NoResourceFoundException) {
             return ResponseEntity.status(404).body(Map.of("error", "Resource not found"));
+        } else if (e instanceof AccessDeniedException) {
+            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
         }
 
         else {

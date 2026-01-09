@@ -129,9 +129,9 @@ public class PostService {
     }
 
     public void deletePost(long id) throws IOException {
-        String filePath = postRepo.findImagePathById(id);
-        if (!filePath.isEmpty())
-            removeFile(filePath);
+        // String filePath = postRepo.findImagePathById(id);
+        // if (!filePath.isEmpty())
+        // removeFile(filePath);
         postRepo.deleteById(id);
     }
 
@@ -165,5 +165,9 @@ public class PostService {
 
     public boolean findVisibilityById(long id) {
         return postRepo.findVisibilityById(id);
+    }
+
+    public Post getPost(long id) {
+        return postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
     }
 }

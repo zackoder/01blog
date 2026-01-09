@@ -16,7 +16,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 
     boolean existsById(long id);
 
-    String findImagePathById(long id);
+    // String findImagePathById(long id);
 
     @Query("SELECT p.visibility FROM Post p WHERE p.id = :post_id")
     boolean findVisibilityById(@Param("post_id") long id);

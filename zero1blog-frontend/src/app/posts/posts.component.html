@@ -1,4 +1,4 @@
-<div class="postsContainer">
+<div class="postsContainer" [class.top]="router.url === '/'">
   @for (post of postsService.posts(); track post.id; let i = $index) {
   <div class="post">
     <h2 class="userNickname">
@@ -11,18 +11,18 @@
     @if (targetedPost == i) {
     <div class="actionMenu">
       <ul class="opptions">
-        @if (post.postOwner || isAdmin) {
-        <li (click)="deleteChecker = true">
-          <i class="fa-regular fa-trash-can"></i>
-          delete
+        @if (!post.postOwner && !isAdmin) {
+        <li (click)="reportForm = true">
+          <i class="fa-regular fa-flag"></i> report
         </li>
         } @if (post.postOwner) {
         <li (click)="editPost(post.id)">
           <i class="fa-regular fa-pen-to-square"></i> edit
         </li>
-        } @else {
-        <li (click)="reportForm = true">
-          <i class="fa-regular fa-flag"></i> report
+        } @if (post.postOwner || isAdmin) {
+        <li (click)="deleteChecker = true">
+          <i class="fa-regular fa-trash-can"></i>
+          delete
         </li>
         } @if (reportForm) {
         <app-report

@@ -97,6 +97,8 @@ public class PostController {
         HashMap<String, String> resp = new HashMap<>();
 
         String UserNickname = jwtService.extractUsername(jwt.substring(7));
+        String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
+        System.out.println("role: " + role);
 
         if (!postService.existsByNickname(UserNickname)) {
             resp.put("error", "user not found");
@@ -107,9 +109,6 @@ public class PostController {
             resp.put("error", "post not found");
             return ResponseEntity.status(403).body(resp);
         }
-
-        String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
-        System.out.println("role: " + role);
 
         if (!role.equals("admin") && !postService.checkOwner(id, UserNickname)) {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));

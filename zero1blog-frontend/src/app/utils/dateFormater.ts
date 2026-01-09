@@ -1,4 +1,5 @@
 import { HttpHandler, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 export function formatDate(ceaiation: number) {
   let now: number = new Date().getTime() / 1000;
@@ -41,4 +42,14 @@ export function checkToken() {
     Authorization: `Bearer ${token}`,
   });
   return headers;
+}
+
+export function checkStatus(err: any, rout: Router) {
+  if (err.status === 403) {
+    rout.navigate(['/']);
+    return;
+  } else if (err.status === 400) {
+    rout.navigate(['/login']);
+    return;
+  }
 }

@@ -74,4 +74,9 @@ export class NavbarComponent {
     this.show = false;
     this.router.navigate(['/addPost']);
   }
+
+  goToDashboard() {
+    this.show = false;
+    this.router.navigate(['/dashboard']);
+  }
 }

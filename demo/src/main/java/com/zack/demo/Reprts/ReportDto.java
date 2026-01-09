@@ -1,8 +1,9 @@
 package com.zack.demo.Reprts;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record ReportDto(
-        String target,
-        long targetId,
-        String content,
-        long createdAt) {
+                @NotBlank String content,
+                String reported,
+                long reportedPostId) {
 }
