@@ -59,6 +59,9 @@ public class ReportService {
     }
 
     public List<ReportResDtoRes> getReports(String type, long offset) {
+        System.out.println();
+        System.out.println("type: " + type);
+        System.out.println();
         return reportRepo.getReports(type, offset);
     }
 }

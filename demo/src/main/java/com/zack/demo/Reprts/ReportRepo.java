@@ -13,7 +13,7 @@ public interface ReportRepo extends JpaRepository<Report, Long> {
     @Query(value = """
             SELECT
                 r.id,
-                r.reported_post_id,
+                CASE WHEN r.type = 'post' THEN r.reported_post_id ELSE 0 END AS postId,
                 r.created_at,
                 u1.nickname AS reporterNickname,
                 u2.nickname AS reportedNickname,

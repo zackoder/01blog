@@ -40,8 +40,8 @@ export class DashboardComponent implements OnInit {
       .get<Report[]>(`${this.baseUrl}/reports/${type}`, { headers })
       .subscribe({
         next: (res) => {
-          // console.log(res);
           this.reports.update((current) => [...current, ...res]);
+          console.log(this.reports());
         },
         error: (err) => {
           checkStatus(err, this.rout);
