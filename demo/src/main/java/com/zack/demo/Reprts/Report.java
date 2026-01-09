@@ -36,4 +36,6 @@ public class Report {
     @Column(name = "created_at")
     private long createdAt;
     private String content;
+    @Column(name = "type")
+    private String type;
 }

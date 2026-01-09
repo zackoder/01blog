@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,11 +31,6 @@ public class ReportsController {
             @RequestHeader("authorization") String auth) {
 
         String nickname = jwtService.extractUsername(auth.substring(7));
-        System.out.println();
-        System.out.println();
-        System.out.println(dto.toString());
-        System.out.println();
-        System.out.println();
 
         if ((dto.reported() == null || dto.reported().isEmpty()) && dto.reportedPostId() <= 0) {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
@@ -44,13 +40,13 @@ public class ReportsController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/reports")
-    public ResponseEntity<?> getReports(@RequestHeader("authorization") String jwt) {
+    @GetMapping("/reports/{type}")
+    public ResponseEntity<?> getReports(@PathVariable("type") String type, @RequestHeader("authorization") String jwt) {
         String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
         if (!role.equals("admin")) {
             return ResponseEntity.status(403).body(Map.of("error", "Access Denied"));
         }
-        List<Report> reports = reportService.getReports(0);
+        List<ReportResDtoRes> reports = reportService.getReports(type, 0);
         System.out.println(reports);
         return ResponseEntity.ok().body(reports);
     }

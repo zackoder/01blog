@@ -30,12 +30,14 @@ public class ReportService {
 
         User reported = null;
         Post reportedPost = null;
+        String type = "";
 
         if (dto.reported() == null || dto.reported().isEmpty()) {
             reportedPost = postService.getPost(dto.reportedPostId());
             if (reportedPost.getUser().getId().equals(reporter.getId())) {
                 throw new AccessDeniedException("Forbidden");
             }
+            type = "post";
         } else {
             System.out.println();
             System.out.println("check reported: " + dto.reported());
@@ -43,6 +45,7 @@ public class ReportService {
             if (reported.getId().equals(reporter.getId())) {
                 throw new AccessDeniedException("Forbidden");
             }
+            type = "user";
         }
 
         Report report = new Report();
@@ -51,10 +54,11 @@ public class ReportService {
         report.setContent(dto.content());
         report.setCreatedAt(new Date().getTime() / 1000);
         report.setReportedPost(reportedPost);
+        report.setType(type);
         reportRepo.save(report);
     }
 
-    public List<Report> getReports(long offset) {
-        return reportRepo.findAll();
+    public List<ReportResDtoRes> getReports(String type, long offset) {
+        return reportRepo.getReports(type, offset);
     }
 }
