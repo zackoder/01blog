@@ -3,18 +3,21 @@ import { environment } from '../../environments/environment.prod';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { checkStatus, checkToken } from '../utils/dateFormater';
+import { RepotedPostsComponent } from '../repoted-posts/repoted-posts.component';
+import { RepotedUsersComponent } from '../repoted-users/repoted-users.component';
 
-interface Report {
+export interface Report {
   id: number;
-  post_id: number;
-  user_id: number;
-  created_at: number;
+  postId: number;
+  reporterNickname: string; // reportedNickname
+  reportedNickname: string; // reportedNickname
+  reportedAt: number;
   content: string;
 }
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [RepotedPostsComponent, RepotedUsersComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })

@@ -1,4 +1,4 @@
-import { Injectable, signal, Signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export interface Post {
   content: string;

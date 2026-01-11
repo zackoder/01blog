@@ -1,0 +1,17 @@
+@for (report of reports(); track report.id) {
+<div>
+  <p (click)="getPost(report.postId)">
+    {{ report.reporterNickname }} reported a post click to see the reported post
+  </p>
+  <p>{{ report.content }}</p>
+</div>
+}
+
+<!--
+        "id": 13,
+        "postId": 5,
+        "reportedAt": 1767925846,
+        "reporterNickname": "Zack_1767921945217",
+        "reportedNickname": null,
+        "content": "idk"
+-->

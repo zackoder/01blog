@@ -1,4 +1,16 @@
 <div class="p">
-  <button (click)="reportsList('post')">Reported Posts</button>
-  <button (click)="reportsList('user')">Reported Users</button>
+  <button [class.selected]="type === 'post'" (click)="reportsList('post')">
+    Reported Posts
+  </button>
+  <button [class.selected]="type === 'user'" (click)="reportsList('user')">
+    Reported Users
+  </button>
+
+  <div>
+    @if (type === 'post') {
+    <app-repoted-posts [(reports)]="reports"></app-repoted-posts>
+    } @else {
+    <app-repoted-users (reports)="reports()"></app-repoted-users>
+    }
+  </div>
 </div>

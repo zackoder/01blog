@@ -8,7 +8,6 @@ import { environment } from '../../environments/environment.prod';
 import { PostsService } from '../services/posts.service';
 import { AuthService } from '../services/auth-service.service.spec';
 import { checkToken } from '../utils/dateFormater';
-import { blob } from 'node:stream/consumers';
 import { ToastService, Type } from '../services/toast.service';
 
 @Component({
@@ -57,10 +56,6 @@ export class AddPostComponent implements OnInit {
       this.getPost();
     }
   }
-
-  // ngOnDestroy(): void {
-  //   this.user.userData$.unsubscribe();
-  // }
 
   getPost() {
     const headers = checkToken();
