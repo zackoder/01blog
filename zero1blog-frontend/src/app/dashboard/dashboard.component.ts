@@ -9,8 +9,8 @@ import { RepotedUsersComponent } from '../repoted-users/repoted-users.component'
 export interface Report {
   id: number;
   postId: number;
-  reporterNickname: string; // reportedNickname
-  reportedNickname: string; // reportedNickname
+  reporterNickname: string;
+  reportedNickname: string;
   reportedAt: number;
   content: string;
 }

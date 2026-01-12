@@ -5,7 +5,70 @@
   </p>
   <p>{{ report.content }}</p>
 </div>
+} @if (post) {
+<div class="post">
+  <h2 class="userNickname">
+    <span (click)="goToProfile(post.nickname, post.user_id)">
+      {{ post.nickname }}
+    </span>
+    <i (click)="toggle(i)" class="fa-solid fa-bars"></i>
+  </h2>
+
+  <div class="actionMenu">
+    <ul class="opptions">
+      <li (click)="deleteChecker = true">
+        <i class="fa-regular fa-trash-can"></i>
+        delete
+      </li>
+      @if (deleteChecker) {
+      <div class="layout">
+        <div>are you sure you want to delete this post?</div>
+        <button (click)="deleteChecker = false">cancel</button>
+        <button (click)="delete(post.id)">delete</button>
+      </div>
+      }
+    </ul>
+  </div>
+
+  <p class="date">{{ formatDate(post.created_at) }}</p>
+  <div>
+    <p>{{ post.content }}</p>
+    @if (post.image_path) {
+    <div class="fileContainer">
+      @if (post.image_path.startsWith("/uploads/image")) {
+      <img [src]="`http://localhost:8080${post.image_path}`" alt="Post Image" />
+      } @if (post.image_path.startsWith("/uploads/videos")) {
+      <video [src]="`http://localhost:8080${post.image_path}`" controls></video>
+      }
+    </div>
+    }
+  </div>
+  <div>
+    <button (click)="reaction(post.id, 'like', i)">Like</button>
+    <span>{{ post.likes }}</span>
+    <button (click)="reaction(post.id, 'dislike', i)">Dislike</button>
+    <span> {{ post.dislikes }} </span>
+    <button (click)="showTargetedPostId = post.id">Comments</button>
+    <app-comments [postId]="post.id"></app-comments>
+    <span>00</span>
+  </div>
+</div>
 }
+
+<!-- 
+avatar : "/uploads/images/1767921906767_Screenshot from 2025-11-19 20-59-51.png"
+content: "qsdfqsdfqsdfqsdf qsdfqsdfqsdf"
+created_at : 0
+dislikes : 0
+id : 6
+image_path : ""
+likes : 0
+nickname : ""
+postOwner : true
+reacted : ""
+user_id : 0
+visibility : true
+-->
 
 <!--
         "id": 13,
