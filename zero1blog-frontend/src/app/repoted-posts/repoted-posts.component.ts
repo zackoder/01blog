@@ -22,22 +22,37 @@ export class RepotedPostsComponent {
   post: Post | null = null;
   isLoading = false;
   deleteChecker = false;
+  showComments = false;
+  targetedPostId = -1;
+  reportIndex = -1;
+  dropdown = false;
+
   public reports = model<Report[]>();
   constructor(private http: HttpClient, private rout: Router) {}
-  getPost(i: number) {
+  getPost(index: number, i: number) {
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.rout.navigate(['/login']);
       return;
     }
+
+    this.post = null;
+    if (index === this.reportIndex) {
+      this.reportIndex = -1;
+      console.log('this.reportIndex', this.reportIndex);
+      return;
+    }
+
     if (this.isLoading) return;
     this.isLoading = true;
+    this.reportIndex = index;
+    
     this.http
       .get<Post>(`${this.baseUrl}/getPost/${i}?edit=false`, { headers })
       .subscribe({
         next: (res) => {
           this.post = res;
-          console.log(this.post);
+          this.targetedPostId = this.post.id;
           this.isLoading = false;
         },
         error: (err) => {
@@ -105,5 +120,17 @@ export class RepotedPostsComponent {
   }
   formatDate(ceaiation: number) {
     return formatDateUtil(ceaiation);
+  }
+
+  toggle(id: number) {
+    if (id == this.targetedPostId) this.targetedPostId = -1;
+    else this.targetedPostId = id;
+  }
+
+  toggleComments() {
+    this.showComments = !this.showComments;
+  }
+  toggleDropdown() {
+    this.dropdown = !this.dropdown;
   }
 }

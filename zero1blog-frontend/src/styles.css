@@ -1,4 +1,3 @@
-
 /* --- 1. GLOBAL RESET & BASE STYLES --- */
 html,
 body,
@@ -10,6 +9,15 @@ body,
   padding: 0;
 }
 
+body,
+p,
+span,
+h1,
+h2,
+h3,
+div {
+  cursor: default;
+}
 /* Design tokens */
 :root {
   /* Spacing & sizing */
@@ -545,5 +553,11 @@ button.secondary:hover {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

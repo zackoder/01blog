@@ -1,80 +1,148 @@
-@for (report of reports(); track report.id) {
-<div>
-  <p (click)="getPost(report.postId)">
-    {{ report.reporterNickname }} reported a post click to see the reported post
-  </p>
-  <p>{{ report.content }}</p>
-</div>
-} @if (post) {
-<div class="post">
-  <h2 class="userNickname">
-    <span (click)="goToProfile(post.nickname, post.user_id)">
-      {{ post.nickname }}
-    </span>
-    <i (click)="toggle(i)" class="fa-solid fa-bars"></i>
-  </h2>
+<div class="container mt-4 my-4">
+  @for (report of reports(); track report.id) {
 
-  <div class="actionMenu">
-    <ul class="opptions">
-      <li (click)="deleteChecker = true">
-        <i class="fa-regular fa-trash-can"></i>
-        delete
-      </li>
-      @if (deleteChecker) {
-      <div class="layout">
-        <div>are you sure you want to delete this post?</div>
-        <button (click)="deleteChecker = false">cancel</button>
-        <button (click)="delete(post.id)">delete</button>
-      </div>
-      }
-    </ul>
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+      <p class="mb-1 text-muted small">
+        <strong class="text-dark">
+          {{ report.reporterNickname }}
+        </strong>
+        reported a post
+        <span
+          (click)="getPost($index, report.postId)"
+          class="text-primary ms-1 cursor-pointer"
+        >
+          @if (reportIndex === $index) { Hide post } @else { View post }
+        </span>
+      </p>
+
+      <p class="mb-0 text-secondary small">
+        {{ report.content }}
+      </p>
+    </div>
   </div>
 
-  <p class="date">{{ formatDate(post.created_at) }}</p>
-  <div>
-    <p>{{ post.content }}</p>
-    @if (post.image_path) {
-    <div class="fileContainer">
-      @if (post.image_path.startsWith("/uploads/image")) {
-      <img [src]="`http://localhost:8080${post.image_path}`" alt="Post Image" />
-      } @if (post.image_path.startsWith("/uploads/videos")) {
-      <video [src]="`http://localhost:8080${post.image_path}`" controls></video>
-      }
+  @if (reportIndex === $index && isLoading) {
+
+  <div class="card border-0 shadow-sm mb-4 placeholder-slide">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  } @if (post && reportIndex === $index) {
+  <div class="card border-0 shadow-sm mb-4 slide-fade-in">
+    <div
+      class="card-body border-bottom d-flex justify-content-between align-items-start"
+    >
+      <div>
+        <h6
+          class="mb-0 fw-semibold cursor-pointer"
+          (click)="goToProfile(post.nickname, post.user_id)"
+        >
+          {{ post.nickname }}
+        </h6>
+        <small class="text-muted">
+          {{ formatDate(post.created_at) }}
+        </small>
+      </div>
+
+      <div class="dropdown">
+        <i
+          (click)="toggleDropdown()"
+          class="fa-solid fa-bars text-muted cursor-pointer"
+        ></i>
+        @if (dropdown) {
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li>
+            <button
+              class="dropdown-item text-danger d-flex align-items-center gap-2"
+              (click)="deleteChecker = true"
+            >
+              <i class="fa-regular fa-trash-can"></i>
+              Delete post
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item text-danger d-flex align-items-center gap-2"
+              (click)="deleteChecker = true"
+            >
+              <i class="fa-solid fa-eye-slash"></i>
+              Hide post
+            </button>
+          </li>
+        </ul>
+        }
+      </div>
+    </div>
+
+    @if (deleteChecker) {
+    <div class="alert alert-light border-top text-center mb-0">
+      <p class="mb-2 small">Are you sure you want to delete this post?</p>
+      <button
+        class="btn btn-sm btn-outline-secondary me-2"
+        (click)="deleteChecker = false"
+      >
+        Cancel
+      </button>
+      <button class="btn btn-sm btn-danger" (click)="delete(post.id)">
+        Delete
+      </button>
     </div>
     }
+
+    <div class="card-body">
+      <p class="mb-3">{{ post.content }}</p>
+
+      @if (post.image_path) {
+      <div class="rounded overflow-hidden mb-3">
+        @if (post.image_path.startsWith("/uploads/image")) {
+        <img
+          class="img-fluid w-100"
+          [src]="`${baseUrl}${post.image_path}`"
+          alt="Post Image"
+        />
+        } @if (post.image_path.startsWith("/uploads/videos")) {
+        <video
+          class="w-100 rounded"
+          [src]="`http://localhost:8080${post.image_path}`"
+          controls
+        ></video>
+        }
+      </div>
+      }
+
+      <!-- Actions -->
+      <div class="d-flex align-items-center gap-3 small text-muted">
+        <button
+          class="btn btn-sm btn-light"
+          (click)="reaction(post.id, 'like')"
+        >
+          👍 {{ post.likes }}
+        </button>
+
+        <button
+          class="btn btn-sm btn-light"
+          (click)="reaction(post.id, 'dislike')"
+        >
+          👎 {{ post.dislikes }}
+        </button>
+
+        <button
+          class="btn btn-sm btn-outline-secondary ms-auto"
+          (click)="toggleComments()"
+        >
+          Comments
+        </button>
+      </div>
+
+      @if (showComments) {
+      <div class="mt-3">
+        <app-comments [postId]="post.id"></app-comments>
+      </div>
+      }
+    </div>
   </div>
-  <div>
-    <button (click)="reaction(post.id, 'like')">Like</button>
-    <span>{{ post.likes }}</span>
-    <button (click)="reaction(post.id, 'dislike')">Dislike</button>
-    <span> {{ post.dislikes }} </span>
-    <button (click)="showTargetedPostId = post.id">Comments</button>
-    <app-comments [postId]="post.id"></app-comments>
-    <span>00</span>
-  </div>
+  } }
 </div>
-}
-
-<!-- 
-avatar : "/uploads/images/1767921906767_Screenshot from 2025-11-19 20-59-51.png"
-content: "qsdfqsdfqsdfqsdf qsdfqsdfqsdf"
-created_at : 0
-dislikes : 0
-id : 6
-image_path : ""
-likes : 0
-nickname : ""
-postOwner : true
-reacted : ""
-user_id : 0
-visibility : true
--->
-
-<!--
-        "id": 13,
-        "postId": 5,
-        "reportedAt": 1767925846,
-        "reporterNickname": "Zack_1767921945217",
-        "reportedNickname": null,
-        "content": "idk"
--->

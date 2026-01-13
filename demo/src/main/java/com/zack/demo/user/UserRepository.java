@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.transaction.Transactional;
-import lombok.var;
 
 import java.util.Optional;
 
