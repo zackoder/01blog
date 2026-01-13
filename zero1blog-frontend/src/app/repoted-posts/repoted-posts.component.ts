@@ -3,7 +3,10 @@ import { Report } from '../dashboard/dashboard.component';
 import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { checkToken } from '../utils/dateFormater';
+import {
+  checkToken,
+  formatDate as formatDateUtil,
+} from '../utils/dateFormater';
 import { Post } from '../services/posts.service';
 import { CommentsComponent } from '../comments/comments.component';
 
@@ -74,7 +77,7 @@ export class RepotedPostsComponent {
     this.rout.navigate([profile]);
   }
 
-  reaction(postId: number, reaction: string, index: number) {
+  reaction(postId: number, reaction: string) {
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.rout.navigate(['/login']);
@@ -99,5 +102,8 @@ export class RepotedPostsComponent {
         },
         error: (e) => console.error(e),
       });
+  }
+  formatDate(ceaiation: number) {
+    return formatDateUtil(ceaiation);
   }
 }

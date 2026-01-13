@@ -44,9 +44,9 @@
     }
   </div>
   <div>
-    <button (click)="reaction(post.id, 'like', i)">Like</button>
+    <button (click)="reaction(post.id, 'like')">Like</button>
     <span>{{ post.likes }}</span>
-    <button (click)="reaction(post.id, 'dislike', i)">Dislike</button>
+    <button (click)="reaction(post.id, 'dislike')">Dislike</button>
     <span> {{ post.dislikes }} </span>
     <button (click)="showTargetedPostId = post.id">Comments</button>
     <app-comments [postId]="post.id"></app-comments>

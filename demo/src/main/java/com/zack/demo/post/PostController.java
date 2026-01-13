@@ -37,13 +37,13 @@ public class PostController {
     public ResponseEntity<?> getPost(@PathVariable long id, @RequestParam("edit") boolean edit,
             @RequestHeader("authorization") String authHeader) {
 
+        String nickname = jwtService.extractUsername(authHeader.substring(7));
         if (edit) {
-            String nickname = jwtService.extractUsername(authHeader.substring(7));
             if (!postService.checkOwner(id, nickname)) {
                 return ResponseEntity.badRequest().body("{\"error\":\"Bad Request\"}");
             }
         }
-        GetPostDto post = postService.getPostById(id);
+        GetPostDto post = postService.getPostById(nickname, id);
         return ResponseEntity.ok(post);
     }
 

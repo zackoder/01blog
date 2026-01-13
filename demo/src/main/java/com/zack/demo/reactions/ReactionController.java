@@ -40,7 +40,7 @@ public class ReactionController {
         }
 
         reactionService.seveReaction(nickname);
-        ReactionDtoResp res = reactionService.countReaction(nickname);
+        ReactionDtoResp res = reactionService.countReaction(nickname, dtoReq.targetId());
         System.out.println(res);
         return ResponseEntity.ok().body(res);
     }

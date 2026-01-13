@@ -22,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zack.demo.reactions.ReactionDtoResp;
+import com.zack.demo.reactions.ReactionService;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserService;
 
@@ -36,6 +38,9 @@ public class PostService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ReactionService reactionService;
 
     public HashMap<String, ?> savePost(AddPostDto postDto, String userNickname, MultipartFile file) throws IOException {
         Post post = new Post();
@@ -149,16 +154,26 @@ public class PostService {
         return post;
     }
 
-    public GetPostDto getPostById(long id) {
+    public GetPostDto getPostById(String nickname, long id) {
         Post post = postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
 
         if (!post.getVisibility()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This post has been hidden by an administrator.");
         }
+
+        ReactionDtoResp reaction = reactionService.countReaction(nickname, post.getId());
+
         GetPostDto resp = new GetPostDto(post.getId(), post.getUser().getImagePath(), post.getContent(),
-                post.getImagePath(), 0, post.getVisibility(),
-                0, "", 0, 0,
-                true, "");
+                post.getImagePath(), post.getUser().getId(), post.getVisibility(),
+                post.getCreated_at(), post.getUser().getNickname(), reaction.getLikes(), reaction.getDislikes(),
+                post.getUser().getNickname().equals(nickname), reaction.getReacted());
+        /*
+         * String nickname,
+         * long likes,
+         * long dislikes,
+         * boolean postOwner,
+         * String reacted
+         */
 
         return resp;
     }
