@@ -52,6 +52,7 @@ export class NavbarComponent {
       error: (err) => {
         console.log(err);
         this.isLoading = false;
+        this.router.navigate(['/login']);
       },
     });
   }

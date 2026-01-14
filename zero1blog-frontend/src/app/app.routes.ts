@@ -30,14 +30,17 @@ export const routes: Routes = [
   {
     path: 'addPost',
     component: AddPostComponent,
+    title: 'Create Post',
   },
 
   {
     path: 'edit/:index',
     component: AddPostComponent,
+    title: 'Edit Post',
   },
   {
     path: 'dashboard',
     component: DashboardComponent,
+    title: 'Dashboard',
   },
 ];
