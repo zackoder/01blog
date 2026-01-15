@@ -82,3 +82,17 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             @Param("postOwner") long postOwner, @Param("limit") long limit, @Param("offset") long offset);
 
 }
+/*
+ * long id,
+ * String avatar,
+ * String content,
+ * String image_path,
+ * long user_id,
+ * boolean visibility,
+ * long created_at,
+ * String nickname,
+ * long likes,
+ * long dislikes,
+ * boolean postOwner,
+ * String reacted
+ */

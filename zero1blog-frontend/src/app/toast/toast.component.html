@@ -1,5 +1,42 @@
-@for (message of toast.toasts(); track message.id) {
-<div class="toast">
-  <p>{{ message.message }}</p>
+<div
+  class="toast-container position-fixed bottom-0 end-0 p-4"
+  style="z-index: 9999"
+>
+  @for (message of toast.toasts(); track message.id) {
+  <div
+    class="toast show align-items-center text-white border-0 mb-3 shadow-lg rounded-3 overflow-hidden animate-toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    style="background-color: #1b263b"
+  >
+    <div class="d-flex">
+      <div
+        [class]="message.type === 'error' ? 'bg-danger' : 'bg-info'"
+        style="width: 5px"
+      ></div>
+
+      <div class="toast-body d-flex align-items-center py-3 px-3">
+        <div class="me-3 fs-5">
+          @if (message.type === 'error') {
+          <i class="fa-solid fa-circle-exclamation text-danger"></i>
+          } @else {
+          <i class="fa-solid fa-circle-check text-info"></i>
+          }
+        </div>
+
+        <div class="pe-4">
+          <p class="mb-0 fw-medium small">{{ message.message }}</p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close btn-close-white ms-auto me-2 opacity-50 small"
+          (click)="toast.remove(message.id)"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
+  </div>
+  } @empty { }
 </div>
-} @empty { }
