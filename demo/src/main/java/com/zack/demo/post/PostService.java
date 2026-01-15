@@ -154,10 +154,10 @@ public class PostService {
         return post;
     }
 
-    public GetPostDto getPostById(String nickname, long id) {
+    public GetPostDto getPostById(String role, String nickname, long id) {
         Post post = postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
 
-        if (!post.getVisibility()) {
+        if (!post.getVisibility() && !role.equals("admin")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This post has been hidden by an administrator.");
         }
 
@@ -167,13 +167,6 @@ public class PostService {
                 post.getImagePath(), post.getUser().getId(), post.getVisibility(),
                 post.getCreated_at(), post.getUser().getNickname(), reaction.getLikes(), reaction.getDislikes(),
                 post.getUser().getNickname().equals(nickname), reaction.getReacted());
-        /*
-         * String nickname,
-         * long likes,
-         * long dislikes,
-         * boolean postOwner,
-         * String reacted
-         */
 
         return resp;
     }
@@ -184,5 +177,11 @@ public class PostService {
 
     public Post getPost(long id) {
         return postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
+    }
+
+    public void hidePost(long id) {
+        Post post = getPost(id);
+        post.setVisibility(!post.getVisibility());
+        postRepo.save(post);
     }
 }

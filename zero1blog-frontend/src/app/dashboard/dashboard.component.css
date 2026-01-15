@@ -1,7 +1,36 @@
-.p {
-  padding-top: 120px;
+.bg-dark-card {
+  background-color: #2a2a2a !important;
 }
 
-.selected {
-  background-color: gray;
+.nav-pills .nav-link {
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.nav-pills .nav-link:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-pills .nav-link.active {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.slide-fade-in {
+  animation: slideFade 0.4s ease-out;
+}
+
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

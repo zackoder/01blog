@@ -32,6 +32,8 @@ export class AddPostComponent implements OnInit {
   selectedFile: File | null = null;
   private baseUrl = environment.apiUrl;
   isLoading: boolean = false;
+  imagePreview: string | null = null;
+  fileType: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -81,16 +83,6 @@ export class AddPostComponent implements OnInit {
           console.log('error', err.status);
         },
       });
-  }
-
-  OnSelectFile(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length) {
-      this.selectedFile = input.files[0];
-      console.log('File selected:', this.selectedFile.name);
-    } else {
-      this.selectedFile = null;
-    }
   }
 
   onSubmit(): void {
@@ -155,5 +147,40 @@ export class AddPostComponent implements OnInit {
           this.isLoading = false;
         },
       });
+  }
+
+  OnSelectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length) {
+      const file = input.files[0];
+      this.selectedFile = file;
+      this.fileType = file.type;
+      this.data.image_path = file;
+
+      console.log('File selected:', file.name);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFile = null;
+      this.imagePreview = null;
+      this.fileType = null;
+    }
+  }
+
+  removeMedia(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.fileType = null;
+    this.data.image_path = null;
+
+    const fileInput = document.getElementById('image') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 }

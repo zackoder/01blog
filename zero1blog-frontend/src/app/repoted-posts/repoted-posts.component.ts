@@ -46,7 +46,7 @@ export class RepotedPostsComponent {
     if (this.isLoading) return;
     this.isLoading = true;
     this.reportIndex = index;
-    
+
     this.http
       .get<Post>(`${this.baseUrl}/getPost/${i}?edit=false`, { headers })
       .subscribe({
@@ -132,5 +132,23 @@ export class RepotedPostsComponent {
   }
   toggleDropdown() {
     this.dropdown = !this.dropdown;
+  }
+  dismissReport(report_id: number) {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.rout.navigate(['/login']);
+      return;
+    }
+    console.log('report id', report_id);
+    this.http
+      .post(`${this.baseUrl}/hide/${report_id}`, null, { headers })
+      .subscribe({
+        next: (res) => {
+          console.log('------------');
+        },
+        error: (err) => {
+          console.log('error', err);
+        },
+      });
   }
 }

@@ -83,7 +83,7 @@ public class UserService {
             userRepository.unfollowUser(follower.getId(), followed.getId());
             return "unfollowed";
         } else {
-            userRepository.followUser(follower.getId(), followed.getId(), new java.util.Date().getTime() / 1000);
+            userRepository.followUser(follower.getId(), followed.getId());
             return "followed";
         }
     }

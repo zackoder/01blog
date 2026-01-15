@@ -58,7 +58,6 @@ public class ReactionService {
                 reacter.getId());
         Reactions reaction = new Reactions();
         if (reactionOptional.isEmpty()) {
-            reaction.setCreatedAt(new Date().getTime() / 1000);
             reaction.setPostId(this.dto.targetId());
             reaction.setUserId(reacter.getId());
             reaction.setReaction_type(dto.reactionType());

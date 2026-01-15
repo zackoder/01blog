@@ -39,7 +39,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             FROM posts p
             JOIN users u ON p.user_id = u.id
             LEFT JOIN reactions r ON p.id = r.post_id
-
+            WHERE
+                p.visibility = true
             GROUP BY
                 p.id, u.image_path, p.content, p.image_path, p.user_id, p.visibility, p.created_at, u.nickname
 

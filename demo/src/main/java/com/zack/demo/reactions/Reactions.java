@@ -30,5 +30,4 @@ public class Reactions {
     private long postId;
     private long userId;
     private String reaction_type;
-    private long createdAt;
 }

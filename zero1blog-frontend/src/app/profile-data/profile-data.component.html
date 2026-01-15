@@ -1,62 +1,91 @@
 @if (!isLoading && userData) {
-<div class="container-fluid p-0 vh-100 bg-white">
-  <div class="h-100 w-100 p-4">
-    <div class="text-center mt-5">
-      <img
-        [src]="'http://localhost:8080' + userData.avatar"
-        alt="profile picture"
-        class="rounded-circle border border-3 border-light shadow-sm mb-3 object-fit-cover"
-        style="width: 150px; height: 150px"
-      />
+<div class="min-vh-100 py-5" style="background-color: #0d1b2a">
+  <div class="container py-5">
+    <div
+      class="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto animate slide-up"
+      style="
+        background-color: #1b263b;
+        border: 1px solid rgba(65, 90, 119, 0.4) !important;
+        max-width: 700px;
+      "
+    >
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center">
+          <div class="position-relative d-inline-block mb-4">
+            <img
+              [src]="'http://localhost:8080' + userData.avatar"
+              alt="profile picture"
+              class="rounded-circle border border-3 border-info p-1 shadow-lg object-fit-cover"
+              style="width: 160px; height: 160px"
+            />
+            <span
+              class="position-absolute bottom-0 end-0 bg-info p-2 rounded-circle border border-4 border-dark"
+              style="width: 20px; height: 20px"
+              title="Online"
+            ></span>
+          </div>
 
-      <h2 class="h4 fw-bold text-dark mb-1">
-        Full Name: {{ userData.firstName }}
-        {{ userData.lastName.toUpperCase() }}
-      </h2>
-      <p class="text-muted mb-3">Nickname: {{ userData.nickname }}</p>
-    </div>
+          <h2 class="h3 fw-bold text-white mb-1">
+            {{ userData.firstName }} {{ userData.lastName.toUpperCase() }}
+          </h2>
+          <p class="text-info opacity-75 fw-medium mb-4">
+            &#64;{{ userData.nickname }}
+          </p>
+        </div>
 
-    <div class="mx-auto" style="max-width: 600px">
-      <div class="mt-2">
-        <p class="fw-bold mb-1 text-secondary small">Bio:</p>
-        @if (userData.bio) {
-        <p
-          class="p-3 bg-light rounded shadow-sm italic text-dark border-start border-primary border-4"
-        >
-          {{ userData.bio }}
-        </p>
-        }
-      </div>
+        <div class="mt-2 mb-5">
+          <p
+            class="text-secondary small fw-bold text-uppercase mb-2 ls-1"
+            style="letter-spacing: 1px"
+          >
+            Biography
+          </p>
+          @if (userData.bio) {
+          <div
+            class="p-4 rounded-3 border-start border-info border-4"
+            style="background-color: rgba(13, 27, 42, 0.4)"
+          >
+            <p class="text-white-50 fst-italic mb-0 fs-5">
+              {{ userData.bio }}
+            </p>
+          </div>
+          } @else {
+          <p class="text-muted fst-italic">This user hasn't added a bio yet.</p>
+          }
+        </div>
 
-      <div class="d-flex flex-column gap-2 mt-3">
-        @if (!userData.isOwner) { @if (!userData.isFollower) {
-        <button
-          [disabled]="isLoadingFollow"
-          (click)="follow()"
-          class="btn btn-primary w-100 rounded-pill fw-bold"
-        >
-          @if (isLoadingFollow) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          } @else { follow }
-        </button>
-        } @else {
-        <button
-          [disabled]="isLoadingFollow"
-          (click)="follow()"
-          class="btn btn-outline-secondary w-100 rounded-pill fw-bold"
-        >
-          @if (isLoadingFollow) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          } @else { unfollow }
-        </button>
-        }
+        <div class="d-flex flex-column gap-3">
+          @if (!userData.isOwner) { @if (!userData.isFollower) {
+          <button
+            [disabled]="isLoadingFollow"
+            (click)="follow()"
+            class="btn btn-info w-100 rounded-pill fw-bold py-3 shadow-sm"
+          >
+            @if (isLoadingFollow) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Processing... } @else {
+            <i class="fa-solid fa-user-plus me-2"></i> FOLLOW USER }
+          </button>
+          } @else {
+          <button
+            [disabled]="isLoadingFollow"
+            (click)="follow()"
+            class="btn btn-outline-info w-100 rounded-pill fw-bold py-3"
+          >
+            @if (isLoadingFollow) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Processing... } @else {
+            <i class="fa-solid fa-user-check me-2"></i> UNFOLLOW }
+          </button>
+          }
 
-        <button
-          class="btn btn-link btn-sm text-danger text-decoration-none mt-2"
-        >
-          report User
-        </button>
-        }
+          <button
+            class="btn btn-link btn-sm text-danger text-decoration-none mt-2 fw-bold opacity-75 hover-opacity-100"
+          >
+            <i class="fa-solid fa-flag me-2"></i> Report Account
+          </button>
+          }
+        </div>
       </div>
     </div>
   </div>

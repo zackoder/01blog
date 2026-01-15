@@ -12,6 +12,7 @@ export interface Post {
   reacted: string;
   user_id: number;
   visibility: boolean;
+  avatar: string;
 }
 
 @Injectable({

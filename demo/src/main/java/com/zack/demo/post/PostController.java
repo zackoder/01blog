@@ -38,12 +38,13 @@ public class PostController {
             @RequestHeader("authorization") String authHeader) {
 
         String nickname = jwtService.extractUsername(authHeader.substring(7));
+        String role = jwtService.extractClaim(authHeader.substring(7), claims -> claims.get("role", String.class));
         if (edit) {
             if (!postService.checkOwner(id, nickname)) {
-                return ResponseEntity.badRequest().body("{\"error\":\"Bad Request\"}");
+                return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
             }
         }
-        GetPostDto post = postService.getPostById(nickname, id);
+        GetPostDto post = postService.getPostById(role, nickname, id);
         return ResponseEntity.ok(post);
     }
 
@@ -119,4 +120,14 @@ public class PostController {
         return ResponseEntity.ok().body(resp);
     }
 
+    @PostMapping("/hide/{id}")
+    public ResponseEntity<?> hidePost(@PathVariable long id, @RequestHeader("authorization") String jwt) {
+        String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
+        if (!role.equals("admin")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "you don't have permission to do that"));
+        }
+        System.out.println("post id: " + id);
+        postService.hidePost(id);
+        return ResponseEntity.ok().body(Map.of("message", "post was hidden"));
+    }
 }
