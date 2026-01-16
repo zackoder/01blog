@@ -71,9 +71,7 @@ export class SignupComponent {
     }
 
     this.isLoading = true;
-
     const formData = new FormData();
-
     const data = JSON.stringify(this.data);
 
     formData.append(
@@ -127,21 +125,23 @@ export class SignupComponent {
 
   validData(): boolean {
     let valid = true;
+    if (!this.data.nickname.trim()) {
+      this.errorMsg.errNickname = 'Nickname is required';
+      valid = false;
+    }
     if (!this.data.email.trim()) {
-      this.errorMsg.errEmail = 'You need to enter your email or nickname';
+      this.errorMsg.errEmail = 'Email is required';
       valid = false;
     }
     if (!this.data.password) {
       this.errorMsg.errPassword = 'Enter your password';
       valid = false;
+    } else if (!this.isPasswordValid()) {
+      this.errorMsg.errPassword = 'Password must meet all criteria';
+      valid = false;
     }
     if (this.data.password !== this.data.confirmPassword) {
       this.errorMsg.errConfirmPassword = 'Passwords do not match';
-      valid = false;
-    }
-    if (!this.isPasswordValid()) {
-      this.errorMsg.errPassword =
-        'Password must meet all the required criteria';
       valid = false;
     }
     return valid;

@@ -3,6 +3,7 @@ import { Report } from '../dashboard/dashboard.component';
 import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '../utils/dateFormater';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-repoted-users',
@@ -19,7 +20,7 @@ export class RepotedUsersComponent {
   deleteChecker: boolean = false;
   targetUser: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private rout: Router) {}
 
   viewUserDetails(index: number, reportId: number) {
     if (this.userIndex === index) {
@@ -41,25 +42,17 @@ export class RepotedUsersComponent {
   confirmBan(nickname: string) {
     const jwt = localStorage.getItem('jwtToken');
 
-    this.http
-      .post(
-        `${this.baseUrl}/user/ban`,
-        null,
-        {}
-      )
-      .subscribe({
-        next: () => {
-          this.reports.update((current) =>
-            current
-              ? current.filter((r) => r.reportedNickname !== nickname)
-              : []
-          );
-          this.banChecker = false;
-          this.userIndex = -1;
-          alert(`User ${nickname} has been banned.`);
-        },
-        error: (err) => console.error('Ban failed', err),
-      });
+    this.http.post(`${this.baseUrl}/user/ban`, null, {}).subscribe({
+      next: () => {
+        this.reports.update((current) =>
+          current ? current.filter((r) => r.reportedNickname !== nickname) : []
+        );
+        this.banChecker = false;
+        this.userIndex = -1;
+        alert(`User ${nickname} has been banned.`);
+      },
+      error: (err) => console.error('Ban failed', err),
+    });
   }
 
   confirmDelete(nickname: string) {
@@ -85,5 +78,11 @@ export class RepotedUsersComponent {
 
   formatDate(timestamp: number) {
     return formatDate(timestamp);
+  }
+  goToProfile(nickname: string) {
+    console.log('working');
+
+    const profile = `/profile/${nickname}`;
+    this.rout.navigate([profile]);
   }
 }

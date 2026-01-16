@@ -1,54 +1,77 @@
 /* Container & Background */
 .post-card {
-  background-color: #0d1b2a; /* Navy Blue */
-  border: 1px solid rgba(65, 90, 119, 0.4);
+  background-color: #1b263b; /* Updated to match your integrated card color */
+  border: 1px solid rgba(65, 90, 119, 0.3) !important;
+  border-radius: 1rem;
+  transition: transform 0.2s ease;
 }
 
 /* User Header Styling */
 .profile-img-sm {
-  width: 42px;
-  height: 42px;
+  width: 45px;
+  height: 45px;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .user-link {
   cursor: pointer;
   transition: color 0.2s ease;
+  text-decoration: none;
 }
 
 .user-link:hover {
   color: #00d4ff !important;
+  text-decoration: underline;
 }
 
 /* Dropdown Menu */
 .custom-post-dropdown {
-  background-color: #1b263b !important;
-  border: 1px solid #415a77 !important;
-  min-width: 150px;
-  position: absolute;
-  right: 0;
-  z-index: 1050;
+  background-color: #0d1b2a !important; /* Darker navy for contrast */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px;
+  min-width: 160px;
+  padding: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
 .custom-post-dropdown .dropdown-item {
-  color: #e0e1dd !important;
-  cursor: pointer;
+  color: #ffffff !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .custom-post-dropdown .dropdown-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff !important;
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+}
+
+/* Floating Overlay Styling */
+.animate-fade-in {
+  animation: fadeInDown 0.3s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Reaction Pill Styling */
-.bg-navy-light {
-  background-color: #1b263b;
+.btn-group {
+  background-color: rgba(13, 27, 42, 0.4);
 }
 
 .btn-action {
-  color: #e0e1dd;
+  color: #ffffff;
   border: none;
   font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .btn-action:hover {
@@ -57,27 +80,71 @@
 }
 
 /* Media Container */
+.post-media-wrapper {
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .post-media-wrapper img,
 .post-media-wrapper video {
   max-height: 550px;
+  width: 100%;
   object-fit: contain;
+}
+
+/* Success/Danger Button Glows */
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-outline-info {
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+.btn-outline-info:hover {
+  background-color: #00d4ff;
+  color: #0d1b2a;
 }
 
 /* Animations */
 .slide-up {
-  animation: slideUp 0.35s ease-out forwards;
+  animation: slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.slide-in {
-  animation: fadeIn 0.2s ease-in;
+.report-overlay-content {
+  background-color: #1b263b;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  width: 90%;
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  max-height: 90%; /* Keeps it from touching card edges */
+  overflow-y: auto; /* Allows scrolling inside form if card is tiny */
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Scrollbar styling for the form */
+.report-overlay-content::-webkit-scrollbar {
+  width: 4px;
+}
+.report-overlay-content::-webkit-scrollbar-thumb {
+  background: #00d4ff;
+  border-radius: 10px;
 }

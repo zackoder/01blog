@@ -1,62 +1,59 @@
-/* Deep Blue Palette */
 .custom-navbar {
-  background-color: #0d1b2a; /* Deep Navy Blue */
-  border-bottom: 2px solid #1b263b;
-  min-height: 80px; /* Taller navbar */
+  background-color: #0d1b2a;
+  border-bottom: 1px solid rgba(65, 90, 119, 0.3);
 }
 
-.text-glow {
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-.profile-img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  transition: border-color 0.3s ease;
-}
-
-.profile-img:hover {
-  border-color: #00d4ff !important;
-}
-
-/* Custom Dropdown for Dark Blue Theme */
 .custom-dropdown {
-  background-color: #1b263b !important; /* Slightly lighter navy */
-  border: 1px solid #415a77 !important;
-  min-width: 260px; /* Wider dropdown */
+  min-width: 240px;
+  background-color: #1b263b !important;
+  border: 1px solid rgba(65, 90, 119, 0.4) !important;
   border-radius: 12px;
+  z-index: 1050;
 }
 
 .dropdown-item {
-  color: #e0e1dd !important;
-  font-weight: 500;
-  padding-left: 1.5rem;
+  color: #ffffff !important;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
-  background-color: #415a77 !important;
-  color: #fff !important;
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
 }
 
-/* Admin Badge Styling */
+.profile-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.profile-img:hover {
+  transform: scale(1.05);
+}
+
 .admin-badge {
-  background-color: rgba(255, 71, 87, 0.2);
-  color: #ff4757;
-  border: 1px solid #ff4757;
-  font-size: 0.9rem;
+  background-color: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
 }
 
 .nav-spacer {
-  height: 85px;
+  height: 75px;
 }
 
-/* Animation */
-.slide-in {
-  animation: navSlide 0.2s ease-out;
+.animate.slide-in {
+  animation: slideIn 0.25s ease-out forwards;
 }
 
-@keyframes navSlide {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
   reports = signal<Report[]>([]);
   baseUrl = environment.apiUrl;
   type = 'post';
+  isLoading = false;
   constructor(private http: HttpClient, private rout: Router) {}
   ngOnInit(): void {
     this.reportsList(this.type);
@@ -34,6 +35,11 @@ export class DashboardComponent implements OnInit {
       this.type = type;
       this.reports.set([]);
     }
+    if (type === this.type && this.reports().length !== 0) {
+      return;
+    }
+    if (this.isLoading) return;
+    this.isLoading = true;
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.rout.navigate(['/login']);
@@ -44,10 +50,12 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.reports.update((current) => [...current, ...res]);
+          this.isLoading = false;
           console.log(this.reports());
         },
         error: (err) => {
           checkStatus(err, this.rout);
+          this.isLoading = false;
           console.log(err.status);
         },
       });

@@ -1,19 +1,22 @@
 @if (currentPath !== '/login' && currentPath !== '/signup') {
 <nav class="navbar navbar-expand fixed-top shadow-lg custom-navbar py-2">
   <div class="container-fluid px-md-5">
-    <a class="navbar-brand fw-bold fs-2 text-white cursor-pointer" (click)="goHome()">
+    <a
+      class="navbar-brand fw-bold fs-2 text-white cursor-pointer"
+      (click)="goHome()"
+    >
       01<span class="text-info">blog</span>
     </a>
 
-    <div class="ms-auto position-relative">
+    <div class="ms-auto position-relative" style="overflow: visible">
       <div class="d-flex align-items-center gap-3">
         @if (isAdmin) {
-          <span class="badge rounded-pill admin-badge px-3 py-1 small">
-            Admin
-          </span>
+        <span class="badge rounded-pill admin-badge px-3 py-1 small">
+          Admin
+        </span>
         }
 
-        <div class="profile-wrapper" (click)="toggle()">
+        <div class="profile-wrapper position-relative" (click)="toggle()">
           <img
             class="rounded-circle border border-2 border-info shadow-sm cursor-pointer profile-img"
             [src]="'http://localhost:8080' + data.avatar"
@@ -23,19 +26,44 @@
       </div>
 
       @if (show) {
-      <ul class="dropdown-menu dropdown-menu-end show shadow-lg py-2 custom-dropdown animate slide-in">
-        <li class="px-4 py-2 text-info small border-bottom border-secondary border-opacity-25 mb-2">
+      <ul
+        class="dropdown-menu dropdown-menu-end show shadow-lg py-2 custom-dropdown animate slide-in"
+        style="position: absolute; right: 0; left: auto; margin-top: 10px"
+      >
+        <li
+          class="px-4 py-2 text-info small border-bottom border-secondary border-opacity-25 mb-2"
+        >
           <i class="fa-solid fa-user-check me-2"></i> {{ data.nickname }}
         </li>
-        <li><a class="dropdown-item py-2 fs-5" (click)="openProfile()"><i class="fa-regular fa-user me-3 text-info"></i> Profile</a></li>
-        <li><a class="dropdown-item py-2 fs-5" (click)="navigateToAddPost()"><i class="fa-regular fa-square-plus me-3 text-info"></i> Add Post</a></li>
+        <li>
+          <a class="dropdown-item py-2 fs-5" (click)="openProfile()"
+            ><i class="fa-regular fa-user me-3 text-info"></i> Profile</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item py-2 fs-5" (click)="navigateToAddPost()"
+            ><i class="fa-regular fa-square-plus me-3 text-info"></i> Add
+            Post</a
+          >
+        </li>
 
         @if (isAdmin) {
-        <li><a class="dropdown-item py-2 fs-5 text-warning" (click)="goToDashboard()"><i class="fa-solid fa-chart-line me-3"></i> Dashboard</a></li>
+        <li>
+          <a
+            class="dropdown-item py-2 fs-5 text-warning"
+            (click)="goToDashboard()"
+            ><i class="fa-solid fa-chart-line me-3"></i> Dashboard</a
+          >
+        </li>
         }
 
-        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-        <li><a class="dropdown-item py-2 fs-5 text-danger" (click)="logout()"><i class="fa-solid fa-arrow-right-from-bracket me-3"></i> Log Out</a></li>
+        <li><hr class="dropdown-divider border-secondary opacity-25" /></li>
+        <li>
+          <a class="dropdown-item py-2 fs-5 text-danger" (click)="logout()"
+            ><i class="fa-solid fa-arrow-right-from-bracket me-3"></i> Log
+            Out</a
+          >
+        </li>
       </ul>
       }
     </div>

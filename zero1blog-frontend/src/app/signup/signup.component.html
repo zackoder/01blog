@@ -1,225 +1,324 @@
 <div
-  class="container d-flex justify-content-center align-items-center min-vh-100"
+  class="min-vh-100 d-flex align-items-center justify-content-center py-5"
+  style="background-color: #0d1b2a"
 >
-  <div
-    class="card shadow-lg border-0 rounded-4 p-4 w-100"
-    style="max-width: 500px; background: #ffffff"
-  >
-    <h2 class="text-center fw-bold mb-4 text-primary">Create Account</h2>
-
-    <form (ngSubmit)="onSignUp()" #signupForm="ngForm">
-      <div class="mb-4 text-center">
-        <div class="position-relative d-inline-block">
-          <div
-            class="avatar-wrapper rounded-circle border border-3 border-light shadow-sm overflow-hidden bg-light d-flex align-items-center justify-content-center"
-            style="width: 120px; height: 120px"
-          >
-            @if (imagePreview) {
-            <img
-              [src]="imagePreview"
-              class="img-fluid w-100 h-100 object-fit-cover"
-            />
-            <button
-              type="button"
-              class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle border-0 shadow"
-              (click)="removeImage()"
-              style="width: 28px; height: 28px; padding: 0"
-            >
-              &times;
-            </button>
-            } @else {
-            <i
-              class="bi bi-person-fill text-secondary"
-              style="font-size: 3rem"
-            ></i>
-            }
-          </div>
-          <button
-            type="button"
-            class="btn btn-primary btn-sm rounded-circle position-absolute bottom-0 end-0 shadow"
-            (click)="fileInput.click()"
-            style="width: 32px; height: 32px; padding: 0"
-          >
-            <i class="bi bi-camera-fill"></i>
-          </button>
-        </div>
-        <input
-          type="file"
-          #fileInput
-          class="d-none"
-          accept="image/*"
-          (change)="onFileSelected($event)"
-        />
-      </div>
-
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="form-floating">
-            <input
-              id="nickname"
-              name="nickname"
-              type="text"
-              class="form-control rounded-3"
-              placeholder="Nickname"
-              [(ngModel)]="data.nickname"
-              required
-              [class.is-invalid]="errorMsg.errNickname"
-            />
-            <label for="nickname">Nickname</label>
-          </div>
-          @if (errorMsg.errNickname) {
-          <div class="text-danger small px-2">{{ errorMsg.errNickname }}</div>
-          }
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input
-              id="firstName"
-              name="firstName"
-              type="text"
-              class="form-control"
-              placeholder="First Name"
-              [(ngModel)]="data.firstName"
-            />
-            <label for="firstName">First Name</label>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input
-              id="lastName"
-              name="lastName"
-              type="text"
-              class="form-control"
-              placeholder="Last Name"
-              [(ngModel)]="data.lastName"
-            />
-            <label for="lastName">Last Name</label>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-floating">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              class="form-control"
-              placeholder="Email"
-              [(ngModel)]="data.email"
-              required
-            />
-            <label for="email">Email address</label>
-          </div>
-          @if (errorMsg.errEmail) {
-          <div class="text-danger small px-2">{{ errorMsg.errEmail }}</div>
-          }
-        </div>
-
-        <div class="col-12">
-          <div class="form-floating">
-            <input
-              id="password"
-              name="password"
-              type="password"
-              class="form-control"
-              placeholder="Password"
-              [(ngModel)]="data.password"
-              (ngModelChange)="onPasswordChange($event)"
-              required
-            />
-            <label for="password">Password</label>
-          </div>
-
-          <div class="mt-2 p-2 bg-light rounded-3 border">
-            <div class="d-flex flex-wrap gap-2">
-              <span
-                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
-                [class.bg-success-subtle]="passwordValidation.hasMinLength"
-              >
-                <i
-                  class="bi"
-                  [class.bi-check-circle-fill]="passwordValidation.hasMinLength"
-                  [class.bi-x-circle]="!passwordValidation.hasMinLength"
-                ></i>
-                8+ chars
-              </span>
-              <span
-                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
-                [class.bg-success-subtle]="passwordValidation.hasNumber"
-              >
-                <i
-                  class="bi"
-                  [class.bi-check-circle-fill]="passwordValidation.hasNumber"
-                  [class.bi-x-circle]="!passwordValidation.hasNumber"
-                ></i>
-                123
-              </span>
-              <span
-                class="badge rounded-pill text-dark border d-flex align-items-center gap-1"
-                [class.bg-success-subtle]="passwordValidation.hasSpecialChar"
-              >
-                <i
-                  class="bi"
-                  [class.bi-check-circle-fill]="
-                    passwordValidation.hasSpecialChar
-                  "
-                  [class.bi-x-circle]="!passwordValidation.hasSpecialChar"
-                ></i>
-                {{ "@#!" }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-floating">
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              class="form-control"
-              placeholder="Confirm Password"
-              [(ngModel)]="data.confirmPassword"
-              required
-            />
-            <label for="confirmPassword">Confirm Password</label>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-floating">
-            <textarea
-              id="bio"
-              name="bio"
-              class="form-control"
-              style="height: 100px"
-              placeholder="Bio"
-              [(ngModel)]="data.bio"
-            ></textarea>
-            <label for="bio">Short Bio</label>
-          </div>
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        class="btn btn-primary w-100 py-3 fw-bold rounded-3 mt-4"
-        [disabled]="isLoading || !signupForm.form.valid"
-      >
-        {{ isLoading ? "" : "Register Now" }}
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
-      </button>
-
-      <p class="text-center mt-3 text-muted">
-        Already have an account?
-        <a
-          (click)="login()"
-          class="text-primary fw-semibold text-decoration-none cursor-pointer"
-          >Login here</a
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+        <div
+          class="card border-0 shadow-lg rounded-4 overflow-hidden"
+          style="
+            background-color: #1b263b;
+            border: 1px solid rgba(65, 90, 119, 0.4) !important;
+          "
         >
-      </p>
-    </form>
+          <div class="card-body p-4 p-md-5">
+            <h2 class="text-center fw-bold mb-4 text-white">
+              Create <span class="text-info">Account</span>
+            </h2>
+
+            <form (ngSubmit)="onSignUp()" #signupForm="ngForm">
+              <div class="mb-4 text-center">
+                <div class="position-relative d-inline-block">
+                  <div
+                    class="avatar-wrapper rounded-circle border border-3 border-info p-1 shadow-lg overflow-hidden d-flex align-items-center justify-content-center"
+                    style="
+                      width: 130px;
+                      height: 130px;
+                      background-color: rgba(13, 27, 42, 0.5);
+                    "
+                  >
+                    @if (imagePreview) {
+                    <img
+                      [src]="imagePreview"
+                      class="img-fluid w-100 h-100 object-fit-cover"
+                    />
+                    <button
+                      type="button"
+                      (click)="removeImage()"
+                      class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle border-0 shadow"
+                      style="width: 28px; height: 28px"
+                    >
+                      &times;
+                    </button>
+                    } @else {
+                    <i
+                      class="fa-solid fa-user text-secondary"
+                      style="font-size: 3rem"
+                    ></i>
+                    }
+                  </div>
+                  <button
+                    type="button"
+                    (click)="fileInput.click()"
+                    class="btn btn-info btn-sm rounded-circle position-absolute bottom-0 end-0 shadow border-white border-2"
+                    style="width: 38px; height: 38px"
+                  >
+                    <i class="fa-solid fa-camera"></i>
+                  </button>
+                </div>
+                <input
+                  type="file"
+                  #fileInput
+                  class="d-none"
+                  accept="image/*"
+                  (change)="onFileSelected($event)"
+                />
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="nickname"
+                      name="nickname"
+                      type="text"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="Nickname"
+                      [(ngModel)]="data.nickname"
+                      required
+                      [class.is-invalid]="errorMsg.errNickname"
+                    />
+                    <label for="nickname" class="text-white-50">Nickname</label>
+                  </div>
+                  @if (errorMsg.errNickname) {
+                  <div class="text-danger small px-2 mt-1">
+                    {{ errorMsg.errNickname }}
+                  </div>
+                  }
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="First Name"
+                      [(ngModel)]="data.firstName"
+                    />
+                    <label for="firstName" class="text-white-50"
+                      >First Name</label
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="Last Name"
+                      [(ngModel)]="data.lastName"
+                    />
+                    <label for="lastName" class="text-white-50"
+                      >Last Name</label
+                    >
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="Email"
+                      [(ngModel)]="data.email"
+                      required
+                    />
+                    <label for="email" class="text-white-50"
+                      >Email address</label
+                    >
+                  </div>
+                  @if (errorMsg.errEmail) {
+                  <div class="text-danger small px-2 mt-1">
+                    {{ errorMsg.errEmail }}
+                  </div>
+                  }
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="Password"
+                      [(ngModel)]="data.password"
+                      (ngModelChange)="onPasswordChange($event)"
+                      required
+                    />
+                    <label for="password" class="text-white-50">Password</label>
+                  </div>
+                  @if (errorMsg.errPassword) {
+                  <div class="text-danger small px-2 mt-1">
+                    {{ errorMsg.errPassword }}
+                  </div>
+                  }
+
+                  <div
+                    class="mt-2 p-2 rounded-3 border border-secondary border-opacity-25"
+                    style="background-color: rgba(0, 0, 0, 0.1)"
+                  >
+                    <div class="d-flex flex-wrap gap-2">
+                      <span
+                        class="badge rounded-pill border py-2 px-3 fw-normal"
+                        [ngClass]="
+                          passwordValidation.hasMinLength
+                            ? 'bg-info bg-opacity-10 text-info border-info'
+                            : 'text-white-50 border-secondary opacity-50'
+                        "
+                      >
+                        <i
+                          class="fa-solid"
+                          [ngClass]="
+                            passwordValidation.hasMinLength
+                              ? 'fa-check-circle'
+                              : 'fa-circle-xmark'
+                          "
+                        ></i>
+                        8+ Chars
+                      </span>
+                      <span
+                        class="badge rounded-pill border py-2 px-3 fw-normal"
+                        [ngClass]="
+                          passwordValidation.hasUpperCase
+                            ? 'bg-info bg-opacity-10 text-info border-info'
+                            : 'text-white-50 border-secondary opacity-50'
+                        "
+                      >
+                        <i
+                          class="fa-solid"
+                          [ngClass]="
+                            passwordValidation.hasUpperCase
+                              ? 'fa-check-circle'
+                              : 'fa-circle-xmark'
+                          "
+                        ></i>
+                        ABC
+                      </span>
+                      <span
+                        class="badge rounded-pill border py-2 px-3 fw-normal"
+                        [ngClass]="
+                          passwordValidation.hasLowerCase
+                            ? 'bg-info bg-opacity-10 text-info border-info'
+                            : 'text-white-50 border-secondary opacity-50'
+                        "
+                      >
+                        <i
+                          class="fa-solid"
+                          [ngClass]="
+                            passwordValidation.hasLowerCase
+                              ? 'fa-check-circle'
+                              : 'fa-circle-xmark'
+                          "
+                        ></i>
+                        abc
+                      </span>
+                      <span
+                        class="badge rounded-pill border py-2 px-3 fw-normal"
+                        [ngClass]="
+                          passwordValidation.hasNumber
+                            ? 'bg-info bg-opacity-10 text-info border-info'
+                            : 'text-white-50 border-secondary opacity-50'
+                        "
+                      >
+                        <i
+                          class="fa-solid"
+                          [ngClass]="
+                            passwordValidation.hasNumber
+                              ? 'fa-check-circle'
+                              : 'fa-circle-xmark'
+                          "
+                        ></i>
+                        123
+                      </span>
+                      <span
+                        class="badge rounded-pill border py-2 px-3 fw-normal"
+                        [ngClass]="
+                          passwordValidation.hasSpecialChar
+                            ? 'bg-info bg-opacity-10 text-info border-info'
+                            : 'text-white-50 border-secondary opacity-50'
+                        "
+                      >
+                        <i
+                          class="fa-solid"
+                          [ngClass]="
+                            passwordValidation.hasSpecialChar
+                              ? 'fa-check-circle'
+                              : 'fa-circle-xmark'
+                          "
+                        ></i>
+                        &#64;#!
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating custom-form-floating">
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      placeholder="Confirm Password"
+                      [(ngModel)]="data.confirmPassword"
+                      required
+                    />
+                    <label for="confirmPassword" class="text-white-50"
+                      >Confirm Password</label
+                    >
+                  </div>
+                  @if (errorMsg.errConfirmPassword) {
+                  <div class="text-danger small px-2 mt-1">
+                    {{ errorMsg.errConfirmPassword }}
+                  </div>
+                  }
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating custom-form-floating">
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      class="form-control bg-black bg-opacity-20 border-0 text-white"
+                      style="height: 100px"
+                      placeholder="Bio"
+                      [(ngModel)]="data.bio"
+                    ></textarea>
+                    <label for="bio" class="text-white-50">Short Bio</label>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-info w-100 py-3 fw-bold rounded-pill mt-4 shadow-sm"
+                [disabled]="isLoading"
+              >
+                @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Creating Account... } @else { REGISTER NOW }
+              </button>
+
+              <p class="text-center mt-3 text-secondary small">
+                Already have an account?
+                <a
+                  (click)="login()"
+                  class="text-info fw-bold text-decoration-none cursor-pointer ms-1"
+                  >Login here</a
+                >
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

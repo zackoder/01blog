@@ -1,24 +1,63 @@
 <div class="container-fluid mt-4 pb-5 px-md-5">
   <div class="row justify-content-center">
     <div class="col-xl-8 col-lg-10">
-
       @for (post of postsService.posts(); track post.id; let i = $index) {
-      <div class="card mb-4 border-0 shadow-lg post-card animate slide-up">
+      <div
+        class="card mb-4 border-0 shadow-lg post-card animate slide-up"
+        [style.min-height]="
+          reportForm && targetedPost === post.id ? '500px' : 'auto'
+        "
+        style="
+          background-color: #1b263b;
+          border: 1px solid rgba(65, 90, 119, 0.3) !important;
+          position: relative;
+          overflow: hidden;
+          transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        "
+      >
+        @if (reportForm && targetedPost === post.id) {
+        <div
+          class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in"
+          style="
+            background: rgba(13, 27, 42, 0.98);
+            z-index: 2000;
+            backdrop-filter: blur(12px);
+          "
+        >
+          <div class="w-100 px-3">
+            <app-report
+              (removeReportComponent)="reportForm = false; targetedPost = -1"
+              [postId]="post.id"
+            ></app-report>
+          </div>
+        </div>
+        }
 
-        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+        <div
+          class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center"
+        >
           <div class="d-flex align-items-center">
-            <div class="profile-wrapper me-3" (click)="goToProfile(post.nickname, post.user_id)">
+            <div
+              class="profile-wrapper me-3"
+              (click)="goToProfile(post.nickname, post.user_id)"
+            >
               <img
                 class="rounded-circle border border-2 border-info shadow-sm cursor-pointer profile-img-sm"
                 [src]="'http://localhost:8080' + post.avatar"
                 alt="profile"
+                style="width: 45px; height: 45px; object-fit: cover"
               />
             </div>
             <div>
-              <h5 class="m-0 fw-bold text-white user-link" (click)="goToProfile(post.nickname, post.user_id)">
+              <h5
+                class="m-0 fw-bold text-white user-link cursor-pointer"
+                (click)="goToProfile(post.nickname, post.user_id)"
+              >
                 {{ post.nickname }}
               </h5>
-              <small class="text-info opacity-75 small">{{ formatDate(post.created_at) }}</small>
+              <small class="text-info opacity-75 small">{{
+                formatDate(post.created_at)
+              }}</small>
             </div>
           </div>
 
@@ -26,26 +65,40 @@
             <button class="btn btn-link text-white-50 p-1" (click)="toggle(i)">
               <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
             </button>
-
             @if (targetedPost == i) {
-            <ul class="dropdown-menu dropdown-menu-end show shadow-lg custom-post-dropdown d-block">
-              @if (post.postOwner || isAdmin) {
-              <li (click)="deleteChecker = true; targetedPost = -1">
-                <button class="dropdown-item py-2 text-danger">
-                  <i class="fa-regular fa-trash-can me-2"></i> delete
-                </button>
-              </li>
-              }
+            <ul
+              class="dropdown-menu dropdown-menu-end show shadow-lg custom-post-dropdown d-block p-2"
+              style="
+                background-color: #0d1b2a;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                position: absolute;
+                right: 0;
+                z-index: 1000;
+              "
+            >
               @if (post.postOwner) {
               <li (click)="editPost(post.id); targetedPost = -1">
-                <button class="dropdown-item py-2">
-                  <i class="fa-regular fa-pen-to-square me-2"></i> edit
+                <button class="dropdown-item py-2 text-white rounded-2">
+                  <i class="fa-regular fa-pen-to-square me-2 text-info"></i>
+                  edit
                 </button>
               </li>
-              } @else {
-              <li (click)="reportForm = true; targetedPost = -1">
-                <button class="dropdown-item py-2">
+              } @if (!post.postOwner && !isAdmin) {
+              <li (click)="reportForm = true; targetedPost = post.id">
+                <button class="dropdown-item py-2 text-white rounded-2">
                   <i class="fa-regular fa-flag me-2 text-warning"></i> report
+                </button>
+              </li>
+              } @if (isAdmin && !post.postOwner) {
+              <li (click)="dismissPost(post.id)">
+                <button class="dropdown-item py-2 text-white rounded-2">
+                  <i class="fa-solid fa-eye-slash me-2 text-warning"></i> Hide
+                </button>
+              </li>
+              } @if (post.postOwner || isAdmin) {
+              <li (click)="deleteChecker = true; targetedPost = post.id">
+                <button class="dropdown-item py-2 text-danger rounded-2">
+                  <i class="fa-regular fa-trash-can me-2"></i> delete
                 </button>
               </li>
               }
@@ -54,66 +107,102 @@
           </div>
         </div>
 
-        <div class="card-body p-4">
+        <div class="card-body p-4 position-relative">
+          @if (deleteChecker && post.id === targetedPost) {
+          <div
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in"
+            style="
+              background: rgba(13, 27, 42, 0.95);
+              z-index: 20;
+              backdrop-filter: blur(8px);
+            "
+          >
+            <div class="text-center p-4">
+              <i
+                class="fa-solid fa-triangle-exclamation text-danger fs-1 mb-3"
+              ></i>
+              <h4 class="text-white fw-bold">Delete Post?</h4>
+              <div class="d-flex gap-3 justify-content-center mt-3">
+                <button
+                  class="btn btn-outline-light rounded-pill px-4"
+                  (click)="deleteChecker = false; targetedPost = -1"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="btn btn-danger rounded-pill px-4 fw-bold shadow"
+                  (click)="delete(i)"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+
           <p class="card-text fs-5 text-white-50 mb-4">{{ post.content }}</p>
 
           @if (post.image_path) {
-          <div class="post-media-wrapper rounded-3 overflow-hidden bg-black mb-4 border border-secondary border-opacity-25">
+          <div
+            class="post-media-wrapper rounded-3 overflow-hidden bg-black mb-4 border border-secondary border-opacity-25"
+          >
             @if (post.image_path.startsWith("/uploads/image")) {
-              <img [src]="'http://localhost:8080' + post.image_path" class="img-fluid w-100" />
-            }
-            @if (post.image_path.startsWith("/uploads/videos")) {
-              <video [src]="'http://localhost:8080' + post.image_path" class="w-100" controls></video>
+            <img
+              [src]="'http://localhost:8080' + post.image_path"
+              class="img-fluid w-100"
+            />
+            } @else {
+            <video
+              [src]="'http://localhost:8080' + post.image_path"
+              class="w-100"
+              controls
+            ></video>
             }
           </div>
           }
 
-          <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25">
-            <div class="btn-group bg-navy-light rounded-pill p-1 shadow-sm border border-secondary border-opacity-25">
-              <button class="btn btn-sm btn-action rounded-pill px-3" (click)="reaction(post.id, 'like', i)">
+          <div
+            class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25"
+          >
+            <div
+              class="btn-group rounded-pill p-1 shadow-sm border border-secondary border-opacity-25"
+              style="background-color: rgba(0, 0, 0, 0.2)"
+            >
+              <button
+                class="btn btn-sm text-white rounded-pill px-3 border-0"
+                (click)="reaction(post.id, 'like', i)"
+              >
                 <span class="me-1">👍</span> {{ post.likes }}
               </button>
               <div class="vr bg-secondary my-2 opacity-50"></div>
-              <button class="btn btn-sm btn-action rounded-pill px-3" (click)="reaction(post.id, 'dislike', i)">
+              <button
+                class="btn btn-sm text-white rounded-pill px-3 border-0"
+                (click)="reaction(post.id, 'dislike', i)"
+              >
                 <span class="me-1">👎</span> {{ post.dislikes }}
               </button>
             </div>
-
-            <button class="btn btn-sm btn-outline-info rounded-pill px-4 fw-bold" (click)="showTargetedPostId = (showTargetedPostId === post.id ? 0 : post.id)">
+            <button
+              class="btn btn-sm btn-outline-info rounded-pill px-4 fw-bold"
+              (click)="
+                showTargetedPostId =
+                  showTargetedPostId === post.id ? 0 : post.id
+              "
+            >
               <i class="fa-regular fa-comment me-2"></i> Comments
             </button>
           </div>
 
-          @if (reportForm) {
-            <div class="mt-3 border-top border-secondary pt-3 slide-in">
-              <app-report (removeReportComponent)="closeReport($event)" [postId]="post.id"></app-report>
-            </div>
-          }
-
-          @if (deleteChecker) {
-            <div class="alert alert-danger mt-3 d-flex justify-content-between align-items-center shadow-sm">
-              <span class="fw-bold">Delete this post permanently?</span>
-              <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-dark" (click)="deleteChecker = false">cancel</button>
-                <button class="btn btn-sm btn-danger px-3" (click)="delete(i)">delete</button>
-              </div>
-            </div>
-          }
-
           @if (showTargetedPostId == post.id) {
-            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
-              <app-comments [postId]="post.id"></app-comments>
-            </div>
+          <div
+            class="mt-4 pt-3 border-top border-secondary border-opacity-25 animate-fade-in"
+          >
+            <app-comments [postId]="post.id"></app-comments>
+          </div>
           }
         </div>
       </div>
-      } @empty {
-      <div class="text-center py-5 text-secondary">
-        <i class="fa-solid fa-face-empty fs-1 mb-3"></i>
-        <h4>No items found.</h4>
-      </div>
       }
-
     </div>
   </div>
 </div>

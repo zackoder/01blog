@@ -35,9 +35,10 @@ export class NavbarComponent {
   userCredentials() {
     const headers = checkToken();
 
+    if (this.currentPath === '/login' || this.currentPath === '/signup') return;
     if (!headers.has('Authorization')) {
-      if (this.router.url === '/login' || this.router.url === '/signup') return;
       this.router.navigate(['/login']);
+      return;
     }
 
     if (this.isLoading) return;
@@ -52,7 +53,6 @@ export class NavbarComponent {
       error: (err) => {
         console.log(err);
         this.isLoading = false;
-        this.router.navigate(['/login']);
       },
     });
   }

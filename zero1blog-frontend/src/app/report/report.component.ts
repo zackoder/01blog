@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { checkToken } from '../utils/dateFormater';
+import { ToastService } from '../services/toast.service';
 
 interface Report {
   reportedPostId: number;
@@ -30,7 +31,11 @@ export class ReportComponent {
   @Input() reported!: string;
   @Output() removeReportComponent = new EventEmitter<boolean>();
   private baseUrl = environment.apiUrl;
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toast: ToastService
+  ) {}
   onsubmitReport() {
     const headers = checkToken();
 
@@ -50,10 +55,12 @@ export class ReportComponent {
       .subscribe({
         next: (res) => {
           this.error = '';
+          this.toast.show('reported successfully');
           console.log(res);
         },
         error: (e) => {
           console.log(e);
+          this.toast.show('could not report please try again');
         },
       });
   }

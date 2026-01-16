@@ -12,7 +12,7 @@
     >
       <div class="row g-0">
         <div
-          class="col-auto border-end border-secondary border-opacity-25 bg-black bg-opacity-10"
+          class="col-auto border-end border-secondary border-opacity-25 bg-black bg-opacity-10 d-none d-md-block"
           style="width: 160px"
         >
           <div class="p-4 text-center">
@@ -37,14 +37,18 @@
         <div class="col p-4 p-md-5">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h3 fw-bold text-white m-0">
-              Create <span class="text-info">Post</span>
+              {{ data.id ? "Edit" : "Create" }}
+              <span class="text-info">Post</span>
             </h2>
             <button
               id="createPost"
               type="submit"
+              [disabled]="isLoading"
               class="btn btn-info rounded-pill px-5 fw-bold shadow-sm"
             >
-              SUBMIT
+              @if (isLoading) {
+              <span class="spinner-border spinner-border-sm me-2"></span> }
+              {{ data.id ? "UPDATE" : "SUBMIT" }}
             </button>
           </div>
 
@@ -52,16 +56,16 @@
             <div class="mb-3">
               <textarea
                 class="form-control bg-transparent text-white border-0 fs-3 p-0 custom-textarea"
-                name="title"
-                id="title"
-                rows="8"
+                name="content"
+                id="content"
+                rows="6"
                 [(ngModel)]="data.content"
                 placeholder="What's on your mind?"
                 style="box-shadow: none; resize: none"
               ></textarea>
               @if (err) {
               <div
-                class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger mt-3 py-2 small fw-bold"
+                class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger mt-3 py-2 small fw-bold animate-fade-in"
               >
                 <i class="fa-solid fa-circle-exclamation me-2"></i> {{ err }}
               </div>
@@ -69,21 +73,23 @@
             </div>
           </div>
 
-          @if (imagePreview) {
+          @if (imagePreview || data.image_path) {
           <div class="mt-4 position-relative animate slide-up">
             <div
               class="rounded-4 overflow-hidden border border-info border-opacity-25 shadow-lg bg-black bg-opacity-25"
             >
-              @if (fileType?.startsWith('video')) {
+              @let displayUrl = imagePreview ? imagePreview :
+              ('http://localhost:8080' + data.image_path); @let isVideo =
+              fileType?.startsWith('video'); @if (isVideo) {
               <video
-                [src]="imagePreview"
+                [src]="displayUrl"
                 controls
                 class="w-100 d-block"
                 style="max-height: 450px; object-fit: contain"
               ></video>
               } @else {
               <img
-                [src]="imagePreview"
+                [src]="displayUrl"
                 class="img-fluid w-100 d-block"
                 style="max-height: 450px; object-fit: contain"
               />
@@ -98,9 +104,12 @@
               </button>
             </div>
           </div>
-          } @if (!imagePreview) {
-          <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+          } @else {
+          <div
+            class="mt-4 pt-4 border-top border-secondary border-opacity-25 animate-fade-in"
+          >
             <div
+              (click)="fileInput.click()"
               class="p-5 border border-2 border-dashed border-secondary rounded-4 text-center bg-black bg-opacity-20 hover-zone cursor-pointer"
             >
               <label
@@ -110,6 +119,7 @@
                 <i class="fa-solid fa-cloud-arrow-up me-2"></i>ADD IMAGE / VIDEO
               </label>
               <input
+                #fileInput
                 (change)="OnSelectFile($event)"
                 type="file"
                 id="image"

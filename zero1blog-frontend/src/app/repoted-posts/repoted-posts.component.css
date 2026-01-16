@@ -1,52 +1,24 @@
-.modal-content {
-  overflow: hidden;
+/* Prevent white background issues */
+.container-fluid {
+  color: white !important;
 }
 
-.placeholder-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 120px;
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-.btn-light:hover {
-  background-color: #f0f2f5;
+/* Animations */
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out forwards;
 }
 
-/* Image/Video sizing */
-.fileContainer img,
-.fileContainer video {
-  max-height: 500px;
-  object-fit: contain;
-  background-color: #000;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Animation for the popup */
-.modal.show {
-  display: block;
-  animation: fadeIn 0.2s ease-out;
+.btn-info {
+  background-color: #00d4ff !important;
+  color: #0d1b2a !important;
+  border: none;
 }
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.slide-fade-in {
-  animation: slideFadeIn 0.35s ease-out;
-}
-
-.placeholder-slide {
-  animation: slideFadeIn 0.25s ease-out;
-}
-
-@keyframes slideFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-

@@ -1,196 +1,51 @@
-.layout {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal);
-}
-
-.formContainer {
+/* The container allows the form to be centered but flexible */
+.report-container {
+  max-height: 100%;
   width: 100%;
+}
+
+.report-overlay-content {
+  background-color: #1b263b;
+  border: 1px solid rgba(65, 90, 119, 0.4);
+
+  /* SIZE LOGIC */
+  width: 95%; /* Take up most of the width */
+  max-width: 450px; /* But don't get too wide on desktop */
+  height: auto; /* Shrink to fit the content */
+  max-height: 95%; /* Never get taller than the post card */
+
+  /* SCROLL LOGIC */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  overflow-y: auto; /* If the card is tiny, let the form scroll */
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
-.reportForm {
-  background: linear-gradient(
-    135deg,
-    var(--color-surface) 0%,
-    var(--color-bg-alt) 100%
-  );
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl);
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Make the textarea shrink on smaller heights */
+.reportForm textarea {
+  min-height: 80px;
+  max-height: 150px;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
+/* Custom scrollbar for the navy theme */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #415a77;
+  border-radius: 10px;
+}
+
+/* Small adjustments for very tight spaces */
+@media (max-height: 400px) {
+  .report-overlay-content {
+    padding: 1rem !important;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.report-title {
-  font-size: var(--fs-2xl);
-  font-weight: 700;
-  margin-bottom: var(--spacing-lg);
-  color: var(--color-text-primary);
-}
-
-.reportReason {
-  margin-bottom: var(--spacing-lg);
-}
-
-.reportReason label {
-  display: block;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--fs-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.reportReason select,
-.reportReason textarea {
-  width: 100%;
-  padding: var(--spacing-md);
-  font-family: var(--font-sans);
-  font-size: var(--fs-base);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-  transition: border-color var(--transition-base),
-    box-shadow var(--transition-base);
-}
-
-.reportReason select:focus,
-.reportReason textarea:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.08);
-}
-
-.reportReason textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.report-options {
-  list-style: none;
-  margin: var(--spacing-md) 0;
-  padding: 0;
-}
-
-.report-options li {
-  padding: var(--spacing-sm) 0;
-}
-
-.report-options input[type="radio"] {
-  margin-right: var(--spacing-sm);
-  cursor: pointer;
-  accent-color: var(--color-accent);
-}
-
-.report-options label {
-  display: inline;
-  font-weight: 500;
-  margin: 0;
-  text-transform: none;
-  letter-spacing: normal;
-  cursor: pointer;
-}
-
-.form-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-  margin-top: var(--spacing-xl);
-}
-
-.submit-btn,
-.cancel-btn {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: var(--fs-sm);
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: background-color var(--transition-base),
-    transform var(--transition-fast);
-}
-
-.submit-btn {
-  background-color: var(--color-danger);
-  color: var(--color-text-inverse);
-}
-
-.submit-btn:hover {
-  background-color: #b85a5a;
-  transform: translateY(-2px);
-}
-
-.cancel-btn {
-  background-color: var(--color-bg-alt);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-}
-
-.cancel-btn:hover {
-  background-color: var(--color-border);
-}
-
-.success-message {
-  background-color: rgba(46, 204, 113, 0.08);
-  color: var(--color-success);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
-  border-left: 3px solid var(--color-success);
-}
-
-.error-message {
-  background-color: rgba(255, 77, 109, 0.08);
-  color: var(--color-danger);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
-  border-left: 3px solid var(--color-danger);
-}
-
-@media (max-width: 768px) {
-  .reportForm {
-    padding: var(--spacing-lg);
-    width: 95%;
-  }
-
-  .report-title {
-    font-size: var(--fs-xl);
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .submit-btn,
-  .cancel-btn {
-    width: 100%;
+  h5 {
+    font-size: 0.9rem !important;
   }
 }

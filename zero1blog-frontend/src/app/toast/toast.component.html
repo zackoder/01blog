@@ -11,18 +11,15 @@
     style="background-color: #1b263b"
   >
     <div class="d-flex">
-      <div
-        [class]="message.type === 'error' ? 'bg-danger' : 'bg-info'"
-        style="width: 5px"
-      ></div>
+      <div style="width: 5px"></div>
 
       <div class="toast-body d-flex align-items-center py-3 px-3">
         <div class="me-3 fs-5">
-          @if (message.type === 'error') {
+          <!-- @if (message.type === 'error') {
           <i class="fa-solid fa-circle-exclamation text-danger"></i>
           } @else {
           <i class="fa-solid fa-circle-check text-info"></i>
-          }
+          } -->
         </div>
 
         <div class="pe-4">

@@ -87,7 +87,7 @@ export class RepotedPostsComponent {
         error: (err) => console.error(err),
       });
   }
-  goToProfile(nickname: string, id: number) {
+  goToProfile(nickname: string) {
     const profile = `/profile/${nickname}`;
     this.rout.navigate([profile]);
   }
@@ -133,15 +133,16 @@ export class RepotedPostsComponent {
   toggleDropdown() {
     this.dropdown = !this.dropdown;
   }
-  dismissReport(report_id: number) {
+
+  dismissReport(post_id: number) {
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.rout.navigate(['/login']);
       return;
     }
-    console.log('report id', report_id);
+    console.log('report id', post_id);
     this.http
-      .post(`${this.baseUrl}/hide/${report_id}`, null, { headers })
+      .post(`${this.baseUrl}/hide/${post_id}`, null, { headers })
       .subscribe({
         next: (res) => {
           console.log('------------');

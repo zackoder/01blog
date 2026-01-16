@@ -209,4 +209,23 @@ export class PostsComponent implements OnInit, OnDestroy {
   editPost(i: number) {
     this.router.navigate([`/edit/${i}`]);
   }
+
+  dismissPost(post_id: number) {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    console.log('report id', post_id);
+    this.http
+      .post(`${this.baseUrl}/hide/${post_id}`, null, { headers })
+      .subscribe({
+        next: (res) => {
+          console.log('------------');
+        },
+        error: (err) => {
+          console.log('error', err);
+        },
+      });
+  }
 }

@@ -1,20 +1,49 @@
-<div class="layout">
-  <div class="formContainer">
-    <button (click)="closeReport()" class="closeReport">X</button>
+<div
+  class="report-container d-flex align-items-center justify-content-center h-100 w-100 p-2"
+>
+  <div class="report-overlay-content p-3 p-md-4 rounded-4 animate-fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-white fw-bold m-0 fs-6 fs-md-5">
+        <i class="fa-solid fa-flag text-warning me-2"></i> Report Post
+      </h5>
+      <button
+        (click)="closeReport()"
+        class="btn-close btn-close-white shadow-none"
+        aria-label="Close"
+      ></button>
+    </div>
+
     <form (ngSubmit)="onsubmitReport()" class="reportForm">
-      <label for="reportReason"
-        >what is the reason you are reporting the port for:
-      </label>
-      <textarea
-        [(ngModel)]="report.content"
-        name="reportReason"
-        id="reportReason"
-        class="reportReason"
-      ></textarea>
+      <div class="mb-2 mb-md-3">
+        <label for="reportReason" class="text-white-50 small mb-2">
+          Why are you reporting this?
+        </label>
+        <textarea
+          [(ngModel)]="report.content"
+          name="reportReason"
+          id="reportReason"
+          class="form-control bg-black bg-opacity-25 border-secondary border-opacity-25 text-white p-2 p-md-3 custom-scrollbar"
+          rows="3"
+          placeholder="Reason..."
+        ></textarea>
+      </div>
+
       @if (error) {
-      <p class="error">{{ error }}</p>
+      <p
+        class="text-danger x-small bg-danger bg-opacity-10 p-2 rounded border border-danger border-opacity-25 mb-2"
+      >
+        {{ error }}
+      </p>
       }
-      <button type="submit">report</button>
+
+      <div class="d-grid mt-auto">
+        <button
+          type="submit"
+          class="btn btn-info fw-bold py-2 rounded-pill shadow-sm"
+        >
+          Submit
+        </button>
+      </div>
     </form>
   </div>
 </div>
