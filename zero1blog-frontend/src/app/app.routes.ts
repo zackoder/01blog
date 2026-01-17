@@ -43,4 +43,8 @@ export const routes: Routes = [
     component: DashboardComponent,
     title: 'Dashboard',
   },
+  // {
+  //   path: "**"
+  //   component:
+  // }
 ];

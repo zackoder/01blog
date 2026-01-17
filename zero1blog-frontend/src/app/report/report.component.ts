@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { checkToken } from '../utils/dateFormater';
 import { ToastService } from '../services/toast.service';
 
@@ -27,15 +27,17 @@ export class ReportComponent {
   };
   reportReason = '';
   error = '';
+  private baseUrl = environment.apiUrl;
   @Input() postId!: number;
   @Input() reported!: string;
   @Output() removeReportComponent = new EventEmitter<boolean>();
-  private baseUrl = environment.apiUrl;
+
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toast: ToastService
+    private toast: ToastService,
   ) {}
+
   onsubmitReport() {
     const headers = checkToken();
 
@@ -49,7 +51,7 @@ export class ReportComponent {
 
     this.error = '';
     this.report.reportedPostId = this.postId;
-
+    this.report.reported = this.reported;
     this.http
       .post(`${this.baseUrl}/report`, this.report, { headers })
       .subscribe({

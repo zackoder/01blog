@@ -179,9 +179,10 @@ public class PostService {
         return postRepo.findById(id).orElseThrow(() -> new NotFoundException("Post Not Found"));
     }
 
-    public void hidePost(long id) {
+    public String hidePost(long id) {
         Post post = getPost(id);
         post.setVisibility(!post.getVisibility());
         postRepo.save(post);
+        return post.getVisibility() ? "was revealed" : "was hidden";
     }
 }

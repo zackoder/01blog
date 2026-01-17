@@ -21,6 +21,9 @@ public class UserService {
     @Autowired
     private PostRepo postRepo;
 
+    @Autowired
+    private BanedUserRepo bandUserRBanedUserRepo;
+
     UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -86,5 +89,18 @@ public class UserService {
             userRepository.followUser(follower.getId(), followed.getId());
             return "followed";
         }
+    }
+
+    public void deleteUser(User userToDelete) {
+        userRepository.delete(userToDelete);
+    }
+
+    public void saveBan(BanDto dto) {
+        User user = checkUser(dto.nickname());
+        BanUserEntity ban = new BanUserEntity();
+        ban.setReason(dto.reason());
+        ban.setExpiresAt(new java.util.Date().getTime() + (1000 * 60 * 60 + ban.getCounter() * 3));
+        ban.setUserId(user.getId());
+        bandUserRBanedUserRepo.save(ban);
     }
 }

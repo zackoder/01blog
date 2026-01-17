@@ -31,8 +31,13 @@ public class ReportsController {
             @RequestHeader("authorization") String auth) {
 
         String nickname = jwtService.extractUsername(auth.substring(7));
+        System.out.println();
+        System.out.println();
+        System.out.println(dto.toString());
+        System.out.println();
+        System.out.println();
 
-        if ((dto.reported() == null || dto.reported().isEmpty()) && dto.reportedPostId() <= 0) {
+        if ((dto.reported() == null || dto.reported().isEmpty()) && dto.reportedPostId() < 1) {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 

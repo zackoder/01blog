@@ -49,7 +49,7 @@ export class PostsComponent implements OnInit, OnDestroy {
     private offsetService: OffsetLimitService,
     public postsService: PostsService,
     private toast: ToastService,
-    private auth: AuthService
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -149,7 +149,7 @@ export class PostsComponent implements OnInit, OnDestroy {
       .post<any>(
         `${this.baseUrl}/reaction`,
         { target: 'post', targetId: postId, reactionType: reaction },
-        { headers }
+        { headers },
       )
       .subscribe({
         next: (res) => {
@@ -220,8 +220,8 @@ export class PostsComponent implements OnInit, OnDestroy {
     this.http
       .post(`${this.baseUrl}/hide/${post_id}`, null, { headers })
       .subscribe({
-        next: (res) => {
-          console.log('------------');
+        next: (res: any) => {
+          this.toast.show(`post ${res.message}`);
         },
         error: (err) => {
           console.log('error', err);

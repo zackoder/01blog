@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
+import { ReportComponent } from '../report/report.component';
 
 interface ProfileData {
   nickname: string;
@@ -16,13 +17,14 @@ interface ProfileData {
 
 @Component({
   selector: 'app-profile-data',
-  imports: [],
+  imports: [ReportComponent],
   templateUrl: './profile-data.component.html',
   styleUrl: './profile-data.component.css',
 })
 export class ProfileDataComponent {
   isLoading: boolean = false;
   isLoadingFollow: boolean = false;
+  reportForm: boolean = false;
 
   userData: ProfileData = {
     nickname: '',
@@ -35,7 +37,10 @@ export class ProfileDataComponent {
   };
 
   baseUrl: string = environment.apiUrl;
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.getProfileData();
@@ -64,7 +69,6 @@ export class ProfileDataComponent {
       .subscribe({
         next: (data) => {
           this.userData = data;
-          console.log('profile data', data);
           this.isLoading = false;
         },
         error: (err) => {
@@ -100,5 +104,14 @@ export class ProfileDataComponent {
           this.isLoadingFollow = false;
         },
       });
+  }
+
+  reportUser() {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+    }
+
+    // this.http.post(`${this.baseUrl}/report`, )
   }
 }

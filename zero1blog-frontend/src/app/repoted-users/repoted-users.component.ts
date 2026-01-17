@@ -2,8 +2,9 @@ import { Component, input, model } from '@angular/core';
 import { Report } from '../dashboard/dashboard.component';
 import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
-import { formatDate } from '../utils/dateFormater';
+import { checkToken, formatDate } from '../utils/dateFormater';
 import { Router } from '@angular/router';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-repoted-users',
@@ -20,7 +21,11 @@ export class RepotedUsersComponent {
   deleteChecker: boolean = false;
   targetUser: string = '';
 
-  constructor(private http: HttpClient, private rout: Router) {}
+  constructor(
+    private http: HttpClient,
+    private rout: Router,
+    private toast: ToastService,
+  ) {}
 
   viewUserDetails(index: number, reportId: number) {
     if (this.userIndex === index) {
@@ -34,45 +39,59 @@ export class RepotedUsersComponent {
 
   dismissReport(reportId: number) {
     this.reports.update((current) =>
-      current ? current.filter((r) => r.id !== reportId) : []
+      current ? current.filter((r) => r.id !== reportId) : [],
     );
     this.userIndex = -1;
   }
 
   confirmBan(nickname: string) {
-    const jwt = localStorage.getItem('jwtToken');
-
-    this.http.post(`${this.baseUrl}/user/ban`, null, {}).subscribe({
-      next: () => {
-        this.reports.update((current) =>
-          current ? current.filter((r) => r.reportedNickname !== nickname) : []
-        );
-        this.banChecker = false;
-        this.userIndex = -1;
-        alert(`User ${nickname} has been banned.`);
-      },
-      error: (err) => console.error('Ban failed', err),
-    });
-  }
-
-  confirmDelete(nickname: string) {
-    const jwt = localStorage.getItem('jwtToken');
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.rout.navigate(['/login']);
+      return;
+    }
 
     this.http
-      .delete(`${this.baseUrl}/admin/user/${nickname}`, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      })
+      .post(`${this.baseUrl}/banUser`, { nickname, reason: '' }, { headers })
       .subscribe({
         next: () => {
           this.reports.update((current) =>
             current
               ? current.filter((r) => r.reportedNickname !== nickname)
-              : []
+              : [],
+          );
+          this.banChecker = false;
+          this.userIndex = -1;
+        },
+        error: (err) => {
+          this.toast.show(err.error.error);
+          console.error('Ban failed', err);
+        },
+      });
+  }
+
+  confirmDelete(nickname: string) {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      return;
+    }
+
+    this.http
+      .delete(`${this.baseUrl}/deleteUser/${nickname}`, { headers })
+      .subscribe({
+        next: () => {
+          this.reports.update((current) =>
+            current
+              ? current.filter((r) => r.reportedNickname !== nickname)
+              : [],
           );
           this.deleteChecker = false;
           this.userIndex = -1;
         },
-        error: (err) => console.error('Delete failed', err),
+        error: (err) => {
+          this.toast.show(err.error.error);
+          console.log('Delete failed', err);
+        },
       });
   }
 

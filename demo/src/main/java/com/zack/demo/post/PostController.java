@@ -127,7 +127,7 @@ public class PostController {
             return ResponseEntity.badRequest().body(Map.of("error", "you don't have permission to do that"));
         }
         System.out.println("post id: " + id);
-        postService.hidePost(id);
-        return ResponseEntity.ok().body(Map.of("message", "post was hidden"));
+        String res = postService.hidePost(id);
+        return ResponseEntity.ok().body(Map.of("message", res));
     }
 }
