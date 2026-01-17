@@ -65,7 +65,6 @@ export class NavbarComponent {
   }
 
   logout() {
-    localStorage.clear();
     this.show = false;
     this.router.navigate(['/login']);
   }

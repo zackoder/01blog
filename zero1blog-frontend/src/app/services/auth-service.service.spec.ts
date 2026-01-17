@@ -1,5 +1,3 @@
-// services/auth.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -26,7 +24,10 @@ export class AuthService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public isLoading$ = this.loadingSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
     this.fetchUserCredentials().subscribe();
   }
 
@@ -45,12 +46,7 @@ export class AuthService {
         tap((res) => {
           this.userDataSource.next(res);
         }),
-        finalize(() => this.loadingSubject.next(false))
+        finalize(() => this.loadingSubject.next(false)),
       );
-  }
-
-  logout() {
-    localStorage.clear();
-    this.userDataSource.next(null);
   }
 }
