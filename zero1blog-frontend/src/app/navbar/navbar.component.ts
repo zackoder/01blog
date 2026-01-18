@@ -1,16 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { checkToken } from '../utils/dateFormater';
+import { AuthService } from '../services/auth-service.service.spec';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   baseUrl = environment.apiUrl;
   show = false;
   isAdmin = false;
@@ -19,46 +21,53 @@ export class NavbarComponent {
   currentPath: string = '';
 
   constructor(
-    private http: HttpClient,
     private router: Router,
+    public auth: AuthService,
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPath = this.router.url;
-        this.userCredentials();
+        this.auth.ensureUserData().subscribe({
+          next: (res) => {
+            this.data = res;
+          },
+        });
+        console.log('0000000000000000000000000', this.data);
       }
     });
   }
+
+  ngOnInit(): void {}
 
   openProfile() {
     this.router.navigate([`/profile/${this.data.nickname}`]);
     this.show = false;
   }
 
-  userCredentials() {
-    const headers = checkToken();
+  // userCredentials() {
+  //   const headers = checkToken();
 
-    if (this.currentPath === '/login' || this.currentPath === '/signup') return;
-    if (!headers.has('Authorization')) {
-      this.router.navigate(['/login']);
-      return;
-    }
+  //   if (this.currentPath === '/login' || this.currentPath === '/signup') return;
+  //   if (!headers.has('Authorization')) {
+  //     this.router.navigate(['/login']);
+  //     return;
+  //   }
 
-    if (this.isLoading) return;
-    this.isLoading = true;
-    this.http.get(`${this.baseUrl}/userCredentials`, { headers }).subscribe({
-      next: (res) => {
-        this.data = res;
-        console.log(this.data);
-        this.isAdmin = this.data.role === 'admin';
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.log(err);
-        this.isLoading = false;
-      },
-    });
-  }
+  //   if (this.isLoading) return;
+  //   this.isLoading = true;
+  //   this.http.get(`${this.baseUrl}/userCredentials`, { headers }).subscribe({
+  //     next: (res) => {
+  //       this.data = res;
+  //       console.log(this.data);
+  //       this.isAdmin = this.data.role === 'admin';
+  //       this.isLoading = false;
+  //     },
+  //     error: (err) => {
+  //       console.log(err);
+  //       this.isLoading = false;
+  //     },
+  //   });
+  // }
 
   toggle() {
     this.show = !this.show;
@@ -66,6 +75,8 @@ export class NavbarComponent {
 
   logout() {
     this.show = false;
+    localStorage.clear();
+    this.auth.clearUser();
     this.router.navigate(['/login']);
   }
 

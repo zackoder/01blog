@@ -18,15 +18,13 @@ export class ProfileComponent implements OnInit {
   constructor(
     private rout: Router,
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
   ) {}
   fetchProfileData() {
-    console.log(this.rout.url.startsWith('/profile'));
-    this.auth.userData$.subscribe({
-      next: (data) => {
-        console.log(data);
-        this.data = data;
-        console.log(data);
+    if (!this.rout.url.startsWith('/profile')) return;
+    this.auth.ensureUserData().subscribe({
+      next: (res) => {
+        this.data = res;
       },
     });
 

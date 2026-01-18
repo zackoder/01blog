@@ -53,9 +53,9 @@ export class PostsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.auth.userData$.subscribe({
+    this.auth.ensureUserData().subscribe({
       next: (res) => {
-        if (res?.role) this.isAdmin = res.role === 'admin';
+        this.isAdmin = res?.role === 'admin';
       },
     });
     this.currentPath = this.router.url;

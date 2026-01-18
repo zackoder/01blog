@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap, finalize } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, finalize, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
-import { Router } from '@angular/router';
 
 interface UserCredentials {
   id: number;
@@ -15,38 +14,85 @@ interface UserCredentials {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = environment.apiUrl;
-
   private userDataSource = new BehaviorSubject<UserCredentials | null>(null);
-  public userData$: Observable<UserCredentials | null> =
-    this.userDataSource.asObservable();
 
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public isLoading$ = this.loadingSubject.asObservable();
-
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-  ) {
-    this.fetchUserCredentials().subscribe();
+  get currentUser(): UserCredentials | null {
+    return this.userDataSource.value;
   }
 
-  fetchUserCredentials(): Observable<UserCredentials> {
-    const headers = checkToken();
+  constructor(private http: HttpClient) {}
 
-    if (!headers.has('Authorization')) {
-      this.router.navigate(['/login']);
+  ensureUserData(): Observable<UserCredentials | null> {
+    if (this.userDataSource.value) {
+      return of(this.userDataSource.value);
     }
 
-    this.loadingSubject.next(true);
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      return of(null);
+    }
 
     return this.http
-      .get<UserCredentials>(`${this.baseUrl}/userCredentials`, { headers })
+      .get<UserCredentials>(`${environment.apiUrl}/userCredentials`, {
+        headers,
+      })
       .pipe(
-        tap((res) => {
-          this.userDataSource.next(res);
+        tap((user) => this.userDataSource.next(user)),
+        catchError(() => {
+          this.clearUser();
+          return of(null);
         }),
-        finalize(() => this.loadingSubject.next(false)),
       );
   }
+
+  clearUser() {
+    this.userDataSource.next(null);
+    localStorage.removeItem('token');
+  }
 }
+// export class AuthService {
+//   private baseUrl = environment.apiUrl;
+
+//   private userDataSource = new BehaviorSubject<UserCredentials | null>(null);
+//   public userData$: Observable<UserCredentials | null> =
+//     this.userDataSource.asObservable();
+
+//   private loadingSubject = new BehaviorSubject<boolean>(false);
+//   public isLoading$ = this.loadingSubject.asObservable();
+
+//   constructor(
+//     private http: HttpClient,
+//     private router: Router,
+//   ) {}
+
+//   fetchUserCredentials(): Observable<UserCredentials> {
+//     const headers = checkToken();
+
+//     if (!headers.has('Authorization')) {
+//       this.router.navigate(['/login']);
+//     }
+
+//     this.loadingSubject.next(true);
+
+//     return this.http
+//       .get<UserCredentials>(`${this.baseUrl}/userCredentials`, { headers })
+//       .pipe(
+//         tap((res) => {
+//           this.userDataSource.next(res);
+//         }),
+//         finalize(() => this.loadingSubject.next(false)),
+//       );
+//   }
+
+//   subscribe() {
+//     this.fetchUserCredentials().subscribe();
+//   }
+
+//   clearUser() {
+//     this.userDataSource.next(null);
+//   }
+
+//   get userDataValue(): UserCredentials | null {
+//     return this.userDataSource.value;
+//   }
+// }

@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { Subject, filter, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
 import { ReportComponent } from '../report/report.component';
-import { AuthService } from '../services/auth-service.service.spec';
 import { ToastService, Type } from '../services/toast.service';
+import { AuthService } from '../services/auth-service.service.spec';
 
 interface ProfileData {
   id: number;
@@ -26,6 +27,8 @@ interface ProfileData {
   styleUrl: './profile-data.component.css',
 })
 export class ProfileDataComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   isLoading: boolean = false;
   isLoadingFollow: boolean = false;
   reportForm: boolean = false;
@@ -49,27 +52,26 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService,
     private toasts: ToastService,
-  ) {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.getProfileData();
-      }
-    });
-  }
+    private auth: AuthService,
+  ) {}
 
   ngOnInit(): void {
-    this.authService.userData$.subscribe((user) => {
-      if (user) {
-        this.isAdmin = user.role === 'admin';
-      }
-    });
     this.getProfileData();
+    console.log('current user', this.auth.currentUser);
+    // this.router.events
+    //   .pipe(
+    //     filter((event) => event instanceof NavigationEnd),
+    //     takeUntil(this.destroy$),
+    //   )
+    //   .subscribe(() => {
+    //     this.getProfileData();
+    //   });
   }
 
   ngOnDestroy(): void {
-    this.isAdmin = false;
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getProfileData() {
@@ -78,12 +80,14 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
       this.router.navigate(['/login']);
       return;
     }
+
     if (!this.router.url.startsWith('/profile')) {
       return;
     }
 
     if (this.isLoading) return;
     this.isLoading = true;
+
     const pathValues = this.router.url.split('/');
     const nickname = pathValues[pathValues.length - 1];
 
@@ -124,7 +128,6 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
 
   confirmDelete() {
     const headers = checkToken();
-
     const pathValues = this.router.url.split('/');
     const nickname = pathValues[pathValues.length - 1];
     this.http

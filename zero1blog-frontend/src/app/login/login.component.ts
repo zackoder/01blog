@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth-service.service.spec';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,10 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   onLogin() {
     this.errorMessage = '';
@@ -33,10 +37,11 @@ export class LoginComponent {
     this.isLoading = true;
 
     this.http
-      .post<{ token: string; success: boolean; message: string }>(
-        'http://localhost:8080/api/login',
-        this.data
-      )
+      .post<{
+        token: string;
+        success: boolean;
+        message: string;
+      }>('http://localhost:8080/api/login', this.data)
       .subscribe({
         next: (response) => {
           if (response.success && response.token) {
@@ -62,7 +67,7 @@ export class LoginComponent {
   isFormValid(): boolean {
     return this.data.email.trim() !== '' && this.data.password.trim() !== '';
   }
-  
+
   regester() {
     this.router.navigate(['/signup']);
   }
