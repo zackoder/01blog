@@ -1,14 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
-import { checkToken } from '../utils/dateFormater';
 import { AuthService } from '../services/auth-service.service.spec';
-import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [AsyncPipe],
+  imports: [],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
@@ -20,10 +17,7 @@ export class NavbarComponent implements OnInit {
   data: any;
   currentPath: string = '';
 
-  constructor(
-    private router: Router,
-    public auth: AuthService,
-  ) {
+  constructor(private router: Router, public auth: AuthService) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPath = this.router.url;
@@ -32,7 +26,6 @@ export class NavbarComponent implements OnInit {
             this.data = res;
           },
         });
-        console.log('0000000000000000000000000', this.data);
       }
     });
   }
