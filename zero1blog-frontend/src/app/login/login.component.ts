@@ -44,11 +44,9 @@ export class LoginComponent {
       }>('http://localhost:8080/api/login', this.data)
       .subscribe({
         next: (response) => {
-          if (response.success && response.token) {
+          if (response.token) {
             localStorage.setItem('jwtToken', response.token);
             this.router.navigate(['/']);
-          } else {
-            this.errorMessage = response.message || 'Login failed';
           }
           this.isLoading = false;
         },

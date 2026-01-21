@@ -1,57 +1,57 @@
 package com.zack.demo.auth;
 
 import com.zack.demo.config.JwtService;
+import com.zack.demo.user.BanUserEntity;
+import com.zack.demo.user.BanedUserRepo;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
+import javax.ws.rs.NotFoundException;
 
 @RestController
 @RequestMapping("/api")
 public class LoginController {
-    
+
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final BanedUserRepo banedUserRepo;
 
-    public LoginController(UserRepository userRepository, JwtService jwtService) {
+    public LoginController(UserRepository userRepository, JwtService jwtService, BanedUserRepo banedUserRepo) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.banedUserRepo = banedUserRepo;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginRequestDto loginRequest) {
         Map<String, Object> response = new HashMap<>();
 
-        Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
-        if (userOpt.isEmpty()) {
-            userOpt = userRepository.findByNickname(loginRequest.getEmail());
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .or(() -> userRepository.findByNickname(loginRequest.getEmail()))
+                .orElseThrow(() -> new NotFoundException("user not found"));
+
+        BanUserEntity banned = banedUserRepo.findByUserId(user.getId());
+
+        if (banned != null) {
+            if (new Date().before(banned.getExpiresAt())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "you have been banned"));
+            }
         }
-
-        if (userOpt.isEmpty()) {
-            response.put("success", false);
-            response.put("message", "User not found");
-            return ResponseEntity.status(200).body(response);
-        }
-
-        User user = userOpt.get();
-
-        System.out.println(loginRequest.getPassword());
 
         if (!user.getPassword().equals(loginRequest.getPassword())) {
-            response.put("success", false);
-            response.put("message", "Incorrect password");
-            return ResponseEntity.status(200).body(response);
+            response.put("error", "Incorrect password");
+            return ResponseEntity.badRequest().body(response);
         }
 
         String token = jwtService.generateToken(user);
 
-        response.put("success", true);
-        response.put("message", "Login successful");
         response.put("token", token);
-        response.put("user", user);
 
         return ResponseEntity.ok(response);
     }

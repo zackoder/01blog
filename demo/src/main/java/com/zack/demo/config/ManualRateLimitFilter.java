@@ -1,9 +1,10 @@
 package com.zack.demo.config;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -17,43 +18,52 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class ManualRateLimitFilter extends OncePerRequestFilter {
 
-    private final Map<String, UserBucket> buckets = new ConcurrentHashMap<>();
-    private final int MAX_REQUESTS = 10;
-    private final long TIME_WINDOW = 60000;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    private final int MAX_REQUESTS = 100;
+    private final long BAN_TIME_DAYS = 1;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String key = request.getRemoteAddr();
-        long now = System.currentTimeMillis();
+        String userIdentifier = getIdentifier(request);
+        String rateKey = "rate:" + userIdentifier;
+        String banKey = "ban:" + userIdentifier;
 
-        UserBucket bucket = buckets.compute(key, (k, v) -> {
-            if (v == null || now > v.expiration) {
-                return new UserBucket(1, now + TIME_WINDOW);
-            }
-            v.count++;
-            return v;
-        });
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(banKey))) {
+            sendError(response, "You are banned for 24 hours due to excessive requests.");
+            return;
+        }
 
-        if (bucket.count > MAX_REQUESTS) {
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Too many requests. Try again in a minute.\"}");
+        Long count = redisTemplate.opsForValue().increment(rateKey);
+
+        if (count != null && count == 1) {
+            redisTemplate.expire(rateKey, 1, TimeUnit.MINUTES);
+        }
+
+        if (count != null && count > MAX_REQUESTS) {
+            redisTemplate.opsForValue().set(banKey, "true", BAN_TIME_DAYS, TimeUnit.DAYS);
+            sendError(response, "Too many requests. You have been banned for 24 hours.");
             return;
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private static class UserBucket {
-        int count;
-        long expiration;
-
-        UserBucket(int count, long expiration) {
-            this.count = count;
-            this.expiration = expiration;
+    private String getIdentifier(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return "user:" + authHeader.substring(7).hashCode();
         }
+        return "ip:" + request.getRemoteAddr();
+    }
+
+    private void sendError(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }

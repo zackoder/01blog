@@ -58,15 +58,11 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getProfileData();
-    console.log('current user', this.auth.currentUser);
-    // this.router.events
-    //   .pipe(
-    //     filter((event) => event instanceof NavigationEnd),
-    //     takeUntil(this.destroy$),
-    //   )
-    //   .subscribe(() => {
-    //     this.getProfileData();
-    //   });
+    this.auth.ensureUserData().subscribe({
+      next: (res) => {
+        this.isAdmin = res?.role === 'admin';
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -120,7 +116,7 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
         this.banChecker = false;
       },
       error: (err) => {
-        this.toasts.show(err.error || 'Failed to ban user', Type.error);
+        this.toasts.show(err.error.error);
         this.banChecker = false;
       },
     });

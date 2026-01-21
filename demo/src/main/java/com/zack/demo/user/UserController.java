@@ -114,8 +114,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
-        String requester = jwtService.extractUsername(jwt.substring(7));
-        if (requester.equals(dto.nickname())) {
+        User requester = userService.checkUser(dto.nickname());
+        if (requester.getRole().equals("admin")) {
             return ResponseEntity.badRequest().body(Map.of("error", "you can't ban the admin"));
         }
 

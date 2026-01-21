@@ -26,4 +26,9 @@ public class BanUserEntity {
     private long expiresAt;
 
     private int counter = 1;
+
+    public Date getExpiresAt() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getExpiresAt'");
+    }
 }
