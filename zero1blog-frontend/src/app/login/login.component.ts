@@ -51,7 +51,7 @@ export class LoginComponent {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Login failed:', error);
+          console.log('Login failed:', error);
           this.errorMessage = 'please try again';
           this.isLoading = false;
         },

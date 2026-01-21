@@ -49,13 +49,17 @@ export class PostsComponent implements OnInit, OnDestroy {
     private offsetService: OffsetLimitService,
     public postsService: PostsService,
     private toast: ToastService,
-    private auth: AuthService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
     this.auth.ensureUserData().subscribe({
       next: (res) => {
         this.isAdmin = res?.role === 'admin';
+      },
+      error: (err) => {
+        console.log(err);
+        this.toast.show(err.error.error);
       },
     });
     this.currentPath = this.router.url;
@@ -149,7 +153,7 @@ export class PostsComponent implements OnInit, OnDestroy {
       .post<any>(
         `${this.baseUrl}/reaction`,
         { target: 'post', targetId: postId, reactionType: reaction },
-        { headers },
+        { headers }
       )
       .subscribe({
         next: (res) => {
@@ -158,7 +162,7 @@ export class PostsComponent implements OnInit, OnDestroy {
           targetedPost.likes = res.likes;
           targetedPost.reacted = res.reacted;
         },
-        error: (e) => console.error(e),
+        error: (e) => console.log(e),
       });
   }
 
@@ -197,7 +201,7 @@ export class PostsComponent implements OnInit, OnDestroy {
             this.toast.show(res.message, Type.success);
           }
         },
-        error: (err) => console.error(err),
+        error: (err) => console.log(err),
       });
   }
 

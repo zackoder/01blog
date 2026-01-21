@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment.prod';
 import { AuthService } from '../services/auth-service.service.spec';
 import { PostsComponent } from '../posts/posts.component';
 import { ProfileDataComponent } from '../profile-data/profile-data.component';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -19,12 +20,16 @@ export class ProfileComponent implements OnInit {
     private rout: Router,
     private http: HttpClient,
     private auth: AuthService,
+    private toast: ToastService
   ) {}
   fetchProfileData() {
     if (!this.rout.url.startsWith('/profile')) return;
     this.auth.ensureUserData().subscribe({
       next: (res) => {
         this.data = res;
+      },
+      error: (err) => {
+        this.toast.show(err.error.error);
       },
     });
 

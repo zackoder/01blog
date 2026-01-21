@@ -65,7 +65,7 @@ export class RepotedUsersComponent {
         },
         error: (err) => {
           this.toast.show(err.error.error);
-          console.error('Ban failed', err);
+          console.log('Ban failed', err);
         },
       });
   }

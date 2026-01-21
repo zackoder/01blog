@@ -84,7 +84,7 @@ export class RepotedPostsComponent {
             });
           }
         },
-        error: (err) => console.error(err),
+        error: (err) => console.log(err),
       });
   }
   goToProfile(nickname: string) {
@@ -115,7 +115,7 @@ export class RepotedPostsComponent {
           this.post.likes = res.likes;
           this.post.reacted = res.reacted;
         },
-        error: (e) => console.error(e),
+        error: (e) => console.log(e),
       });
   }
   formatDate(ceaiation: number) {

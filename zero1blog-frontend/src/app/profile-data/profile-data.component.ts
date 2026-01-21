@@ -53,7 +53,7 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private toasts: ToastService,
-    private auth: AuthService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +61,10 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     this.auth.ensureUserData().subscribe({
       next: (res) => {
         this.isAdmin = res?.role === 'admin';
+      },
+      error: (err) => {
+        console.log(err.error.error);
+        this.toasts.show(err.error.error);
       },
     });
   }
@@ -152,7 +156,7 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     this.http
       .get<any>(
         `${this.baseUrl}/follow?followedNickname=${this.userData.nickname}`,
-        { headers },
+        { headers }
       )
       .subscribe({
         next: (res) => {

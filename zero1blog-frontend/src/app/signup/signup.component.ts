@@ -105,7 +105,7 @@ export class SignupComponent {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Signup failed:', error);
+          console.log('Signup failed:', error);
           this.isLoading = false;
         },
       });

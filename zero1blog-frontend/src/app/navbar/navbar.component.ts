@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../services/auth-service.service.spec';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,13 +18,21 @@ export class NavbarComponent implements OnInit {
   data: any;
   currentPath: string = '';
 
-  constructor(private router: Router, public auth: AuthService) {
+  constructor(
+    private router: Router,
+    public auth: AuthService,
+    private toast: ToastService
+  ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPath = this.router.url;
         this.auth.ensureUserData().subscribe({
           next: (res) => {
             this.data = res;
+          },
+          error: (err) => {
+            console.log(err);
+            this.toast.show(err.error.error);
           },
         });
       }
@@ -36,31 +45,6 @@ export class NavbarComponent implements OnInit {
     this.router.navigate([`/profile/${this.data.nickname}`]);
     this.show = false;
   }
-
-  // userCredentials() {
-  //   const headers = checkToken();
-
-  //   if (this.currentPath === '/login' || this.currentPath === '/signup') return;
-  //   if (!headers.has('Authorization')) {
-  //     this.router.navigate(['/login']);
-  //     return;
-  //   }
-
-  //   if (this.isLoading) return;
-  //   this.isLoading = true;
-  //   this.http.get(`${this.baseUrl}/userCredentials`, { headers }).subscribe({
-  //     next: (res) => {
-  //       this.data = res;
-  //       console.log(this.data);
-  //       this.isAdmin = this.data.role === 'admin';
-  //       this.isLoading = false;
-  //     },
-  //     error: (err) => {
-  //       console.log(err);
-  //       this.isLoading = false;
-  //     },
-  //   });
-  // }
 
   toggle() {
     this.show = !this.show;
