@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, finalize, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
+import { Router } from '@angular/router';
 
 interface UserCredentials {
   id: number;
@@ -20,7 +21,10 @@ export class AuthService {
     return this.userDataSource.value;
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private rout: Router,
+  ) {}
 
   ensureUserData(): Observable<UserCredentials | null> {
     if (this.userDataSource.value) {
@@ -38,9 +42,14 @@ export class AuthService {
       })
       .pipe(
         tap((user) => this.userDataSource.next(user)),
-        catchError(() => {
+        catchError((err) => {
           this.clearUser();
-          return of(null);
+
+          if (err.status === 404 && !this.rout.url.match('/signup')) {
+            this.rout.navigate(['/login']);
+            return of(null);
+          }
+          return of(err);
         }),
       );
   }
@@ -50,49 +59,3 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 }
-// export class AuthService {
-//   private baseUrl = environment.apiUrl;
-
-//   private userDataSource = new BehaviorSubject<UserCredentials | null>(null);
-//   public userData$: Observable<UserCredentials | null> =
-//     this.userDataSource.asObservable();
-
-//   private loadingSubject = new BehaviorSubject<boolean>(false);
-//   public isLoading$ = this.loadingSubject.asObservable();
-
-//   constructor(
-//     private http: HttpClient,
-//     private router: Router,
-//   ) {}
-
-//   fetchUserCredentials(): Observable<UserCredentials> {
-//     const headers = checkToken();
-
-//     if (!headers.has('Authorization')) {
-//       this.router.navigate(['/login']);
-//     }
-
-//     this.loadingSubject.next(true);
-
-//     return this.http
-//       .get<UserCredentials>(`${this.baseUrl}/userCredentials`, { headers })
-//       .pipe(
-//         tap((res) => {
-//           this.userDataSource.next(res);
-//         }),
-//         finalize(() => this.loadingSubject.next(false)),
-//       );
-//   }
-
-//   subscribe() {
-//     this.fetchUserCredentials().subscribe();
-//   }
-
-//   clearUser() {
-//     this.userDataSource.next(null);
-//   }
-
-//   get userDataValue(): UserCredentials | null {
-//     return this.userDataSource.value;
-//   }
-// }

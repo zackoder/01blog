@@ -133,6 +133,10 @@ public class PostService {
     }
 
     public void deletePost(long id) throws IOException {
+        Post post = postRepo.findById(id).orElseThrow(() -> new NotFoundException("post not found"));
+        if (!post.getImagePath().isEmpty()) {
+            removeFile(post.getImagePath().substring(1));
+        }
         postRepo.deleteById(id);
     }
 

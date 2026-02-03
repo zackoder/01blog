@@ -39,17 +39,18 @@ export class AddPostComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private user: AuthService,
-    private toasts: ToastService
+    private toasts: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
     this.user.ensureUserData().subscribe({
       next: (res) => {
-        this.data = res;
+        this.userData = res;
+        this.isLoading = false;
       },
       error: (err) => {
-        console.log(err);
+        this.isLoading = false;
         this.toasts.show(err.error.error);
       },
     });
@@ -119,7 +120,7 @@ export class AddPostComponent implements OnInit {
 
     formData.append(
       'content',
-      new Blob([JSON.stringify(postPayload)], { type: 'application/json' })
+      new Blob([JSON.stringify(postPayload)], { type: 'application/json' }),
     );
 
     if (this.selectedFile) {

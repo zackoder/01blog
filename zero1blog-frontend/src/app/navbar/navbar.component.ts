@@ -21,17 +21,17 @@ export class NavbarComponent implements OnInit {
   constructor(
     private router: Router,
     public auth: AuthService,
-    private toast: ToastService
+    private toast: ToastService,
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPath = this.router.url;
         this.auth.ensureUserData().subscribe({
           next: (res) => {
+            this.isAdmin = res?.role === 'admin';
             this.data = res;
           },
           error: (err) => {
-            console.log(err);
             this.toast.show(err.error.error);
           },
         });

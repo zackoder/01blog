@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.zack.demo.config.SecurityConfig;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserRepository;
 
@@ -20,6 +21,9 @@ public class SignupService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SecurityConfig securityConfig;
 
     public String registerUser(SignupRequestDto dto, MultipartFile profileImage) throws IOException {
         if (userRepository.existsByEmail(dto.email())) {
@@ -49,12 +53,13 @@ public class SignupService {
             filePath = "default-avatar.jpg";
         }
 
+        String encodedPass = securityConfig.passwordEncoder().encode(dto.password());
         user.setImagePath("/uploads/" + filePath);
         user.setNickname(dto.nickname());
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
         user.setEmail(dto.email());
-        user.setPassword(dto.password());
+        user.setPassword(encodedPass);
         user.setBio(dto.bio());
 
         User savedUser = userRepository.save(user);
