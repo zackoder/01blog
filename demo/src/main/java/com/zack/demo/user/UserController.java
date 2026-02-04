@@ -34,6 +34,12 @@ public class UserController {
         return ResponseEntity.ok().body(CredentialsDto);
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<?> getMethodName(@RequestHeader("authorization") String jwt) {
+        List<GetCredentialsDto> users = userService.getUsers();
+        return ResponseEntity.ok().body(users);
+    }
+
     @GetMapping("/userData/{nickname}")
     public ResponseEntity<?> getUserData(@RequestParam("offset") long offset, @PathVariable String nickname,
             @RequestHeader("authorization") String jwt) {

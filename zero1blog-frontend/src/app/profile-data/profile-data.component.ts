@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject, filter, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
@@ -52,12 +52,19 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private route: ActivatedRoute,
     private toasts: ToastService,
-    private auth: AuthService
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
-    this.getProfileData();
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const nickname = params['nickname'];
+      if (nickname) {
+        this.getProfileData(nickname);
+      }
+    });
+
     this.auth.ensureUserData().subscribe({
       next: (res) => {
         this.isAdmin = res?.role === 'admin';
@@ -74,22 +81,19 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  getProfileData() {
+  getProfileData(nickname: string) {
+    if (!this.router.url.startsWith('/profile')) {
+      return;
+    }
+
     const headers = checkToken();
     if (!headers.has('Authorization')) {
       this.router.navigate(['/login']);
       return;
     }
 
-    if (!this.router.url.startsWith('/profile')) {
-      return;
-    }
-
     if (this.isLoading) return;
     this.isLoading = true;
-
-    const pathValues = this.router.url.split('/');
-    const nickname = pathValues[pathValues.length - 1];
 
     this.http
       .get<ProfileData>(`${this.baseUrl}/profileData?nickname=${nickname}`, {
@@ -156,7 +160,7 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     this.http
       .get<any>(
         `${this.baseUrl}/follow?followedNickname=${this.userData.nickname}`,
-        { headers }
+        { headers },
       )
       .subscribe({
         next: (res) => {

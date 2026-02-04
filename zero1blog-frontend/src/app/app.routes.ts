@@ -23,7 +23,7 @@ export const routes: Routes = [
     title: 'home',
   },
   {
-    path: 'profile/:id',
+    path: 'profile/:nickname',
     component: ProfileComponent,
   },
 

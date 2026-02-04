@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
 import { Router } from '@angular/router';
 
-interface UserCredentials {
+export interface UserCredentials {
   id: number;
   nickname: string;
   avatar: string;
@@ -33,6 +33,7 @@ export class AuthService {
 
     const headers = checkToken();
     if (!headers.has('Authorization')) {
+      this.rout.navigate(['/login']);
       return of(null);
     }
 

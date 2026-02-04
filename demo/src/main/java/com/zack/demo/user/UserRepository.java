@@ -7,12 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
         Optional<User> findByEmail(String email);
 
         Optional<User> findByNickname(String nickname);
+
+        @Query(value = """
+                        SELECT id, nickname, image_path, role FROM users u where u.role != 'admin';
+                        """, nativeQuery = true)
+        List<GetCredentialsDto> getAllUsers();
 
         Optional<User> findById(long nickname);
 
