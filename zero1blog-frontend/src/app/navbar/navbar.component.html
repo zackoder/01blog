@@ -24,6 +24,14 @@
         01<span class="text-info">blog</span>
       </a>
 
+      @if (showSearchResults) {
+        <div
+          class="position-fixed top-0 start-0 w-100 h-100"
+          style="z-index: 1040"
+          (click)="showSearchResults = false"
+        ></div>
+      }
+
       <div
         class="d-flex mx-auto position-relative search-container order-last order-md-1 mt-2 mt-md-0"
       >
@@ -32,13 +40,48 @@
           class="form-control rounded-pill border-0 text-white pe-5"
           style="background-color: rgba(255, 255, 255, 0.1)"
           placeholder="Search..."
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
+          [ngModel]="searchQuery"
+          (ngModelChange)="searchQuery = $event; onSearch()"
+          (keydown)="onKeyDown($event)"
         />
         <i
           class="fa-solid fa-magnifying-glass position-absolute top-50 end-0 translate-middle-y me-3 text-info cursor-pointer"
           (click)="onSearch()"
         ></i>
+
+        @if (showSearchResults && searchResults.length > 0) {
+          <ul
+            class="list-group position-absolute w-100 mt-2 shadow-lg overflow-hidden animate slide-in"
+            style="
+              top: 100%;
+              z-index: 1050;
+              background-color: #1b263b;
+              border: 1px solid rgba(65, 90, 119, 0.4);
+              border-radius: 12px;
+            "
+          >
+            @for (result of searchResults; track result.id; let i = $index) {
+              <li
+                class="list-group-item border-0 text-white cursor-pointer d-flex align-items-center gap-3 px-3 py-2"
+                [class.active-result]="i === selectedIndex"
+                style="
+                  background-color: transparent;
+                  transition: background-color 0.2s;
+                "
+                (click)="navigateToProfile(result.nickname)"
+                (mouseenter)="selectedIndex = i"
+              >
+                <img
+                  [src]="'http://localhost:8080' + result.avatar"
+                  class="rounded-circle border border-info object-fit-cover"
+                  style="width: 35px; height: 35px"
+                  alt="avatar"
+                />
+                <span class="fw-medium">{{ result.nickname }}</span>
+              </li>
+            }
+          </ul>
+        }
       </div>
 
       <div

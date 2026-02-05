@@ -21,6 +21,9 @@ export class NavbarComponent implements OnInit {
   data: any;
   currentPath: string = '';
   searchQuery: string = '';
+  searchResults: any[] = [];
+  showSearchResults: boolean = false;
+  selectedIndex: number = -1;
 
   constructor(
     private router: Router,
@@ -85,19 +88,57 @@ export class NavbarComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    if (this.searchQuery.trim() !== '') {
-      console.log('search query', this.searchQuery);
 
+    if (this.searchQuery.trim() !== '') {
       this.http
-        .get(`${this.baseUrl}/search?query=${this.searchQuery}`, { headers })
+        .get<any[]>(`${this.baseUrl}/search?query=${this.searchQuery}`, {
+          headers,
+        })
         .subscribe({
           next: (res) => {
-            console.log('search res', res);
+            this.searchResults = res;
+            this.showSearchResults = true;
+            this.selectedIndex = -1;
           },
           error: (err) => {
             console.log('search err', err);
           },
         });
     }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (this.showSearchResults && this.searchResults.length > 0) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.selectedIndex =
+          (this.selectedIndex + 1) % this.searchResults.length;
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        this.selectedIndex =
+          (this.selectedIndex - 1 + this.searchResults.length) %
+          this.searchResults.length;
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (this.selectedIndex >= 0) {
+          this.navigateToProfile(
+            this.searchResults[this.selectedIndex].nickname,
+          );
+        } else {
+          this.onSearch();
+        }
+      } else if (event.key === 'Escape') {
+        this.showSearchResults = false;
+      }
+    } else if (event.key === 'Enter') {
+      this.onSearch();
+    }
+  }
+
+  navigateToProfile(nickname: string) {
+    this.router.navigate([`/profile/${nickname}`]);
+    this.showSearchResults = false;
+    this.searchQuery = '';
+    this.searchResults = [];
   }
 }

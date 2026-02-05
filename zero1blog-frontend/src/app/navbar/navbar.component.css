@@ -66,3 +66,8 @@
     width: 35%;
   }
 }
+
+.active-result {
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+}
