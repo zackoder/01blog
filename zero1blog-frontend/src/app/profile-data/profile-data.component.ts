@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment.prod';
 import { checkToken } from '../utils/dateFormater';
 import { ReportComponent } from '../report/report.component';
 import { ToastService, Type } from '../services/toast.service';
+// import { AuthService } from '../services/auth-service.service';
 import { AuthService } from '../services/auth-service.service.spec';
 
 interface ProfileData {
@@ -66,10 +67,10 @@ export class ProfileDataComponent implements OnInit, OnDestroy {
     });
 
     this.auth.ensureUserData().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isAdmin = res?.role === 'admin';
       },
-      error: (err) => {
+      error: (err: any) => {
         console.log(err.error.error);
         this.toasts.show(err.error.error);
       },

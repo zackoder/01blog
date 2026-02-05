@@ -10,6 +10,7 @@ import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-profile',
+  standalone: true,
   imports: [PostsComponent, ProfileDataComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',

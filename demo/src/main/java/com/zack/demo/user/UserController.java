@@ -34,9 +34,10 @@ public class UserController {
         return ResponseEntity.ok().body(CredentialsDto);
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<?> getMethodName(@RequestHeader("authorization") String jwt) {
-        List<GetCredentialsDto> users = userService.getUsers();
+    @GetMapping("/search")
+    public ResponseEntity<?> getMethodName(@RequestParam("query") String query,
+            @RequestHeader("authorization") String jwt) {
+        List<GetCredentialsDto> users = userService.getUsers(query);
         return ResponseEntity.ok().body(users);
     }
 

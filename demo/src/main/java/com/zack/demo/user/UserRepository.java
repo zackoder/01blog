@@ -16,9 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
         Optional<User> findByNickname(String nickname);
 
         @Query(value = """
-                        SELECT id, nickname, image_path, role FROM users u where u.role != 'admin';
+                        SELECT id, nickname, image_path, role FROM users u where u.nickname ILIKE %:query% and u.role != 'admin';
                         """, nativeQuery = true)
-        List<GetCredentialsDto> getAllUsers();
+        List<GetCredentialsDto> getAllUsers(@Param("query") String query);
 
         Optional<User> findById(long nickname);
 

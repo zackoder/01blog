@@ -57,3 +57,12 @@
     transform: translateY(0);
   }
 }
+
+.search-container {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .search-container {
+    width: 35%;
+  }
+}

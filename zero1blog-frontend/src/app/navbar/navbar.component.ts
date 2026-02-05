@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment.prod';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../services/auth-service.service.spec';
 import { ToastService } from '../services/toast.service';
+import { HttpClient } from '@angular/common/http';
+import { checkToken } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
@@ -17,22 +20,27 @@ export class NavbarComponent implements OnInit {
   isLoading = false;
   data: any;
   currentPath: string = '';
+  searchQuery: string = '';
 
   constructor(
     private router: Router,
     public auth: AuthService,
     private toast: ToastService,
+    private http: HttpClient,
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPath = this.router.url;
+        this.isLoading = true;
         this.auth.ensureUserData().subscribe({
-          next: (res) => {
+          next: (res: any) => {
             this.isAdmin = res?.role === 'admin';
             this.data = res;
+            this.isLoading = false;
           },
-          error: (err) => {
+          error: (err: any) => {
             this.toast.show(err.error.error);
+            this.isLoading = false;
           },
         });
       }
@@ -69,5 +77,27 @@ export class NavbarComponent implements OnInit {
   goToDashboard() {
     this.show = false;
     this.router.navigate(['/dashboard']);
+  }
+
+  onSearch() {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.searchQuery.trim() !== '') {
+      console.log('search query', this.searchQuery);
+
+      this.http
+        .get(`${this.baseUrl}/search?query=${this.searchQuery}`, { headers })
+        .subscribe({
+          next: (res) => {
+            console.log('search res', res);
+          },
+          error: (err) => {
+            console.log('search err', err);
+          },
+        });
+    }
   }
 }

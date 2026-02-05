@@ -32,6 +32,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   private baseUrl = environment.apiUrl;
   nothingToFetch = false;
   isLoading = false;
+  skeletonPosts = new Array(3).fill(0);
   prevScrollPosition = window.pageYOffset;
   targetedPost = -1;
   reportForm = false;

@@ -1,14 +1,50 @@
-@if (data) {
-  <nav class="navbar navbar-expand fixed-top shadow-lg custom-navbar py-2">
+@if (isLoading) {
+  <nav class="navbar navbar-expand-md fixed-top shadow-lg custom-navbar py-2">
+    <div class="container-fluid px-md-5">
+      <a class="navbar-brand fw-bold fs-2 text-white cursor-pointer">
+        01<span class="text-info">blog</span>
+      </a>
+
+      <div class="ms-auto placeholder-glow">
+        <div
+          class="placeholder rounded-circle"
+          style="width: 45px; height: 45px; background-color: #415a77"
+        ></div>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-spacer"></div>
+} @else if (data) {
+  <nav class="navbar navbar-expand-md fixed-top shadow-lg custom-navbar py-2">
     <div class="container-fluid px-md-5">
       <a
-        class="navbar-brand fw-bold fs-2 text-white cursor-pointer"
+        class="navbar-brand fw-bold fs-2 text-white cursor-pointer order-0"
         (click)="goHome()"
       >
         01<span class="text-info">blog</span>
       </a>
 
-      <div class="ms-auto position-relative" style="overflow: visible">
+      <div
+        class="d-flex mx-auto position-relative search-container order-last order-md-1 mt-2 mt-md-0"
+      >
+        <input
+          type="text"
+          class="form-control rounded-pill border-0 text-white pe-5"
+          style="background-color: rgba(255, 255, 255, 0.1)"
+          placeholder="Search..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        />
+        <i
+          class="fa-solid fa-magnifying-glass position-absolute top-50 end-0 translate-middle-y me-3 text-info cursor-pointer"
+          (click)="onSearch()"
+        ></i>
+      </div>
+
+      <div
+        class="ms-auto position-relative order-1 order-md-2"
+        style="overflow: visible"
+      >
         <div class="d-flex align-items-center gap-3">
           @if (isAdmin) {
             <span class="badge rounded-pill admin-badge px-3 py-1 small">

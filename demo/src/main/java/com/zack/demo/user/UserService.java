@@ -104,7 +104,7 @@ public class UserService {
         bandUserRBanedUserRepo.save(ban);
     }
 
-    public List<GetCredentialsDto> getUsers() {
-        return userRepository.getAllUsers();
+    public List<GetCredentialsDto> getUsers(String query) {
+        return userRepository.getAllUsers(query);
     }
 }
