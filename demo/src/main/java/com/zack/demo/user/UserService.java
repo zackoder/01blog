@@ -70,9 +70,13 @@ public class UserService {
         return findByNickname(nickName).orElseThrow(() -> new NotFoundException("User Not Found"));
     }
 
+    public boolean isFollowing(Long followerId, Long followedId) {
+        return userRepository.isFollowing(followerId, followedId);
+    }
+
     public UserProfileResponseDto getProfileData(User user, User requester) {
         boolean isOwner = user.getId().equals(requester.getId());
-        boolean isFollowing = userRepository.isFollowing(requester.getId(), user.getId());
+        boolean isFollowing = isFollowing(requester.getId(), user.getId());
 
         return new UserProfileResponseDto(user.getNickname(), user.getFirstName(), user.getLastName(),
                 user.getBio(),
@@ -82,7 +86,7 @@ public class UserService {
     }
 
     public String toggleFollow(User follower, User followed) {
-        if (userRepository.isFollowing(follower.getId(), followed.getId())) {
+        if (isFollowing(follower.getId(), followed.getId())) {
             userRepository.unfollowUser(follower.getId(), followed.getId());
             return "unfollowed";
         } else {
@@ -97,14 +101,25 @@ public class UserService {
 
     public void saveBan(BanDto dto) {
         User user = checkUser(dto.nickname());
+        int counter = 1;
+        BanUserEntity banned = bandUserRBanedUserRepo.findByUserId(user.getId());
+
         BanUserEntity ban = new BanUserEntity();
+        if (banned != null) {
+            ban.setId(banned.getId());
+            counter = banned.getCounter() + 1;
+        }
+
+        System.out.println(counter);
         ban.setReason(dto.reason());
-        ban.setExpiresAt(new java.util.Date().getTime() + (1000 * 60 * 60 + ban.getCounter() * 3));
+        ban.setExpiresAt(new java.util.Date().getTime() + (24 * 1000 * 60 * 60 * counter));
         ban.setUserId(user.getId());
+        ban.setCounter(counter);
         bandUserRBanedUserRepo.save(ban);
     }
 
     public List<GetCredentialsDto> getUsers(String query) {
         return userRepository.getAllUsers(query);
     }
+
 }

@@ -2,6 +2,7 @@ package com.zack.demo.comments;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,13 +52,20 @@ public class CommentsController {
     @GetMapping("/getComments")
     public ResponseEntity<?> getComments(@RequestParam("id") long id, @RequestHeader("authorization") String jwt) {
 
-        List<CommentsResDto> comments = commentsService.getAllComments(id);
+        String nickname = jwtService.extractUsername(jwt.substring(7));
+
+        List<CommentsResDto> comments = commentsService.getAllComments(id, nickname);
         return ResponseEntity.ok().body(comments);
     }
 
     @DeleteMapping("/deleteComment")
     public ResponseEntity<?> deleteComment(@RequestParam("id") long id, @RequestHeader("authorization") String jwt) {
-        
-        return ResponseEntity.ok().body(null);
+
+        String nickname = jwtService.extractUsername(jwt.substring(7));
+        String res = commentsService.deleteComment(id, nickname);
+        if (res.equals("deleted")) {
+            return ResponseEntity.ok().body(Map.of("message", "deleted"));
+        }
+        return ResponseEntity.badRequest().body(Map.of("error", res));
     }
 }

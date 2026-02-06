@@ -22,7 +22,7 @@ public class ManualRateLimitFilter extends OncePerRequestFilter {
     private StringRedisTemplate redisTemplate;
 
     private final int MAX_REQUESTS = 100;
-    private final long BAN_TIME_DAYS = 1;
+    private final long BAN_TIME_MINUTES = 1;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -34,7 +34,7 @@ public class ManualRateLimitFilter extends OncePerRequestFilter {
         String banKey = "ban:" + userIdentifier;
 
         if (Boolean.TRUE.equals(redisTemplate.hasKey(banKey))) {
-            sendError(response, "You are banned for 24 hours due to excessive requests.");
+            sendError(response, "You are banned for " + BAN_TIME_MINUTES + " minute(s) due to excessive requests.");
             return;
         }
 
@@ -45,8 +45,8 @@ public class ManualRateLimitFilter extends OncePerRequestFilter {
         }
 
         if (count != null && count > MAX_REQUESTS) {
-            redisTemplate.opsForValue().set(banKey, "true", BAN_TIME_DAYS, TimeUnit.DAYS);
-            sendError(response, "Too many requests. You have been banned for 24 hours.");
+            redisTemplate.opsForValue().set(banKey, "true", BAN_TIME_MINUTES, TimeUnit.MINUTES);
+            sendError(response, "Too many requests. You have been banned for " + BAN_TIME_MINUTES + " minute(s).");
             return;
         }
 

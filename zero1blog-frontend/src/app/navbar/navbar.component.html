@@ -34,6 +34,7 @@
 
       <div
         class="d-flex mx-auto position-relative search-container order-last order-md-1 mt-2 mt-md-0"
+        style="z-index: 1050"
       >
         <input
           type="text"
@@ -94,6 +95,56 @@
               Admin
             </span>
           }
+
+          <div class="position-relative">
+            <button
+              class="btn btn-link text-info p-0"
+              (click)="checkNotifications()"
+            >
+              <i
+                class="fa-solid fa-bell fs-5"
+                (click)="checkNotifications(); toggleNotifications()"
+              ></i>
+            </button>
+
+            @if (showNotifications) {
+              <ul
+                class="dropdown-menu dropdown-menu-end show shadow-lg py-2 custom-dropdown animate slide-in"
+                style="
+                  position: absolute;
+                  right: 0;
+                  margin-top: 10px;
+                  width: 300px;
+                  max-height: 400px;
+                  overflow-y: auto;
+                "
+              >
+                <li
+                  class="px-3 py-2 text-info small border-bottom border-secondary border-opacity-25 mb-2"
+                >
+                  Notifications
+                </li>
+                @for (notif of notifications; track notif.id) {
+                  <li>
+                    <!-- <a
+                      class="dropdown-item py-2 border-bottom border-secondary border-opacity-10"
+                    > -->
+                    <div class="d-flex flex-column gap-1">
+                      <span class="text-white small"
+                        >New post from user {{ notif.nickname }}</span
+                      >
+                      <span class="text-white" style="font-size: 0.75rem">
+                        {{ formatDate(notif.createdAt) }}</span
+                      >
+                    </div>
+                    <!-- </a> -->
+                  </li>
+                } @empty {
+                  <li class="p-2 text-white">no notifications</li>
+                }
+              </ul>
+            }
+          </div>
 
           <div class="profile-wrapper position-relative" (click)="toggle()">
             <img

@@ -5,7 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../services/auth-service.service.spec';
 import { ToastService } from '../services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { checkToken } from '../utils/dateFormater';
+import { checkToken, formatDate } from '../utils/dateFormater';
 
 @Component({
   selector: 'app-navbar',
@@ -24,6 +24,8 @@ export class NavbarComponent implements OnInit {
   searchResults: any[] = [];
   showSearchResults: boolean = false;
   selectedIndex: number = -1;
+  notifications: any[] = [];
+  showNotifications = false;
 
   constructor(
     private router: Router,
@@ -140,5 +142,31 @@ export class NavbarComponent implements OnInit {
     this.showSearchResults = false;
     this.searchQuery = '';
     this.searchResults = [];
+  }
+
+  checkNotifications() {
+    if (!this.showNotifications) return;
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.http.get<any>(`${this.baseUrl}/notifications`, { headers }).subscribe({
+      next: (res) => {
+        this.notifications = res;
+      },
+      error: (err) => {
+        console.log('notification error', err);
+      },
+    });
+  }
+
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
+
+  formatDate(createdAt: number): string {
+    return formatDate(createdAt);
   }
 }

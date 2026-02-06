@@ -18,8 +18,13 @@ export class CommentsComponent implements OnInit {
   error: string = '';
   isLoading = false;
   comments: any[] = [];
+  showDeleteModal = false;
+  commentToDeleteId: number | null = null;
   private baseUrl = environment.apiUrl;
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     console.log('getting comments');
@@ -69,11 +74,12 @@ export class CommentsComponent implements OnInit {
           postId: this.postId,
           comment: this.comment,
         },
-        { headers }
+        { headers },
       )
       .subscribe({
         next: (res) => {
           console.log('res', res);
+          this.comments.unshift(res);
           this.isLoading = false;
           this.comment = '';
         },
@@ -86,5 +92,45 @@ export class CommentsComponent implements OnInit {
 
   dateFormatter(creationDate: number): string {
     return formatDate(creationDate);
+  }
+
+  onDelete(id: number) {
+    const headers = checkToken();
+
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.commentToDeleteId = id;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.commentToDeleteId = null;
+  }
+
+  confirmDelete() {
+    if (this.commentToDeleteId === null) return;
+
+    const headers = checkToken();
+
+    this.http
+      .delete(`${this.baseUrl}/deleteComment?id=${this.commentToDeleteId}`, {
+        headers,
+      })
+      .subscribe({
+        next: () => {
+          this.comments = this.comments.filter(
+            (c) => c.id !== this.commentToDeleteId,
+          );
+          this.closeDeleteModal();
+        },
+        error: (e) => {
+          console.log('error', e);
+          this.closeDeleteModal();
+        },
+      });
   }
 }

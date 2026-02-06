@@ -45,11 +45,11 @@ public class LoginController {
 
         Date now = new Date();
         if (banned != null) {
-            if (now.before(banned.getExpiresAt())) {
+            if (now.getTime() < banned.getExpiresAt()) {
                 System.out.println();
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "you have been banned", "duration",
-                                (now.getTime() - banned.getExpiresAt().getTime())));
+                        .body(Map.of("banned", true, "error", "you have been banned", "duration",
+                                (banned.getExpiresAt() - now.getTime())));
             }
         }
 

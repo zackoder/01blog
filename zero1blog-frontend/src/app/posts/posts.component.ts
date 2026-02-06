@@ -125,10 +125,9 @@ export class PostsComponent implements OnInit, OnDestroy {
       .get<Post[]>(`${this.baseUrl}${target}?offset=${offset}`, { headers })
       .subscribe({
         next: (data: Post[]) => {
-          if (!Array.isArray(data) || data.length === 0) {
+          if (data.length > 10) {
             this.nothingToFetch = true;
             this.isLoading = false;
-            return;
           }
           this.postsService.setPosts(data);
           this.isLoading = false;

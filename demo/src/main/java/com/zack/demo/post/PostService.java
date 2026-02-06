@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.management.Notification;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.tika.Tika;
@@ -21,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zack.demo.notifications.Notifications;
+import com.zack.demo.notifications.NotificationsRepo;
 import com.zack.demo.reactions.ReactionDtoResp;
 import com.zack.demo.reactions.ReactionService;
 import com.zack.demo.user.User;
@@ -40,6 +43,9 @@ public class PostService {
 
     @Autowired
     private ReactionService reactionService;
+
+    @Autowired
+    private NotificationsRepo notificationsRepo;
 
     public HashMap<String, ?> savePost(AddPostDto postDto, String userNickname, MultipartFile file) throws IOException {
         Post post = new Post();
@@ -70,6 +76,9 @@ public class PostService {
         post.setCreated_at(new Date().getTime() / 1000);
 
         Post newPost = postRepo.save(post);
+        Notifications notification = new Notifications(user.getId(), newPost.getId(),
+                new Date().getTime() / 1000);
+        notificationsRepo.save(notification);
 
         res.put("message", "successfully");
         res.put("postId", newPost.getId());

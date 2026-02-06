@@ -32,7 +32,9 @@ export class AuthService {
     }
 
     const headers = checkToken();
+
     if (!headers.has('Authorization')) {
+      if (this.rout.url.match('/signup')) return of(null);
       this.rout.navigate(['/login']);
       return of(null);
     }
@@ -46,8 +48,7 @@ export class AuthService {
         catchError((err) => {
           this.clearUser();
 
-          if (err.status === 404 && !this.rout.url.match('/signup')) {
-            this.rout.navigate(['/login']);
+          if (this.rout.url.match('/signup')) {
             return of(null);
           }
           return of(err);

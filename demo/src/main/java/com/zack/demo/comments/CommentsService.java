@@ -3,25 +3,32 @@ package com.zack.demo.comments;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zack.demo.notifications.Notifications;
+import com.zack.demo.notifications.NotificationsRepo;
 import com.zack.demo.post.Post;
 import com.zack.demo.post.PostRepo;
 import com.zack.demo.user.User;
 import com.zack.demo.user.UserRepository;
+import com.zack.demo.user.UserService;
 
 @Service
 public class CommentsService {
     @Autowired
-    private UserRepository userRepo;
+    private UserService userService;
     @Autowired
     private PostRepo postRepo;
     @Autowired
     private CommentsRepo commentsRepo;
+    @Autowired
+    private NotificationsRepo notificationsRepo;
 
     public boolean checkUser(String nickname) {
-        return userRepo.existsByNickname(nickname);
+        return userService.existsByNickname(nickname);
     }
 
     public boolean checkPost(long postId) {
@@ -39,7 +46,7 @@ public class CommentsService {
     }
 
     private Comments convertToComments(CommentsReqDto dto, String nickname) {
-        User user = userRepo.findByNickname(nickname).get();
+        User user = userService.checkUser(nickname);
         Post post = postRepo.findById(dto.getPostId()).get();
 
         Comments comment = new Comments();
@@ -53,23 +60,38 @@ public class CommentsService {
     private CommentsResDto commentsResDto(Comments comment) {
         CommentsResDto resDto = new CommentsResDto(comment.getId(), comment.getUser().getId(),
                 comment.getPost().getId(), comment.getContent(), comment.getUser().getNickname(),
-                comment.getCreatedAt());
+                comment.getCreatedAt(), true);
         return resDto;
     }
 
-    public List<CommentsResDto> getAllComments(long id) {
+    public List<CommentsResDto> getAllComments(long id, String nickname) {
         List<Comments> comments = commentsRepo.findAllByPostIdOrderByCreatedAtDesc(id);
-        return convetToResDto(comments);
+        return convetToResDto(comments, nickname);
     }
 
-    public List<CommentsResDto> convetToResDto(List<Comments> comments) {
+    public List<CommentsResDto> convetToResDto(List<Comments> comments, String nickname) {
         List<CommentsResDto> resDto = comments.stream().map(comment -> new CommentsResDto(
                 comment.getId(),
                 comment.getUser().getId(),
                 comment.getPost().getId(),
                 comment.getContent(),
                 comment.getUser().getNickname(),
-                comment.getCreatedAt())).toList();
+                comment.getCreatedAt(),
+                comment.getUser().getNickname().equals(nickname))).toList();
+
         return resDto;
     }
+
+    public String deleteComment(long id, String nickname) {
+        Comments comment = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("comment not found"));
+
+        if (!comment.getUser().getNickname().equals(nickname)) {
+            return "you are not the owner";
+        }
+
+        commentsRepo.delete(comment);
+        return "deleted";
+    }
+
+
 }
