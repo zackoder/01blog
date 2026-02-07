@@ -1,135 +1,74 @@
-com.zack.demo/
-├── DemoApplication.java
-├── user/
-│ ├── User.java (Entity)
-│ ├── UserDto.java (DTO)
-│ ├── UserController.java (REST API)
-│ ├── UserService.java (Business Logic)
-│ └── UserRepository.java (Database)
-├── auth/
-│ ├── LoginRequest.java
-│ ├── LoginResponse.java
-│ ├── AuthController.java
-│ └── AuthService.java
-├── product/
-│ ├── Product.java
-│ ├── ProductController.java
-│ ├── ProductService.java
-│ └── ProductRepository.java
-└── config/
-├── SecurityConfig.java
-└── CorsConfig.java
+# 01blog
 
-https://chatgpt.com/c/6907b1cc-57b8-8328-a6fc-58cb08330059
+**01blog** is a full-featured blogging application that allows users to share their thoughts, engage with content, and manage their profiles. It includes a robust administration dashboard for content moderation and user management.
 
-#### General
+## 🚀 Features
 
-###### Is the source code organized with a clear and logical folder structure?
+### User Features
 
-###### Is a README file included with setup instructions and used technologies?
+- **Authentication**: Secure registration and login using JWT.
+- **Blog Management**: Create, edit, and delete blog posts with media support.
+- **Engagement**:
+  - Like and dislike posts.
+  - Comment on posts.
+  - Report inappropriate content.
+- **Social**: Follow and unfollow other users to see their posts in your feed.
+- **Profile**: Manage user profile and view followers/following.
 
-#### Functional
+### Admin Features
 
-**_Ask the student to justify their answers and show the relevant implementation when needed._**
+- **Dashboard**: Overview of platform activity.
+- **Content Moderation**:
+  - View reported content.
+  - Hide or remove inappropriate blogs.
+- **User Management**:
+  - Ban users for policy violations.
+  - Delete user accounts.
 
-###### Is the project structured as a fullstack application with separate backend (Spring Boot) and frontend (Angular)?
+## 🛠️ Tech Stack
 
-###### Is the communication between frontend and backend done through REST APIs?
+### Backend
 
-###### Is user authentication implemented using JWT or Spring Security?
+- **Framework**: Spring Boot (Java)
+- **Database**: PostgreSQL
+- **Security**: Spring Security with JWT (JSON Web Tokens)
+- **ORM**: Spring Data JPA
+- **Tools**: Lombok, Maven.
 
-###### Is role-based access control (admin/user) correctly enforced?
+### Frontend
 
-###### Are user sessions and authentication tokens securely managed?
+- **Framework**: Angular
+- **Styling**: Bootstrap
+- **HTTP Client**: Angular HttpClient
 
-###### Are all actions (posting, liking, commenting, subscribing, reporting) properly validated?
+## ⚙️ Installation & Setup
 
-###### Is error handling present on both backend and frontend?
+### Prerequisites
 
-###### Are media files (images/videos) uploaded and stored securely?
+- Java 17+
+- Node.js & npm
+- PostgreSQL
+- Angular CLI
+- Redis
 
-###### Are posts created, edited, and deleted with appropriate access control?
+### Setup
+if you want  don't have postgerSql installed run this commend
+```bash
+  ./installPostgre.sh
+```
 
-###### Do users receive notifications when subscribed profiles publish posts?
+after cloning the project enter to the repo and run the commend
+```bash
+  ./runner.sh
+```
 
-#### Backend Logic & Security
+## 📝 API Endpoints Overview
 
-###### Is the password stored using a hashing algorithm (e.g., BCrypt)?
+- **Auth**: `/api/register`, `/api/login`
+- **Users**: `/api/users/{username}`, `/api/users/follow/{id}`
+- **Posts**: `/api/posts`, `/api/posts/{id}/like`, `/api/posts/{id}/comment`
+- **Admin**: `/api/admin/reports`, `/api/admin/users/ban`
 
-###### Are database relationships (e.g., users, posts, comments, reports) correctly set up?
+## 🤝 Contributing
 
-###### Are reports on profiles/posts saved with reasons and timestamps?
-
-###### Are reports hidden from regular users and visible only to admins?
-
-###### Is all input sanitized to prevent SQL injection or XSS attacks?
-
-###### Are all admin-only routes protected by access control?
-
-###### Can the admin delete or ban users and remove inappropriate posts?
-
-###### Are notifications generated automatically when new posts are made?
-
-#### Frontend (Angular)
-
-###### Is the UI divided into Angular components with proper routing and services?
-
-###### Is the UI responsive and mobile-friendly?
-
-###### Are media uploads previewed before submission?
-
-###### Are user roles reflected in the interface (admin tools not visible to regular users)?
-
-###### Can users like, comment, and view posts smoothly?
-
-###### Are all actions (post/report/subscribe) confirmed with visual feedback?
-
-###### Is there a user-friendly UI for reporting users with a reason?
-
-###### Is Angular Material or Bootstrap used for styling and components?
-
-#### Post Interactions
-
-###### Can users create, edit, and delete posts?
-
-###### Are media, timestamps, likes, and comments shown on each post?
-
-###### Can users like and comment on others' posts?
-
-###### Are deleted posts and comments removed correctly from the interface?
-
-###### Are uploaded files retrievable without corruption?
-
-#### Admin Functionality
-
-###### Can the admin view all users, posts, and submitted reports?
-
-###### Can the admin delete or ban users?
-
-###### Can the admin remove or hide posts?
-
-###### Is there a dedicated admin dashboard with clear navigation?
-
-###### Are admin actions confirmed before they take effect?
-
-#### Testing and Stability
-
-###### Is the app functional under multiple users?
-
-###### Does the app handle edge cases (e.g., empty posts, invalid files, duplicate usernames)?
-
-###### Is the browser console free of errors?
-
-###### Are invalid routes or actions handled with proper error messages?
-
-#### Bonus
-
-###### +Does the platform support real-time updates (e.g., comments or notifications)?
-
-###### +Is there infinite scrolling on the post feed?
-
-###### +Is dark mode toggle available?
-
-###### +Are basic admin analytics visible (e.g., number of posts, reported users)?
-
-###### +Does the post editor support Markdown?
+Contributions are welcome! Please fork the repository and submit a pull request.
