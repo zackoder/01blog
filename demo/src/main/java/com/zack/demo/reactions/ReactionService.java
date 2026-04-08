@@ -1,6 +1,5 @@
 package com.zack.demo.reactions;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -23,67 +22,53 @@ public class ReactionService {
     @Autowired
     private ReactionRepo reactionRepo;
 
-    // i have to add the comment repo
-    public boolean validateDto(ReactionDto dto) {
-        System.out.println(dto);
-        if (dto.getReactionType().isEmpty()
-                || (!dto.getReactionType().equals("like") && !dto.getReactionType().equals("dislike"))) {
-            return false;
+    private ReactionDto dto;
+
+    public HashMap<String, String> validateDto(ReactionDto dto) {
+        HashMap<String, String> res = new HashMap<>();
+        if (dto.reactionType().isEmpty()
+                || (!dto.reactionType().equals("like") && !dto.reactionType().equals("dislike"))) {
+            res.put("error", "bad request");
+            return res;
         }
 
-        if (!dto.getTarget().equals("post") && !dto.getTarget().equals("comment")) {
-            return false;
+        Optional<Post> postOption = post.findById(dto.targetId());
+        if (postOption.isEmpty()) {
+            res.put("error", "bad request");
+            return res;
         }
-
-        if (dto.getTarget().equals("post")) {
-            Optional<Post> postOption = post.findById(dto.getTargetId());
-            if (postOption.isEmpty()) {
-                return false;
-            }
-        } else {
-            // here i should hadle the case of the comment reaction
-        }
-
-        return true;
+        this.dto = dto;
+        return res;
     }
 
-    public HashMap<Object, Object> seveReaction(ReactionDto dto, String nickname) {
-        HashMap<Object, Object> ret = new HashMap<>();
+    public boolean checkUser(String nickname) {
+        return user.existsByNickname(nickname);
+    }
+
+    public void seveReaction(String nickname) {
         Optional<User> userOptional = user.findByNickname(nickname);
-        if (userOptional == null || userOptional.isEmpty()) {
-            ret.put("error", "User not found");
-            return ret;
-        }
         User reacter = userOptional.get();
-        // here i should check if the who reacted following the poster
-        Optional<Reactions> reactionOptional = reactionRepo.findByPostIdAndUserId(dto.getTargetId(),
+        Optional<Reactions> reactionOptional = reactionRepo.findByPostIdAndUserId(this.dto.targetId(),
                 reacter.getId());
+        Reactions reaction = new Reactions();
         if (reactionOptional.isEmpty()) {
-            Reactions reaction = new Reactions();
-            reaction.setCreatedAt(new Date().getTime() / 1000);
-            reaction.setPostId(dto.getTargetId());
+            reaction.setPostId(this.dto.targetId());
             reaction.setUserId(reacter.getId());
-            reaction.setReaction_type(dto.getReactionType());
+            reaction.setReaction_type(dto.reactionType());
             reactionRepo.save(reaction);
-            ret.put("userId", reacter.getId());
-            return ret;
         } else {
-            Reactions reaction = reactionOptional.get();
-            if (reaction.getReaction_type().equals(dto.getReactionType())) {
+            reaction = reactionOptional.get();
+            if (reaction.getReaction_type().equals(dto.reactionType())) {
                 reactionRepo.delete(reaction);
             } else {
-                reaction.setReaction_type(dto.getReactionType());
-                var test = reactionRepo.save(reaction);
-                System.out.println(test);
-                ret.put("userId", reacter.getId());
+                reaction.setReaction_type(dto.reactionType());
+                reactionRepo.save(reaction);
             }
         }
-
-        // System.out.println(reaction.getReaction());
-        return ret;
     }
 
-    public ReactionRespDto getNewReactions(long userId, long postId) {
-        return reactionRepo.getNewReactions(postId, userId, postId);
+    public ReactionDtoResp countReaction(String nickname, long post_id) {
+        User user = this.user.findByNickname(nickname).get();
+        return reactionRepo.countReaction(user.getId(), post_id);
     }
 }

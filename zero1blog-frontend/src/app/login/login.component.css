@@ -1,28 +1,72 @@
-.password-requirements {
-  margin-top: 10px;
-  font-size: 14px;
+.custom-input:focus {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.25);
+  color: white;
 }
 
-.password-requirements p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
+.custom-input::placeholder {
+  color: rgba(224, 225, 221, 0.2);
+  font-size: 0.9rem;
 }
 
-.password-requirements .valid {
-  color: green;
-  font-weight: bold;
+.btn-info {
+  background-color: #00d4ff !important;
+  border: none;
+  color: #0d1b2a !important;
+  transition: all 0.3s ease;
 }
 
-.password-requirements .invalid {
-  color: red;
+.btn-info:hover:not(:disabled) {
+  background-color: #00b4d8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3) !important;
 }
 
-button:disabled {
-  opacity: 0.5;
+.btn-info:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-a {
-  position: relative;
-  z-index: 1000;
+.ls-1 {
+  letter-spacing: 1px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-underline:hover {
+  text-decoration: underline !important;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }

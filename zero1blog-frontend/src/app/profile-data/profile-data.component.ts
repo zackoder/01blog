@@ -1,0 +1,176 @@
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subject, filter, takeUntil } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
+import { checkToken } from '../utils/dateFormater';
+import { ReportComponent } from '../report/report.component';
+import { ToastService, Type } from '../services/toast.service';
+// import { AuthService } from '../services/auth-service.service';
+import { AuthService } from '../services/auth-service.service.spec';
+
+interface ProfileData {
+  id: number;
+  nickname: string;
+  firstName: string;
+  lastName: string;
+  bio: string;
+  avatar: string;
+  isFollower: boolean;
+  isOwner: boolean;
+}
+
+@Component({
+  selector: 'app-profile-data',
+  standalone: true,
+  imports: [ReportComponent],
+  templateUrl: './profile-data.component.html',
+  styleUrl: './profile-data.component.css',
+})
+export class ProfileDataComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  isLoading: boolean = false;
+  isLoadingFollow: boolean = false;
+  reportForm: boolean = false;
+  isAdmin: boolean = false;
+  banChecker: boolean = false;
+  deleteChecker: boolean = false;
+
+  userData: ProfileData = {
+    id: 0,
+    nickname: '',
+    lastName: '',
+    firstName: '',
+    bio: '',
+    avatar: '',
+    isFollower: false,
+    isOwner: false,
+  };
+
+  baseUrl: string = environment.apiUrl;
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute,
+    private toasts: ToastService,
+    private auth: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const nickname = params['nickname'];
+      if (nickname) {
+        this.getProfileData(nickname);
+      }
+    });
+
+    this.auth.ensureUserData().subscribe({
+      next: (res: any) => {
+        this.isAdmin = res?.role === 'admin';
+      },
+      error: (err: any) => {
+        console.log(err.error.error);
+        this.toasts.show(err.error.error);
+      },
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  getProfileData(nickname: string) {
+    if (!this.router.url.startsWith('/profile')) {
+      return;
+    }
+
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.isLoading) return;
+    this.isLoading = true;
+
+    this.http
+      .get<ProfileData>(`${this.baseUrl}/profileData?nickname=${nickname}`, {
+        headers,
+      })
+      .subscribe({
+        next: (data) => {
+          this.userData = data;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+        },
+      });
+  }
+
+  confirmBan() {
+    const headers = checkToken();
+    const pathValues = this.router.url.split('/');
+    const nickname = pathValues[pathValues.length - 1];
+    const ban = {
+      nickname,
+      reason: '',
+    };
+    this.http.post(`${this.baseUrl}/banUser`, ban, { headers }).subscribe({
+      next: () => {
+        this.toasts.show('User has been banned', Type.success);
+        this.banChecker = false;
+      },
+      error: (err) => {
+        this.toasts.show(err.error.error);
+        this.banChecker = false;
+      },
+    });
+  }
+
+  confirmDelete() {
+    const headers = checkToken();
+    const pathValues = this.router.url.split('/');
+    const nickname = pathValues[pathValues.length - 1];
+    this.http
+      .delete(`${this.baseUrl}/deleteUser/${nickname}`, { headers })
+      .subscribe({
+        next: () => {
+          this.toasts.show('Account deleted successfully', Type.success);
+          this.router.navigate(['/']);
+        },
+        error: () => {
+          this.toasts.show('Failed to delete user', Type.error);
+          this.deleteChecker = false;
+        },
+      });
+  }
+
+  follow() {
+    const headers = checkToken();
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.isLoadingFollow) return;
+    this.isLoadingFollow = true;
+
+    this.http
+      .get<any>(
+        `${this.baseUrl}/follow?followedNickname=${this.userData.nickname}`,
+        { headers },
+      )
+      .subscribe({
+        next: (res) => {
+          this.userData.isFollower = res.message === 'followed';
+          this.isLoadingFollow = false;
+        },
+        error: () => {
+          this.isLoadingFollow = false;
+        },
+      });
+  }
+}

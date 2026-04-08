@@ -1,18 +1,13 @@
 package com.zack.demo.auth;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-public class SignupRequestDto {
-    private String nickname;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
-    private String bio;
-
-    public SignupRequestDto() {
-    }
+public record SignupRequestDto(
+        @NotBlank String nickname,
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @Email String email,
+        @NotBlank String password,
+        String bio) {
 }

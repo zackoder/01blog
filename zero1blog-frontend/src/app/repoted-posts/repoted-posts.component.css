@@ -1,0 +1,24 @@
+/* Prevent white background issues */
+.container-fluid {
+  color: white !important;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Animations */
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-info {
+  background-color: #00d4ff !important;
+  color: #0d1b2a !important;
+  border: none;
+}

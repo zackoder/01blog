@@ -1,0 +1,52 @@
+<div class="container-fluid mt-5 pt-4 px-md-5">
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-xxl-9">
+      <div class="d-flex justify-content-center mb-5">
+        <div
+          class="bg-dark-card border border-secondary rounded-pill p-1 shadow-lg d-inline-flex"
+        >
+          <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link rounded-pill px-4 py-2 fw-bold"
+                [class.active]="type === 'post'"
+                (click)="reportsList('post')"
+                type="button"
+              >
+                <i class="fa-solid fa-file-lines me-2"></i>Reported Posts
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link rounded-pill px-4 py-2 fw-bold"
+                [class.active]="type === 'user'"
+                (click)="reportsList('user')"
+                type="button"
+              >
+                <i class="fa-solid fa-user-shield me-2"></i>Reported Users
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link rounded-pill px-4 py-2 fw-bold"
+                [class.active]="type === 'allUser'"
+                (click)="allUsers()"
+                type="button"
+              >
+                <i class="fa-solid fa-user-shield me-2"></i>All Users
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-fade-in">
+        @if (type === "post") {
+          <app-repoted-posts [(reports)]="reports"></app-repoted-posts>
+        } @else {
+          <app-repoted-users [reports]="reports()"></app-repoted-users>
+        }
+      </div>
+    </div>
+  </div>
+</div>

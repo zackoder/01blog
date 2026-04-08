@@ -1,3 +1,6 @@
+Integration tests → endpoints (MockMvc)
+E2E tests → Cypress, Postman, Selenium
+
 🏗️ BACKEND (Spring Boot)
 
 ## A. Setup & Configuration

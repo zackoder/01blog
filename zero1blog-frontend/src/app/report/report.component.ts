@@ -3,7 +3,15 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { checkToken } from '../utils/dateFormater';
+import { ToastService } from '../services/toast.service';
+
+interface Report {
+  reportedPostId: number;
+  reported: string;
+  content: String;
+}
 
 @Component({
   selector: 'app-report',
@@ -12,43 +20,53 @@ import { Component, Input } from '@angular/core';
   styleUrl: './report.component.css',
 })
 export class ReportComponent {
+  report: Report = {
+    reportedPostId: 0,
+    reported: '',
+    content: '',
+  };
   reportReason = '';
   error = '';
-  @Input() postId!: number;
   private baseUrl = environment.apiUrl;
-  constructor(private http: HttpClient, private router: Router) {}
+  @Input() postId!: number;
+  @Input() reported!: string;
+  @Output() removeReportComponent = new EventEmitter<boolean>();
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toast: ToastService,
+  ) {}
+
   onsubmitReport() {
-    const token = localStorage.getItem('jwtToken');
+    const headers = checkToken();
 
-    if (!token) this.router.navigate(['/login']);
-
-    if (this.reportReason.trim() === '') {
+    if (!headers.has('Authorization')) {
+      this.router.navigate(['/login']);
+    }
+    if (this.report.content.trim() === '') {
       this.error = "report can't be empty";
       return;
     }
 
     this.error = '';
-    console.log(this.postId);
-    console.log(this.baseUrl);
-
+    this.report.reportedPostId = this.postId;
+    this.report.reported = this.reported;
     this.http
-      .post(
-        `${this.baseUrl}/report`,
-        {
-          target: 'post',
-          targetId: this.postId,
-          content: this.reportReason,
-          createdAt: 0,
-        },
-        { headers: { authorization: `Bearer ${token}` } }
-      )
+      .post(`${this.baseUrl}/report`, this.report, { headers })
       .subscribe({
         next: (res) => {
+          this.error = '';
+          this.toast.show('reported successfully');
           console.log(res);
         },
         error: (e) => {
           console.log(e);
+          this.toast.show('could not report please try again');
         },
       });
+  }
+  closeReport() {
+    this.removeReportComponent.emit(false);
   }
 }

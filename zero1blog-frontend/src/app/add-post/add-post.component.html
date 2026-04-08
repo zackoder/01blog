@@ -1,26 +1,146 @@
-<div class="container">
-  <form (ngSubmit)="onSubmit()" class="addPost">
-    <div class="content_container">
-      <label for="titel">Enter something</label>
-      <textarea
-        class="content"
-        name="title"
-        type="text"
-        id="title"
-        [(ngModel)]="content"
-      ></textarea>
+@if (!isLoading) {
+  <div class="min-vh-100 py-4" style="background-color: #0d1b2a">
+    <div class="container-fluid px-md-5 mt-5">
+      <form
+        (ngSubmit)="onSubmit()"
+        class="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
+        style="
+          background-color: #1b263b;
+          border: 1px solid rgba(65, 90, 119, 0.4) !important;
+          max-width: 1200px;
+        "
+      >
+        <div class="row g-0">
+          <div
+            class="col-auto border-end border-secondary border-opacity-25 bg-black bg-opacity-10 d-none d-md-block"
+            style="width: 160px"
+          >
+            <div class="p-4 text-center">
+              @if (userData.avatar) {
+                <img
+                  [src]="'http://localhost:8080' + userData.avatar"
+                  class="rounded-circle border border-2 border-info p-1 mb-2 shadow-sm"
+                  style="width: 80px; height: 80px; object-fit: cover"
+                />
+              }
+              <p class="text-white fw-bold mb-0 small text-truncate px-1">
+                {{ userData.nickname }}
+              </p>
+              <span
+                class="text-info opacity-50 fw-bold"
+                style="font-size: 0.65rem; letter-spacing: 1px"
+                >POSTER</span
+              >
+            </div>
+          </div>
+
+          <div class="col p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="h3 fw-bold text-white m-0">
+                {{ data.id ? "Edit" : "Create" }}
+                <span class="text-info">Post</span>
+              </h2>
+              <button
+                id="createPost"
+                type="submit"
+                [disabled]="isLoading"
+                class="btn btn-info rounded-pill px-5 fw-bold shadow-sm"
+              >
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                {{ data.id ? "UPDATE" : "SUBMIT" }}
+              </button>
+            </div>
+
+            <div class="content_container">
+              <div class="mb-3">
+                <textarea
+                  class="form-control bg-transparent text-white border-0 fs-3 p-0 custom-textarea"
+                  name="content"
+                  id="content"
+                  rows="6"
+                  [(ngModel)]="data.content"
+                  placeholder="What's on your mind?"
+                  style="box-shadow: none; resize: none"
+                ></textarea>
+                @if (err) {
+                  <div
+                    class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger mt-3 py-2 small fw-bold animate-fade-in"
+                  >
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    {{ err }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            @if (imagePreview || data.image_path) {
+              <div class="mt-4 position-relative animate slide-up">
+                <div
+                  class="rounded-4 overflow-hidden border border-info border-opacity-25 shadow-lg bg-black bg-opacity-25"
+                >
+                  @let displayUrl =
+                    imagePreview
+                      ? imagePreview
+                      : "http://localhost:8080" + data.image_path;
+                  @let isVideo = fileType?.startsWith("video");
+                  @if (isVideo) {
+                    <video
+                      [src]="displayUrl"
+                      controls
+                      class="w-100 d-block"
+                      style="max-height: 450px; object-fit: contain"
+                    ></video>
+                  } @else {
+                    <img
+                      [src]="displayUrl"
+                      class="img-fluid w-100 d-block"
+                      style="max-height: 450px; object-fit: contain"
+                    />
+                  }
+
+                  <button
+                    type="button"
+                    (click)="removeMedia()"
+                    class="btn btn-danger btn-sm rounded-pill position-absolute top-0 end-0 m-3 shadow-lg px-3 border-0"
+                  >
+                    <i class="fa-solid fa-trash-can me-2"></i> Remove Media
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div
+                class="mt-4 pt-4 border-top border-secondary border-opacity-25 animate-fade-in"
+              >
+                <div
+                  (click)="fileInput.click()"
+                  class="p-5 border border-2 border-dashed border-secondary rounded-4 text-center bg-black bg-opacity-20 hover-zone cursor-pointer"
+                >
+                  <label
+                    for="image"
+                    class="form-label d-block fw-bold text-info mb-2 cursor-pointer fs-5"
+                  >
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>ADD IMAGE /
+                    VIDEO
+                  </label>
+                  <input
+                    #fileInput
+                    (change)="OnSelectFile($event)"
+                    type="file"
+                    id="image"
+                    class="form-control d-none"
+                    accept="image/*,video/*"
+                  />
+                  <p class="text-secondary mb-0">
+                    Drag and drop or click to browse your media library
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </form>
     </div>
-    <div class="img_container">
-      <label for="image">add image</label>
-      <input
-        (change)="OnSelectFile($event)"
-        type="file"
-        id="image"
-        class="img"
-      />
-    </div>
-    <div>
-      <button type="submit">submit</button>
-    </div>
-  </form>
-</div>
+  </div>
+}

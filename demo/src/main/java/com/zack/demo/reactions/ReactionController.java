@@ -26,24 +26,22 @@ public class ReactionController {
     public ResponseEntity<?> handleReaction(@RequestBody ReactionDto dtoReq,
             @RequestHeader(value = "authorization", required = false) String auth) {
 
-        HashMap<Object, Object> resp = new HashMap<>();
-        if (auth == null || auth.isEmpty() || !auth.startsWith("Bearer")) {
-            resp.put("error", "unauthorized");
-            return ResponseEntity.status(403).body(resp);
-        }
+        HashMap<String, String> resp = new HashMap<>();
+
         String nickname = jwt.extractUsername(auth.substring(7));
-        if (!reactionService.validateDto(dtoReq)) {
-            resp.put("error", "invalid data");
+        resp = reactionService.validateDto(dtoReq);
+        if (resp.get("error") != null) {
             return ResponseEntity.badRequest().body(resp);
         }
-        resp = reactionService.seveReaction(dtoReq, nickname);
-        if (resp.get("error") != null) {
-            return ResponseEntity.status(404).body(resp);
-        }
-        System.out.println(resp.toString());
 
-        ReactionRespDto res = reactionService.getNewReactions(1, dtoReq.getTargetId());
-        // resp.put("message", "nothing");
+        if (!reactionService.checkUser(nickname)) {
+            resp.put("error", "user not found");
+            return ResponseEntity.badRequest().body(resp);
+        }
+
+        reactionService.seveReaction(nickname);
+        ReactionDtoResp res = reactionService.countReaction(nickname, dtoReq.targetId());
+        System.out.println(res);
         return ResponseEntity.ok().body(res);
     }
 }

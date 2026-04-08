@@ -1,95 +1,35 @@
-/* Container */
-.signup-form, .log-in_form {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 30px;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.custom-form-floating > .form-control {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  color: white !important;
 }
 
-/* Form groups */
-.form-group {
-  margin-bottom: 20px;
+.custom-form-floating > .form-control:focus {
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.25);
+  background-color: rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Labels */
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
+.custom-form-floating > label {
+  transition: all 0.2s;
 }
 
-/* Inputs */
-input, textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-input:focus, textarea:focus {
-  border-color: #007bff;
-}
-
-/* Textarea */
-textarea {
-  resize: vertical;
-}
-
-/* Password requirements */
-.password-requirements p {
-  font-size: 12px;
-  margin: 4px 0;
-}
-
-.password-requirements p.valid {
-  color: green;
-}
-
-.password-requirements p.invalid {
-  color: red;
-}
-
-/* Error messages */
-.error {
-  color: #e74c3c;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-/* Buttons */
-button[type="submit"] {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: #fff;
-  font-weight: 600;
+.btn-info {
+  background-color: #00d4ff !important;
   border: none;
-  border-radius: 6px;
+  color: #0d1b2a !important;
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: #00b4d8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3) !important;
+}
+
+.cursor-pointer {
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s;
 }
 
-button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-button[type="submit"]:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Optional: Responsive */
-@media (max-width: 500px) {
-  .signup-form, .log-in_form {
-    margin: 20px;
-    padding: 20px;
-  }
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: #00d4ff !important;
+  opacity: 1;
 }

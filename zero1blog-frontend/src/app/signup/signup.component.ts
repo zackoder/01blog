@@ -22,6 +22,8 @@ export class SignupComponent {
     bio: '',
   };
 
+  imagePreview: string | ArrayBuffer | null = null;
+  selectedFile: File | null = null;
   isLoading = false;
 
   errorMsg = {
@@ -44,21 +46,51 @@ export class SignupComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.imagePreview = null;
+    this.selectedFile = null;
+  }
+
   onSignUp() {
     this.clearErrors();
 
     if (!this.validData()) {
       return;
     }
+
+    this.isLoading = true;
+    const formData = new FormData();
+    const data = JSON.stringify(this.data);
+
+    formData.append(
+      'signupDto',
+      new Blob([data], { type: 'application/json' })
+    );
+
+    if (this.selectedFile) {
+      formData.append('profileImage', this.selectedFile);
+    }
+
     interface SignupResponse {
       success: boolean;
       message?: string;
       data?: any;
     }
 
-    this.isLoading = true;
     this.http
-      .post<SignupResponse>('http://localhost:8080/api/register', this.data)
+      .post<SignupResponse>('http://localhost:8080/api/register', formData)
       .subscribe({
         next: (response) => {
           if (!response.success) {
@@ -67,14 +99,13 @@ export class SignupComponent {
             } else if (response.message?.includes('Email')) {
               this.errorMsg.errEmail = response.message;
             }
-            return;
           } else {
-            this.router.navigate(["/login"]);
+            this.router.navigate(['/login']);
           }
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Signup failed:', error);
+          console.log('Signup failed:', error);
           this.isLoading = false;
         },
       });
@@ -94,28 +125,25 @@ export class SignupComponent {
 
   validData(): boolean {
     let valid = true;
-
-    if (!this.data.email.trim()) {
-      this.errorMsg.errEmail = 'You need to enter your email or nickname';
+    if (!this.data.nickname.trim()) {
+      this.errorMsg.errNickname = 'Nickname is required';
       valid = false;
     }
-
+    if (!this.data.email.trim()) {
+      this.errorMsg.errEmail = 'Email is required';
+      valid = false;
+    }
     if (!this.data.password) {
       this.errorMsg.errPassword = 'Enter your password';
       valid = false;
+    } else if (!this.isPasswordValid()) {
+      this.errorMsg.errPassword = 'Password must meet all criteria';
+      valid = false;
     }
-
     if (this.data.password !== this.data.confirmPassword) {
       this.errorMsg.errConfirmPassword = 'Passwords do not match';
       valid = false;
     }
-
-    if (!this.isPasswordValid()) {
-      this.errorMsg.errPassword =
-        'Password must meet all the required criteria';
-      valid = false;
-    }
-
     return valid;
   }
 
@@ -143,7 +171,8 @@ export class SignupComponent {
       this.passwordValidation.hasMinLength
     );
   }
+
   login() {
-    this.router.navigate(["/login"])
+    this.router.navigate(['/login']);
   }
 }

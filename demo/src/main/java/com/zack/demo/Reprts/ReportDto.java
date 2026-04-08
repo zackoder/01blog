@@ -1,11 +1,9 @@
 package com.zack.demo.Reprts;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class ReportDto {
-    private String target;
-    private long targetId;
-    private String content;
-    private long createdAt;
+public record ReportDto(
+                @NotBlank String content,
+                String reported,
+                long reportedPostId) {
 }

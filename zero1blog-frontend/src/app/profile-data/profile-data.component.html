@@ -1,0 +1,288 @@
+@if (isLoading) {
+  <div class="min-vh-100 py-5" style="background-color: #0d1b2a">
+    <div class="container py-5">
+      <div
+        class="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
+        style="
+          background-color: #1b263b;
+          border: 1px solid rgba(65, 90, 119, 0.4) !important;
+          max-width: 700px;
+          min-height: 550px;
+        "
+      >
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center placeholder-glow">
+            <div class="d-inline-block mb-4 position-relative">
+              <div
+                class="placeholder rounded-circle"
+                style="width: 160px; height: 160px; background-color: #415a77"
+              ></div>
+            </div>
+            <h2 class="h3 fw-bold mb-1">
+              <span
+                class="placeholder col-6 rounded"
+                style="background-color: #415a77"
+              ></span>
+            </h2>
+            <p class="mb-4">
+              <span
+                class="placeholder col-4 rounded"
+                style="background-color: #415a77"
+              ></span>
+            </p>
+          </div>
+
+          <div class="mt-2 mb-5 placeholder-glow">
+            <p class="mb-2">
+              <span
+                class="placeholder col-3 rounded"
+                style="background-color: #415a77"
+              ></span>
+            </p>
+            <div
+              class="p-4 rounded-3 border-start border-4 border-opacity-25"
+              style="
+                background-color: rgba(13, 27, 42, 0.4);
+                border-color: #415a77 !important;
+              "
+            >
+              <span
+                class="placeholder col-12 rounded mb-2"
+                style="background-color: #415a77"
+              ></span>
+              <span
+                class="placeholder col-8 rounded"
+                style="background-color: #415a77"
+              ></span>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-3 placeholder-glow">
+            <span
+              class="placeholder col-12 rounded-pill"
+              style="height: 54px; background-color: #415a77"
+            ></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else if (userData) {
+  <div class="min-vh-100 py-5" style="background-color: #0d1b2a">
+    <div class="container py-5">
+      <div
+        class="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto animate slide-up"
+        style="
+          background-color: #1b263b;
+          border: 1px solid rgba(65, 90, 119, 0.4) !important;
+          max-width: 700px;
+          position: relative;
+          min-height: 550px;
+        "
+      >
+        @if (reportForm) {
+          <div
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in"
+            style="
+              background: rgba(13, 27, 42, 0.95);
+              z-index: 100;
+              backdrop-filter: blur(10px);
+            "
+          >
+            <div class="w-100 p-4">
+              <app-report
+                [reported]="userData.nickname"
+                (removeReportComponent)="reportForm = false"
+              >
+              </app-report>
+            </div>
+          </div>
+        }
+
+        @if (banChecker) {
+          <div
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in"
+            style="
+              background: rgba(13, 27, 42, 0.96);
+              z-index: 110;
+              backdrop-filter: blur(12px);
+            "
+          >
+            <div class="text-center p-4">
+              <div
+                class="bg-warning bg-opacity-10 p-4 rounded-circle d-inline-block mb-3"
+              >
+                <i class="fa-solid fa-user-slash text-warning fs-1"></i>
+              </div>
+              <h3 class="text-white fw-bold">Ban Account?</h3>
+              <p class="text-white-50 mb-4">
+                Restrict &#64;{{ userData.nickname }}'s access to the platform.
+              </p>
+              <div class="d-flex gap-3 justify-content-center">
+                <button
+                  (click)="banChecker = false"
+                  class="btn btn-outline-light rounded-pill px-4"
+                >
+                  Cancel
+                </button>
+                <button
+                  (click)="confirmBan()"
+                  class="btn btn-warning rounded-pill px-4 fw-bold text-dark shadow"
+                >
+                  Confirm Ban
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (deleteChecker) {
+          <div
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in"
+            style="
+              background: rgba(13, 27, 42, 0.96);
+              z-index: 120;
+              backdrop-filter: blur(12px);
+            "
+          >
+            <div class="text-center p-4">
+              <div
+                class="bg-danger bg-opacity-10 p-4 rounded-circle d-inline-block mb-3"
+              >
+                <i
+                  class="fa-solid fa-triangle-exclamation text-danger fs-1"
+                ></i>
+              </div>
+              <h3 class="text-white fw-bold">Delete Account?</h3>
+              <p class="text-white-50 mb-4">
+                Permanent action. All data for
+                <b>&#64;{{ userData.nickname }}</b> will be deleted.
+              </p>
+              <div class="d-flex gap-3 justify-content-center">
+                <button
+                  (click)="deleteChecker = false"
+                  class="btn btn-outline-light rounded-pill px-4"
+                >
+                  Cancel
+                </button>
+                <button
+                  (click)="confirmDelete()"
+                  class="btn btn-danger rounded-pill px-4 fw-bold shadow"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center">
+            <div class="position-relative d-inline-block mb-4">
+              <img
+                [src]="'http://localhost:8080' + userData.avatar"
+                alt="profile"
+                class="rounded-circle border border-3 border-info p-1 shadow-lg object-fit-cover"
+                style="width: 160px; height: 160px"
+              />
+              <span
+                class="position-absolute bottom-0 end-0 bg-info p-2 rounded-circle border border-4 border-dark"
+                style="width: 20px; height: 20px"
+              ></span>
+            </div>
+            <h2 class="h3 fw-bold text-white mb-1">
+              {{ userData.firstName }} {{ userData.lastName.toUpperCase() }}
+            </h2>
+            <p class="text-info opacity-75 fw-medium mb-4">
+              &#64;{{ userData.nickname }}
+            </p>
+          </div>
+
+          <div class="mt-2 mb-5">
+            <p
+              class="text-secondary small fw-bold text-uppercase mb-2"
+              style="letter-spacing: 1px"
+            >
+              Biography
+            </p>
+            @if (userData.bio) {
+              <div
+                class="p-4 rounded-3 border-start border-info border-4"
+                style="background-color: rgba(13, 27, 42, 0.4)"
+              >
+                <p class="text-white-50 fst-italic mb-0 fs-5">
+                  {{ userData.bio }}
+                </p>
+              </div>
+            } @else {
+              <p class="text-muted fst-italic">This user has no bio.</p>
+            }
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            @if (!userData.isOwner) {
+              @if (!isAdmin) {
+                @if (!userData.isFollower) {
+                  <button
+                    [disabled]="isLoadingFollow"
+                    (click)="follow()"
+                    class="btn btn-info w-100 rounded-pill fw-bold py-3 shadow-sm"
+                  >
+                    @if (isLoadingFollow) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                    } @else {
+                      <i class="fa-solid fa-user-plus me-2"></i> FOLLOW
+                    }
+                  </button>
+                } @else {
+                  <button
+                    [disabled]="isLoadingFollow"
+                    (click)="follow()"
+                    class="btn btn-outline-info w-100 rounded-pill fw-bold py-3"
+                  >
+                    @if (isLoadingFollow) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                    } @else {
+                      <i class="fa-solid fa-user-check me-2"></i> UNFOLLOW
+                    }
+                  </button>
+                }
+                <button
+                  (click)="reportForm = true"
+                  class="btn btn-link btn-sm text-danger text-decoration-none mt-2 fw-bold opacity-75"
+                >
+                  <i class="fa-solid fa-flag me-2"></i> Report
+                </button>
+              }
+
+              @if (isAdmin) {
+                <div
+                  class="admin-zone p-3 rounded-4 border border-danger border-opacity-25 bg-black bg-opacity-10"
+                >
+                  <div class="d-flex flex-column gap-2">
+                    <button
+                      (click)="banChecker = true"
+                      class="btn btn-warning w-100 rounded-pill fw-bold py-3 text-dark shadow-sm"
+                    >
+                      <i class="fa-solid fa-ban me-2"></i> BAN USER
+                    </button>
+                    <button
+                      (click)="deleteChecker = true"
+                      class="btn btn-outline-danger w-100 rounded-pill fw-bold py-3"
+                    >
+                      <i class="fa-solid fa-user-slash me-2"></i> DELETE USER
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

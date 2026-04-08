@@ -1,29 +1,51 @@
-.layout {
-  position: fixed;
-  top: 110px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  background-color: var(--color-post);
-  z-index: 10000;
-  /* display: flex; */
-  /* justify-content: center; */
+/* The container allows the form to be centered but flexible */
+.report-container {
+  max-height: 100%;
   width: 100%;
 }
 
-.formContainer {
-  width: 90%;
-  display: flex;
-  justify-content: center;
-}
+.report-overlay-content {
+  background-color: #1b263b;
+  border: 1px solid rgba(65, 90, 119, 0.4);
 
-.reportForm {
-  margin-top: 90px;
+  /* SIZE LOGIC */
+  width: 95%; /* Take up most of the width */
+  max-width: 450px; /* But don't get too wide on desktop */
+  height: auto; /* Shrink to fit the content */
+  max-height: 95%; /* Never get taller than the post card */
+
+  /* SCROLL LOGIC */
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* If the card is tiny, let the form scroll */
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
-.reportReason {
-  /* width: 90%; */
+/* Make the textarea shrink on smaller heights */
+.reportForm textarea {
+  min-height: 80px;
+  max-height: 150px;
+}
+
+/* Custom scrollbar for the navy theme */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #415a77;
+  border-radius: 10px;
+}
+
+/* Small adjustments for very tight spaces */
+@media (max-height: 400px) {
+  .report-overlay-content {
+    padding: 1rem !important;
+  }
+  h5 {
+    font-size: 0.9rem !important;
+  }
 }

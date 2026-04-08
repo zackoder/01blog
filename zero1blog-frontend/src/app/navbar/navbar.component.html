@@ -1,3 +1,204 @@
-<header>
-  <h2>01blog</h2>
-</header>
+@if (isLoading) {
+  <nav class="navbar navbar-expand-md fixed-top shadow-lg custom-navbar py-2">
+    <div class="container-fluid px-md-5">
+      <a class="navbar-brand fw-bold fs-2 text-white cursor-pointer">
+        01<span class="text-info">blog</span>
+      </a>
+
+      <div class="ms-auto placeholder-glow">
+        <div
+          class="placeholder rounded-circle"
+          style="width: 45px; height: 45px; background-color: #415a77"
+        ></div>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-spacer"></div>
+} @else if (data) {
+  <nav class="navbar navbar-expand-md fixed-top shadow-lg custom-navbar py-2">
+    <div class="container-fluid px-md-5">
+      <a
+        class="navbar-brand fw-bold fs-2 text-white cursor-pointer order-0"
+        (click)="goHome()"
+      >
+        01<span class="text-info">blog</span>
+      </a>
+
+      @if (showSearchResults) {
+        <div
+          class="position-fixed top-0 start-0 w-100 h-100"
+          style="z-index: 1040"
+          (click)="showSearchResults = false"
+        ></div>
+      }
+
+      <div
+        class="d-flex mx-auto position-relative search-container order-last order-md-1 mt-2 mt-md-0"
+        style="z-index: 1050"
+      >
+        <input
+          type="text"
+          class="form-control rounded-pill border-0 text-white pe-5"
+          style="background-color: rgba(255, 255, 255, 0.1)"
+          placeholder="Search..."
+          [ngModel]="searchQuery"
+          (ngModelChange)="searchQuery = $event; onSearch()"
+          (keydown)="onKeyDown($event)"
+        />
+        <i
+          class="fa-solid fa-magnifying-glass position-absolute top-50 end-0 translate-middle-y me-3 text-info cursor-pointer"
+          (click)="onSearch()"
+        ></i>
+
+        @if (showSearchResults && searchResults.length > 0) {
+          <ul
+            class="list-group position-absolute w-100 mt-2 shadow-lg overflow-hidden animate slide-in"
+            style="
+              top: 100%;
+              z-index: 1050;
+              background-color: #1b263b;
+              border: 1px solid rgba(65, 90, 119, 0.4);
+              border-radius: 12px;
+            "
+          >
+            @for (result of searchResults; track result.id; let i = $index) {
+              <li
+                class="list-group-item border-0 text-white cursor-pointer d-flex align-items-center gap-3 px-3 py-2"
+                [class.active-result]="i === selectedIndex"
+                style="
+                  background-color: transparent;
+                  transition: background-color 0.2s;
+                "
+                (click)="navigateToProfile(result.nickname)"
+                (mouseenter)="selectedIndex = i"
+              >
+                <img
+                  [src]="'http://localhost:8080' + result.avatar"
+                  class="rounded-circle border border-info object-fit-cover"
+                  style="width: 35px; height: 35px"
+                  alt="avatar"
+                />
+                <span class="fw-medium">{{ result.nickname }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div
+        class="ms-auto position-relative order-1 order-md-2"
+        style="overflow: visible"
+      >
+        <div class="d-flex align-items-center gap-3">
+          @if (isAdmin) {
+            <span class="badge rounded-pill admin-badge px-3 py-1 small">
+              Admin
+            </span>
+          }
+
+          <div class="position-relative">
+            <button
+              class="btn btn-link text-info p-0"
+              (click)="checkNotifications()"
+            >
+              <i
+                class="fa-solid fa-bell fs-5"
+                (click)="checkNotifications(); toggleNotifications()"
+              ></i>
+            </button>
+
+            @if (showNotifications) {
+              <ul
+                class="dropdown-menu dropdown-menu-end show shadow-lg py-2 custom-dropdown animate slide-in"
+                style="
+                  position: absolute;
+                  right: 0;
+                  margin-top: 10px;
+                  width: 300px;
+                  max-height: 400px;
+                  overflow-y: auto;
+                "
+              >
+                <li
+                  class="px-3 py-2 text-info small border-bottom border-secondary border-opacity-25 mb-2"
+                >
+                  Notifications
+                </li>
+                @for (notif of notifications; track notif.id) {
+                  <li>
+                    <!-- <a
+                      class="dropdown-item py-2 border-bottom border-secondary border-opacity-10"
+                    > -->
+                    <div class="d-flex flex-column gap-1">
+                      <span class="text-white small"
+                        >New post from user {{ notif.nickname }}</span
+                      >
+                      <span class="text-white" style="font-size: 0.75rem">
+                        {{ formatDate(notif.createdAt) }}</span
+                      >
+                    </div>
+                    <!-- </a> -->
+                  </li>
+                } @empty {
+                  <li class="p-2 text-white">no notifications</li>
+                }
+              </ul>
+            }
+          </div>
+
+          <div class="profile-wrapper position-relative" (click)="toggle()">
+            <img
+              class="rounded-circle border border-2 border-info shadow-sm cursor-pointer profile-img"
+              [src]="'http://localhost:8080' + data.avatar"
+              alt="profile"
+            />
+          </div>
+        </div>
+
+        @if (show) {
+          <ul
+            class="dropdown-menu dropdown-menu-end show shadow-lg py-2 custom-dropdown animate slide-in"
+            style="position: absolute; right: 0; left: auto; margin-top: 10px"
+          >
+            <li
+              class="px-4 py-2 text-info small border-bottom border-secondary border-opacity-25 mb-2"
+            >
+              <i class="fa-solid fa-user-check me-2"></i> {{ data.nickname }}
+            </li>
+            <li>
+              <a class="dropdown-item py-2 fs-5" (click)="openProfile()"
+                ><i class="fa-regular fa-user me-3 text-info"></i> Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item py-2 fs-5" (click)="navigateToAddPost()"
+                ><i class="fa-regular fa-square-plus me-3 text-info"></i> Add
+                Post</a
+              >
+            </li>
+
+            @if (isAdmin) {
+              <li>
+                <a
+                  class="dropdown-item py-2 fs-5 text-warning"
+                  (click)="goToDashboard()"
+                  ><i class="fa-solid fa-chart-line me-3"></i> Dashboard</a
+                >
+              </li>
+            }
+
+            <li><hr class="dropdown-divider border-secondary opacity-25" /></li>
+            <li>
+              <a class="dropdown-item py-2 fs-5 text-danger" (click)="logout()"
+                ><i class="fa-solid fa-arrow-right-from-bracket me-3"></i> Log
+                Out</a
+              >
+            </li>
+          </ul>
+        }
+      </div>
+    </div>
+  </nav>
+
+  <div class="nav-spacer"></div>
+}

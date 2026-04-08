@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
-import { AddPostComponent } from '../add-post/add-post.component';
+import { Component, OnInit } from '@angular/core';
 import { PostsComponent } from '../posts/posts.component';
-import { NavbarComponent } from '../navbar/navbar.component';
+import { Router } from '@angular/router';
+import { ProfileComponent } from '../profile/profile.component';
 
 @Component({
   selector: 'app-home',
-  imports: [AddPostComponent, PostsComponent, NavbarComponent],
+  imports: [PostsComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent {}
+export class HomeComponent {
+  constructor(private router: Router) {}
+}

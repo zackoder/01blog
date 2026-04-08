@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class OffsetLimitService {
-  protected offset: number = 0;
+  private offset: number = 0;
 
   constructor() {}
   getOffset(): number {

@@ -1,9 +1,13 @@
 package com.zack.demo.Reprts;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -12,33 +16,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zack.demo.config.JwtService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 public class ReportsController {
     @Autowired
-    private JwtService jwt;
+    private JwtService jwtService;
     @Autowired
     private ReportService reportService;
 
     @PostMapping("/report")
-    public ResponseEntity<?> reportsController(@RequestBody ReportDto dto,
+    public ResponseEntity<?> reportsController(@Valid @RequestBody ReportDto dto,
             @RequestHeader("authorization") String auth) {
 
-        HashMap<String, Object> resp = new HashMap<>();
-        if (auth.isEmpty() || !auth.startsWith("Bearer")) {
-            resp.put("error", "Unauthorized");
-            return ResponseEntity.status(403).body(resp);
+        String nickname = jwtService.extractUsername(auth.substring(7));
+        System.out.println();
+        System.out.println();
+        System.out.println(dto.toString());
+        System.out.println();
+        System.out.println();
+
+        if ((dto.reported() == null || dto.reported().isEmpty()) && dto.reportedPostId() < 1) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Bad Request"));
         }
 
-        String nickname = jwt.extractUsername(auth.substring(7));
-        HashMap<String, Object> reportStat = reportService.checkReportData(nickname, dto);
+        reportService.saveReport(dto, nickname);
+        return ResponseEntity.ok(null);
+    }
 
-        if (reportStat.get("error") != null) {
-            return ResponseEntity.status(404).body(reportStat);
+    @GetMapping("/reports/{type}")
+    public ResponseEntity<?> getReports(@PathVariable("type") String type, @RequestHeader("authorization") String jwt) {
+        String role = jwtService.extractClaim(jwt.substring(7), claims -> claims.get("role", String.class));
+        if (!role.equals("admin")) {
+            return ResponseEntity.status(403).body(Map.of("error", "Access Denied"));
         }
-
-        reportService.saveReport(dto, (long) reportStat.get("userId"));
-        resp.put("message", "success");
-        return ResponseEntity.ok(resp);
+        List<ReportResDtoRes> reports = reportService.getReports(type, 0);
+        System.out.println(reports);
+        return ResponseEntity.ok().body(reports);
     }
 }

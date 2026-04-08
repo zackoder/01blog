@@ -18,10 +18,10 @@ public class JwtService {
     private static final String SECRET_KEY = "Idea 15 is the best, followed by idea 10.";
 
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    
+
     public String generateToken(User user) {
         long expirationMs = 24 * 1000 * 60 * 60;
-
+        System.out.println("user object: " + user.toString());
         return Jwts.builder()
                 .setSubject(user.getNickname())
                 .claim("nickname", user.getNickname())

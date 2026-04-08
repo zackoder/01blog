@@ -1,0 +1,73 @@
+.custom-navbar {
+  background-color: #0d1b2a;
+  border-bottom: 1px solid rgba(65, 90, 119, 0.3);
+}
+
+.custom-dropdown {
+  min-width: 240px;
+  background-color: #1b263b !important;
+  border: 1px solid rgba(65, 90, 119, 0.4) !important;
+  border-radius: 12px;
+  z-index: 1050;
+}
+
+.dropdown-item {
+  color: #ffffff !important;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+}
+
+.profile-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.profile-img:hover {
+  transform: scale(1.05);
+}
+
+.admin-badge {
+  background-color: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.nav-spacer {
+  height: 75px;
+}
+
+.animate.slide-in {
+  animation: slideIn 0.25s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-container {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .search-container {
+    width: 35%;
+  }
+}
+
+.active-result {
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+}

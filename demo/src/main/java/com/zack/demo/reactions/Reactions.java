@@ -19,7 +19,6 @@ public class Reactions {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // keep convenience references but map them to the primitive id columns
     @ManyToOne
     @JoinColumn(name = "postId", insertable = false, updatable = false)
     private Post post;
@@ -31,5 +30,4 @@ public class Reactions {
     private long postId;
     private long userId;
     private String reaction_type;
-    private long createdAt;
 }

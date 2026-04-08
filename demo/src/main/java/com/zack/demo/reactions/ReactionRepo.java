@@ -8,20 +8,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReactionRepo extends JpaRepository<Reactions, Long> {
-    // match the entity field names
     Optional<Reactions> findByPostIdAndUserId(long postId, long userId);
 
     @Query(value = """
             SELECT
-                SUM(CASE WHEN reaction_type = 'like' THEN 1 ELSE 0 END) AS likes,
-                SUM(CASE WHEN reaction_type = 'deslike' THEN 1 ELSE 0 END) AS dislikes,
-                CASE
-                    WHEN post_id = ? AND user_id = ? THEN reaction_type
-                    ELSE ''
-            END AS reacted
-            FROM reactions
-            WHERE post_id = ?
-            GROUP BY post_id, user_id, reaction_type
-            """, nativeQuery = true)
-    ReactionRespDto getNewReactions(long postId, long userId, long postId);
+                COALESCE(SUM(CASE WHEN r.reaction_type = 'like' THEN 1 ELSE 0 END), 0) AS likes,
+                COALESCE(SUM(CASE WHEN r.reaction_type = 'dislike' THEN 1 ELSE 0 END), 0) AS dislikes,
+                MAX(CASE WHEN r.user_id = ? THEN r.reaction_type ELSE '' END) AS reacted
+            FROM
+                reactions r
+            WHERE
+                r.post_id = ?
+                """, nativeQuery = true)
+    ReactionDtoResp countReaction(long userId, long postId);
 }
