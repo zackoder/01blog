@@ -1,0 +1,27 @@
+<div class="users-grid">
+  @for (user of allUsers(); track user.id) {
+    <div class="user-card p-3 mb-3 d-flex align-items-center gap-3">
+      <div class="avatar-wrapper">
+        @if (user.avatar) {
+          <img
+            [src]="'http://localhost:8080' + user.avatar"
+            class="rounded-circle object-fit-cover avatar-img"
+            alt="avatar"
+          />
+        } @else {
+          <div
+            class="avatar-fallback rounded-circle d-flex align-items-center justify-content-center"
+          >
+            <i class="fa-solid fa-user text-white"></i>
+          </div>
+        }
+      </div>
+
+      <div class="flex-grow-1">
+        <a (click)="goToProfile(user.nickname)" class="user-link d-block">
+          <span class="fw-medium text-white">{{ user.nickname }}</span>
+        </a>
+      </div>
+    </div>
+  }
+</div>

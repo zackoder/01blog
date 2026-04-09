@@ -30,7 +30,7 @@
               <button
                 class="nav-link rounded-pill px-4 py-2 fw-bold"
                 [class.active]="type === 'allUser'"
-                (click)="allUsers()"
+                (click)="getAllUsers()"
                 type="button"
               >
                 <i class="fa-solid fa-user-shield me-2"></i>All Users
@@ -43,8 +43,10 @@
       <div class="slide-fade-in">
         @if (type === "post") {
           <app-repoted-posts [(reports)]="reports"></app-repoted-posts>
-        } @else {
+        } @else if (type === "user") {
           <app-repoted-users [reports]="reports()"></app-repoted-users>
+        } @else if (type === "allUser") {
+          <app-all-users [(allUsers)]="allUsers"></app-all-users>
         }
       </div>
     </div>

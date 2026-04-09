@@ -1,10 +1,12 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, Signal, signal } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { checkStatus, checkToken } from '../utils/dateFormater';
 import { RepotedPostsComponent } from '../repoted-posts/repoted-posts.component';
 import { RepotedUsersComponent } from '../repoted-users/repoted-users.component';
+import { UserCredentials } from '../services/auth-service.service.spec';
+import { AllUsersComponent } from '../all-users/all-users.component';
 
 export interface Report {
   id: number;
@@ -17,7 +19,7 @@ export interface Report {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RepotedPostsComponent, RepotedUsersComponent],
+  imports: [RepotedPostsComponent, RepotedUsersComponent, AllUsersComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -26,6 +28,7 @@ export class DashboardComponent implements OnInit {
   baseUrl = environment.apiUrl;
   type = 'post';
   isLoading = false;
+  allUsers = signal<UserCredentials[]>([]);
   constructor(
     private http: HttpClient,
     private rout: Router,
@@ -37,6 +40,7 @@ export class DashboardComponent implements OnInit {
     if (this.type !== type) {
       this.type = type;
       this.reports.set([]);
+      this.allUsers.set([]);
     }
     if (type === this.type && this.reports().length !== 0) {
       return;
@@ -63,16 +67,18 @@ export class DashboardComponent implements OnInit {
         },
       });
   }
-  allUsers() {
+  getAllUsers() {
     if (this.isLoading) return;
     this.isLoading = true;
     this.type = 'allUser';
     this.reports.set([]);
     this.http
-      .get(`${this.baseUrl}/users`, { headers: checkToken() })
+      .get<
+        UserCredentials[]
+      >(`${this.baseUrl}/allUsers`, { headers: checkToken() })
       .subscribe({
-        next: (res) => {
-          console.log(res);
+        next: (res: UserCredentials[]) => {
+          this.allUsers.set(res);
           this.isLoading = false;
         },
         error: (err) => {
