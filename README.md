@@ -58,21 +58,9 @@ after cloning the repo run the commend
 cd 01blog
 ```
 
-if you don't have postgerSql installed run this commend
+then run the setup script
 ```bash
-  ./installPostgre.sh
-```
-
-if you want to run it as a docker image run the commend
-
-```bash
-  ./buildPostgerImage.sh
-```
-
-install redis by runnig the commend
-
-```bash
-  installRides.sh
+./setup.sh
 ```
 
 to run the project run the commend
